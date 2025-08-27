@@ -4,10 +4,11 @@
 
 class Item : public sf::Drawable{
 public:
-	Item(std::shared_ptr<sf::Texture> texture, sf::IntRect tex_rect) : mSpritesheet(std::move(texture)), mSprite(*mSpritesheet, tex_rect){}
+	Item(std::shared_ptr<sf::Texture> texture, sf::IntRect tex_rect) : mSpritesheet(texture), mSprite(*mSpritesheet, tex_rect){}
 	void draw(sf::RenderTarget& target, sf::RenderStates states) const override;
 	virtual void printStats() const {}
 	sf::Sprite& getSprite() { return mSprite; }
+	void setPosition(sf::Vector2f position) { mSprite.setPosition(position); }
 
 private:
 	std::shared_ptr<sf::Texture> mSpritesheet;

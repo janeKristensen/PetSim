@@ -27,6 +27,7 @@ Game::Game(sf::Font& font, std::shared_ptr<sf::RenderWindow> window) : mWindow(s
     mInventorySystem = std::make_unique<InventorySystem>(mScene->getInvSize(), mScene->getInvPosition());
 
     auto food1 = std::make_shared<Food>(mSpritesheet, sf::IntRect({ 0,0 }, { 32,32 }), 10);
+    mInventorySystem->addItemToInv({590, 25}, food1);
     mItems.push_back(std::static_pointer_cast<Item>(food1));
     mRenderItems.push_back(std::static_pointer_cast<sf::Drawable>(food1));
 

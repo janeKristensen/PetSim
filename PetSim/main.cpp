@@ -34,11 +34,9 @@ int main()
                         auto mouse_position = static_cast<sf::Vector2f>(sf::Mouse::getPosition(*window));
                         scene->handleClick(mouse_position);
                      }
+                else if (event->is<sf::Event::TextEntered>()) {
 
-                if (scene->isInTextField()) {
-
-                    if (event->is<sf::Event::TextEntered>()) {
-
+                    if (scene->isInTextField()) {
                         auto unicode = event->getIf<sf::Event::TextEntered>()->unicode;
                         if (unicode == 8) {
 
