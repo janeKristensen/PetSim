@@ -1,12 +1,13 @@
-#include "scene.h"
+#include "Scene.h"
 #include <iostream>
 #include <chrono>
 
 
 constexpr float SCREEN_MARGIN = 10.f;
+constexpr float INV_WIDTH = 200.0f;
 
-Scene::Scene(std::future<std::shared_ptr<Model>>& model, std::shared_ptr<sf::Texture> spritesheet, std::shared_ptr<Pet> currentPet, sf::Vector2f screenSize, sf::Font& font)
-	: mModelFuture(std::move(model)), mSpritesheet(std::move(spritesheet)), mPet(std::move(currentPet)), mScreenSize(screenSize), 
+Scene::Scene(std::future<std::shared_ptr<Model>>& model, std::shared_ptr<sf::Texture> spritesheet, std::shared_ptr<Pet> currentPet, sf::Vector2f screenSize, const sf::Font& font)
+	: mFont(font), mModelFuture(model), mSpritesheet(spritesheet), mPet(currentPet), mScreenSize(screenSize), 
 		mPromptText(font, "", 24), mHealthText(font, "", 24), mHungerText(font, "", 24), mGroomText(font, "", 24), mPetText(font, "", 24) {
 
 	mBorder = sf::RectangleShape(screenSize);
@@ -26,7 +27,7 @@ Scene::Scene(std::future<std::shared_ptr<Model>>& model, std::shared_ptr<sf::Tex
 	float bg_X = mBackground.getSize().x;
 	float bg_Y = mBackground.getSize().y;
 
-	float button_width = 200.f;
+	float button_width = INV_WIDTH;
 	float button_height = 50.f;
 	mButton = sf::RectangleShape({ button_width, button_height });
 	mButton.setPosition(
@@ -36,13 +37,12 @@ Scene::Scene(std::future<std::shared_ptr<Model>>& model, std::shared_ptr<sf::Tex
 		}
 	);
 
-	float inv_width = button_width;
 	float inv_height = bg_Y - (3 * SCREEN_MARGIN) - button_height;
-	mInventory = sf::RectangleShape({ inv_width, inv_height });
+	mInventory = sf::RectangleShape({ INV_WIDTH, inv_height });
 	mInventory.setFillColor(sf::Color::Red);
 	mInventory.setPosition(
 		{
-			bg_start_X + bg_X - inv_width - SCREEN_MARGIN,
+			bg_start_X + bg_X - INV_WIDTH - SCREEN_MARGIN,
 			bg_start_Y + SCREEN_MARGIN
 		}
 	);

@@ -3,7 +3,7 @@
 #
 
 # Add source to this project's executable.
-add_executable (PetSim "PetSim.cpp" "PetSim.h" "pet.h" "pet.cpp" "item.h" "item.cpp" "scene.h"  "scene.cpp" "model.h" "model.cpp" "main.cpp")
+add_executable (PetSim "PetSim.cpp" "PetSim.h" "Pet.h" "Pet.cpp" "Item.h" "Item.cpp" "Scene.h"  "Scene.cpp" "Model.h" "Model.cpp" "Main.cpp" "NeedsSystem.h" "NeedsSystem.cpp" "InventorySystem.h" "InventorySystem.cpp")
 
 if (CMAKE_VERSION VERSION_GREATER 3.12)
   set_property(TARGET PetSim PROPERTY CXX_STANDARD 20)

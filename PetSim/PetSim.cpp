@@ -2,7 +2,6 @@
 
 
 
-constexpr float DECAY_TIME = 60.0f;
 constexpr sf::Vector2f screenSize{ 800.f, 600.f };
 
 static std::shared_ptr<Model> makeModel(std::string path, float p, float temp) {
@@ -16,14 +15,16 @@ Game::Game(sf::Font& font, std::shared_ptr<sf::RenderWindow> window) : mWindow(s
     /* *******************************************************************************
        *   Loading the llm model
        * ****************************************************************************/
-       
+    
     std::string model_path = "../llm_model/models/SmolLM2-1.7B-Instruct-IQ4_XS.gguf";
     mModelFuture = std::async(std::launch::async, makeModel, model_path, 0.2, 1.5);
 
     mSpritesheet = std::make_shared<sf::Texture>("../ressources/spritesheet.png");
     mPet = std::make_shared<Pet>(mSpritesheet, sf::IntRect({ 0,128 }, { 64,64 }), "Kitty", "Cat", "Happy");
 
+    mNeedsSystem = std::make_unique<NeedsSystem>(mPet, mModelFuture);
     mScene = std::make_unique<Scene>(mModelFuture, mSpritesheet, mPet, screenSize, font);
+    mInventorySystem = std::make_unique<InventorySystem>(mScene->getInvSize(), mScene->getInvPosition());
 
     auto food1 = std::make_shared<Food>(mSpritesheet, sf::IntRect({ 0,0 }, { 32,32 }), 10);
     mItems.push_back(std::static_pointer_cast<Item>(food1));
@@ -32,24 +33,8 @@ Game::Game(sf::Font& font, std::shared_ptr<sf::RenderWindow> window) : mWindow(s
 }
 
 void Game::update(float dt) {
-
-    mTimeTracker += dt;
-
-    if (mTimeTracker >= DECAY_TIME) {
-
-        mTimeTracker = 0;
-        mPet->decayValues();
-
-        auto hunger = mPet->getHungerValue();
-        if (hunger == 80) {
-            mModel->addSystemPrompt("A little hungry.");
-        }
-        else if (hunger == 40) {
-
-            mModel->addSystemPrompt("Very hungry and want food.");
-        }
-    }
-
+    
+    mNeedsSystem->update(dt);
     mScene->update(dt);
 }
 
@@ -57,6 +42,7 @@ void Game::render() {
 
     mWindow->clear();
     mScene->render(*mWindow);
+    mInventorySystem->render(*mWindow);
     for (auto obj : mRenderItems) {
 
         auto item = static_pointer_cast<Item>(obj);

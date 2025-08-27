@@ -1,4 +1,4 @@
-#include "pet.h"
+#include "Pet.h"
 #include <iostream>
 
 constexpr int32_t MAX_VALUE = 100;
