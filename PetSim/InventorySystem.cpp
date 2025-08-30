@@ -1,5 +1,6 @@
 #include "InventorySystem.h"
 
+
 constexpr float INV_MARGIN = 4.0;
 
 
@@ -76,7 +77,7 @@ void InventorySystem::render(sf::RenderWindow& window) {
 
 }
 
-const std::tuple<sf::Vector2f, size_t> InventorySystem::getSlotPosition(sf::Vector2f mousePosition) const {
+const std::tuple<sf::Vector2f, int32_t> InventorySystem::getSlotPosition(sf::Vector2f mousePosition) const {
 
 	size_t i = 0;
 	for (const auto& column : mInventory) {
@@ -93,7 +94,7 @@ const std::tuple<sf::Vector2f, size_t> InventorySystem::getSlotPosition(sf::Vect
 		}
 	}
 
-	return {};
+	return { {}, -1 };
 }
 
 const sf::Vector2f InventorySystem::getSlotPositionAtIndex(size_t index) const {
@@ -131,28 +132,66 @@ void InventorySystem::adjustItemCount(int32_t value, size_t index) {
 void InventorySystem::addItemToSlot(sf::Vector2f mousePosition, std::shared_ptr<Item> item) {
 
 	auto [position, index] = getSlotPosition(mousePosition);
-	if (index == NULL || mItems[index] != nullptr) {
+
+	// if not dragged inside an inventory slot; check if there is an item af same type in inventory
+	if (index == -1) {
+
+		for (int i = 0; i < mItems.size(); i++) {
+
+			if (*mItems[i] == *item) {
+				index = i;
+				position = getSlotPositionAtIndex(i);
+				break;
+			}
+		}
+	} // if not, find next empty slot.
+	else if (mItems[index] && *mItems[index] != *item) {
 		index = getFirstEmptySlot();
 		position = getSlotPositionAtIndex(index);
 	}
 
+
 	item->setPosition(position);
 	mItems[index] = item;
 	adjustItemCount(1, index);
+	
+	size_t row = index / COLUMNS;
+	size_t col = index % COLUMNS;
+	if (mInventory[row][col].getAmount() > 1) {
+
+		despawnItem(item);
+	}
 }
 
-void InventorySystem::removeFromSlot(Item& item) {
+void InventorySystem::removeFromSlot(sf::Vector2f mousePosition, Item& item) {
 
-	for (size_t i = 0; i < mItems.size(); i++) {
+	auto [position, index] = getSlotPosition(mousePosition);
 
-		if (mItems[i].get() == &item) {
-			mItems[i] = nullptr;
-			adjustItemCount(-1, i);
-		}
-	}
+	if (index == -1 || !mItems[index]) return;
+
+	adjustItemCount(-1, index);
+	size_t row = index / COLUMNS;
+	size_t col = index % COLUMNS;
+	uint32_t item_amount = mInventory[row][col].getAmount();
+
+	if(item_amount == 0) mItems[index] = nullptr;
+	else if(item_amount >= 1) { mItems[index] = spawnItem(item); }		
 }
 
 void InventorySystem::dragItem(const sf::Vector2f mousePosition, Item& item) {
 
 	item.setPosition(mousePosition);
+}
+
+void InventorySystem::despawnItem(std::shared_ptr<Item> item) {
+
+	item.reset();	
+	std::cout << "Despawned item" << std::endl;
+}
+
+std::shared_ptr<Item> InventorySystem::spawnItem(const Item& item) {
+
+	auto new_item = std::make_shared<Item>(item);
+	std::cout << "Spawned item" << std::endl;
+	return new_item;
 }

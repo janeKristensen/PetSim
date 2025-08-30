@@ -26,10 +26,14 @@ Game::Game(sf::Font& font, std::shared_ptr<sf::RenderWindow> window) : mWindow(s
     mScene = std::make_unique<Scene>(mModelFuture, mSpritesheet, mPet, screenSize, font);
     mInventorySystem = std::make_unique<InventorySystem>(mScene->getInvSize(), mScene->getInvPosition(), font);
 
-    auto food1 = std::make_shared<Food>(mSpritesheet, sf::IntRect({ 0,0 }, { 32,32 }), 10);
+    auto food1 = std::make_shared<Food>(1, mSpritesheet, sf::IntRect({ 0,0 }, { 32,32 }), 10);
     mInventorySystem->addItemToSlot({590, 25}, food1);
-    mItems.push_back(std::static_pointer_cast<Item>(food1));
-    mRenderItems.push_back(std::static_pointer_cast<sf::Drawable>(food1));
+    mItems.push_back(food1);
+    //mRenderItems.push_back(std::static_pointer_cast<sf::Drawable>(food1));
+
+    auto food2 = std::make_shared<Food>(1, mSpritesheet, sf::IntRect({ 0,0 }, { 32,32 }), 10);
+    mItems.push_back(food2);
+    //mRenderItems.push_back(std::static_pointer_cast<sf::Drawable>(food2));
 
 }
 
@@ -70,7 +74,7 @@ void Game::handleDrag() {
 
         if (item->getSprite().getGlobalBounds().contains(mouse_position)) {
 
-            mInventorySystem->removeFromSlot(*item);
+            mInventorySystem->removeFromSlot(mouse_position, *item);
 
             while (!mCurrentEvent.value().is<sf::Event::MouseButtonReleased>()) {
 
@@ -85,6 +89,13 @@ void Game::handleDrag() {
 
 void Game::update(float dt) {
     
+    /*for (auto& item : mItems) {
+
+        if (item && !item->isAlive()) {
+            item.reset();
+        }
+    }*/
+
     mNeedsSystem->update(dt);
     mScene->update(dt);
     mInventorySystem->update();
@@ -95,10 +106,10 @@ void Game::render() {
     mWindow->clear();
     mScene->render(*mWindow);
     mInventorySystem->render(*mWindow);
-    for (auto obj : mRenderItems) {
+    for (auto obj : mItems) {
 
-        auto item = static_pointer_cast<Item>(obj);
-        mWindow->draw(item->getSprite());
+        if (!obj) continue;
+        mWindow->draw(obj->getSprite());
     }
     
     mWindow->display();

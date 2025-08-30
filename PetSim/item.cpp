@@ -17,3 +17,4 @@ void GroomItem::printStats() const {
 
 	std::string stats = std::format("+{} grooming", mGroomValue);
 }
+
