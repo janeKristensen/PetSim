@@ -3,42 +3,77 @@
 constexpr float INV_MARGIN = 4.0;
 
 
-InventorySystem::InventorySystem(sf::Vector2f invDimensions, sf::Vector2f invPosition) {
+InventorySystem::InventorySystem(sf::Vector2f invDimensions, sf::Vector2f invPosition, const sf::Font& font) : mFont(font){
+	
 	
 	float slot_size_x = ((invDimensions.x - (COLUMNS + 1) * INV_MARGIN) / COLUMNS);
 	float slot_size_y = ((invDimensions.y - (ROWS + 1) * INV_MARGIN)/ ROWS);
 
-	size_t i = 0;
-	sf::Vector2f cell_position;
+	mAmountText.reserve(MAX_SLOTS * sizeof(sf::Text));
+	sf::Vector2f slot_position;
 
+	size_t i = 0;
 	for (auto& column : mInventory) {
 		
-		for (auto& cell : column) {
+		for (auto& slot : column) {
 
-			if (i < ROWS) cell_position = { invPosition.x + INV_MARGIN, invPosition.y + INV_MARGIN + i * (slot_size_y + INV_MARGIN) };
-			else cell_position = { invPosition.x + slot_size_x + 2*INV_MARGIN, invPosition.y + INV_MARGIN + (i - ROWS) * (slot_size_y + INV_MARGIN) };
+			if (i < ROWS) slot_position = { invPosition.x + INV_MARGIN, invPosition.y + INV_MARGIN + i * (slot_size_y + INV_MARGIN) };
+			else slot_position = { invPosition.x + slot_size_x + 2*INV_MARGIN, invPosition.y + INV_MARGIN + (i - ROWS) * (slot_size_y + INV_MARGIN) };
 
-			cell.setSize({slot_size_x, slot_size_y});
-			cell.setPosition(cell_position);
+			auto& slot_rect = slot.getShape();
+			slot_rect.setSize({slot_size_x, slot_size_y});
+			slot_rect.setPosition(slot_position);
 #ifndef NDEBUG
-			cell.setFillColor(sf::Color::Blue);
+			slot_rect.setFillColor(sf::Color::Blue);
 #endif
+			slot.setAmount(0);
+
+			mAmountText.push_back(sf::Text(font, "", 36));
+			auto char_size = mAmountText[i].getCharacterSize();
+			auto text_position_x = slot_position.x + INV_MARGIN;
+			auto text_position_y = slot_position.y + slot_size_y - char_size - INV_MARGIN;
+			mAmountText[i].setPosition({text_position_x, text_position_y});
+			mAmountText[i].setFillColor(sf::Color::White);
+			mAmountText[i].setStyle(sf::Text::Bold);
+			mAmountText[i].setString("");
+			i++;
+		}
+	}	
+}
+
+void InventorySystem::update() {
+
+	size_t i = 0;
+	for (const auto& column : mInventory) {
+
+		for (const auto& slot : column) {
+
+			int32_t item_amount = slot.getAmount();
+			if(item_amount > 0) mAmountText[i].setString(std::to_string(item_amount));
+			else mAmountText[i].setString("");
 			i++;
 		}
 	}
 }
 
+
 void InventorySystem::render(sf::RenderWindow& window) {
 
-#ifndef NDEBUG
+	size_t i = 0;
 	for (const auto& column : mInventory) {
 
 		for (const auto& slot : column) {
-
-			window.draw(slot);
+#ifndef NDEBUG
+			window.draw(slot.getShape());
+#endif	
+			auto& text = mAmountText[i];
+			if (text.getString() != "") {
+				window.draw(text);
+			}
+			i++;
 		}
 	}
-#endif
+
 }
 
 const std::tuple<sf::Vector2f, size_t> InventorySystem::getSlotPosition(sf::Vector2f mousePosition) const {
@@ -48,9 +83,10 @@ const std::tuple<sf::Vector2f, size_t> InventorySystem::getSlotPosition(sf::Vect
 
 		for (const auto& slot : column) {
 
-			if (slot.getGlobalBounds().contains(mousePosition)) {
+			auto& slot_rect = slot.getShape();
+			if (slot_rect.getGlobalBounds().contains(mousePosition)) {
 
-				return { slot.getPosition(), i };
+				return { slot_rect.getPosition(), i };
 			}
 
 			i++;
@@ -62,10 +98,14 @@ const std::tuple<sf::Vector2f, size_t> InventorySystem::getSlotPosition(sf::Vect
 
 const sf::Vector2f InventorySystem::getSlotPositionAtIndex(size_t index) const {
 
-	// TODO: What if i change the number of columns?
-	if (index < ROWS) return mInventory[0][index].getPosition();
-	else return mInventory[1][index - ROWS].getPosition();
+	if (index > MAX_SLOTS) {
 
+		return {};
+	}
+
+	size_t row = index / COLUMNS;
+	size_t col = index % COLUMNS;
+	return mInventory[row][col].getShape().getPosition();
 }
 
 size_t InventorySystem::getFirstEmptySlot() {
@@ -76,17 +116,29 @@ size_t InventorySystem::getFirstEmptySlot() {
 	}
 }
 
+void InventorySystem::adjustItemCount(int32_t value, size_t index) {
+
+	if (index > MAX_SLOTS) {
+
+		return;
+	}
+
+	size_t row = index / COLUMNS;
+	size_t col = index % COLUMNS;
+	mInventory[row][col].setAmount(value);
+}
+
 void InventorySystem::addItemToSlot(sf::Vector2f mousePosition, std::shared_ptr<Item> item) {
 
 	auto [position, index] = getSlotPosition(mousePosition);
-	if (index == NULL) {
+	if (index == NULL || mItems[index] != nullptr) {
 		index = getFirstEmptySlot();
 		position = getSlotPositionAtIndex(index);
 	}
 
 	item->setPosition(position);
 	mItems[index] = item;
-
+	adjustItemCount(1, index);
 }
 
 void InventorySystem::removeFromSlot(Item& item) {
@@ -95,6 +147,7 @@ void InventorySystem::removeFromSlot(Item& item) {
 
 		if (mItems[i].get() == &item) {
 			mItems[i] = nullptr;
+			adjustItemCount(-1, i);
 		}
 	}
 }

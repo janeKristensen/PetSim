@@ -24,7 +24,7 @@ Game::Game(sf::Font& font, std::shared_ptr<sf::RenderWindow> window) : mWindow(s
 
     mNeedsSystem = std::make_unique<NeedsSystem>(mPet, mModelFuture);
     mScene = std::make_unique<Scene>(mModelFuture, mSpritesheet, mPet, screenSize, font);
-    mInventorySystem = std::make_unique<InventorySystem>(mScene->getInvSize(), mScene->getInvPosition());
+    mInventorySystem = std::make_unique<InventorySystem>(mScene->getInvSize(), mScene->getInvPosition(), font);
 
     auto food1 = std::make_shared<Food>(mSpritesheet, sf::IntRect({ 0,0 }, { 32,32 }), 10);
     mInventorySystem->addItemToSlot({590, 25}, food1);
@@ -87,6 +87,7 @@ void Game::update(float dt) {
     
     mNeedsSystem->update(dt);
     mScene->update(dt);
+    mInventorySystem->update();
 }
 
 void Game::render() {
