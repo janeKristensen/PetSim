@@ -4,7 +4,6 @@
 
 Model::Model(const std::string& path, float p, float temp) {
 
-    std::cout << "Creating model" << std::endl;
     mModel = std::make_shared<InferenceModel>(path, p, temp);
 }
 

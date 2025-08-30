@@ -28,7 +28,6 @@ void NeedsSystem::updateSystemPrompt() {
     if (newState != mPreviousState) {
 
         if (mModel == nullptr) {
-
             mModel = mModelFuture.get();
             mModel->addSystemPrompt(mPet->getInitPrompt());
         }

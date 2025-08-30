@@ -12,25 +12,26 @@ static void pushRequestToModel(std::string query, std::shared_ptr<Model> model) 
 
 class Scene {
 public:
-	Scene(std::future<std::shared_ptr<Model>>& model, std::shared_ptr<sf::Texture> spritesheet, std::shared_ptr<Pet> currentPet, sf::Vector2f screenSize, const sf::Font& font);
+	Scene(std::shared_future<std::shared_ptr<Model>> model, std::shared_ptr<sf::Texture> spritesheet, std::shared_ptr<Pet> currentPet, sf::Vector2f screenSize, const sf::Font& font);
 	~Scene();
 	void render(sf::RenderWindow& window);
 	void update(float dt);
 	void handleClick(sf::Vector2f mouseposition);
-	void addToStringBuffer(const char text) { mStringBuffer += text; }
-	void eraseFromStringBuffer();
-	bool isInTextField() { return mInTextField; }
+	void handleTextEntry(const sf::Event& event);
 	sf::Vector2f getInvSize() { return mInventory.getSize(); }
 	sf::Vector2f getInvPosition() { return mInventory.getPosition(); }
 
 private:
 	std::string getPrompt() { return mPromptText.getString(); }
-	void setCurrentPet(std::shared_ptr<Pet> pet) { mPet = std::move(pet); mPet->setSpritePosition(mPetPosition); }
+	void setCurrentPet(std::shared_ptr<Pet> pet) { mPet = pet; mPet->setSpritePosition(mPetPosition); }
+	void addToStringBuffer(const char text) { mStringBuffer += text; }
+	void eraseFromStringBuffer();
+	bool isInTextField() { return mInTextField; }
 
 	std::shared_ptr<sf::Texture> mSpritesheet = nullptr;
 	std::shared_ptr<Pet> mPet = nullptr;
 	std::shared_ptr<Model> mModel = nullptr;
-	std::future<std::shared_ptr<Model>>& mModelFuture;
+	std::shared_future<std::shared_ptr<Model>> mModelFuture;
 	std::vector<std::future<void>> mFutures;
 	std::string mStringBuffer;
 	std::string mStringLine;

@@ -10,7 +10,7 @@ enum class State {LOW, MEDIUM, HIGH, COUNT};
 class NeedsSystem {
 
 public:
-	NeedsSystem(std::shared_ptr<Pet> pet, std::future<std::shared_ptr<Model>>& model) : mPet(pet), mModelFuture(model){}
+	NeedsSystem(std::shared_ptr<Pet> pet, std::shared_future<std::shared_ptr<Model>> model) : mPet(pet), mModelFuture(model){}
 	void update(float dt);
 
 private:
@@ -22,7 +22,7 @@ private:
 
 	std::shared_ptr<Pet> mPet = nullptr;
 	std::shared_ptr<Model> mModel = nullptr;
-	std::future<std::shared_ptr<Model>>& mModelFuture;
+	std::shared_future<std::shared_ptr<Model>> mModelFuture;
 	float mTimeTracker = 0.f;
 	State mFeedState = State::HIGH;
 	State mGroomState = State::HIGH;

@@ -6,7 +6,7 @@
 constexpr float SCREEN_MARGIN = 10.f;
 constexpr float INV_WIDTH = 200.0f;
 
-Scene::Scene(std::future<std::shared_ptr<Model>>& model, std::shared_ptr<sf::Texture> spritesheet, std::shared_ptr<Pet> currentPet, sf::Vector2f screenSize, const sf::Font& font)
+Scene::Scene(std::shared_future<std::shared_ptr<Model>> model, std::shared_ptr<sf::Texture> spritesheet, std::shared_ptr<Pet> currentPet, sf::Vector2f screenSize, const sf::Font& font)
 	: mFont(font), mModelFuture(model), mSpritesheet(spritesheet), mPet(currentPet), mScreenSize(screenSize), 
 		mPromptText(font, "", 24), mHealthText(font, "", 24), mHungerText(font, "", 24), mGroomText(font, "", 24), mPetText(font, "", 24) {
 
@@ -141,7 +141,6 @@ void Scene::update(float dt) {
 			mBlipTracker = 0;
 		}
 	}
-	
 		
 	if (mModel != nullptr) {
 
@@ -151,8 +150,7 @@ void Scene::update(float dt) {
 			mPetText.setString(str);
 			mResponseTracker = 0.f;
 		}
-
-		if (mResponseTracker > 120.f) {
+		else if (mResponseTracker > 120.f) {
 			mResponseTracker = 0.f;
 			mFutures.push_back(std::async(std::launch::async, pushRequestToModel, "Tell me how you feel.", mModel));
 		}
@@ -206,6 +204,21 @@ void Scene::handleClick(sf::Vector2f mouseposition) {
 	
 }
 
+void Scene::handleTextEntry(const sf::Event& event) {
+
+	if (isInTextField()) {
+		auto unicode = event.getIf<sf::Event::TextEntered>()->unicode;
+		if (unicode == 8) {
+
+			eraseFromStringBuffer();
+		}
+		else if (unicode < 128) {
+
+			addToStringBuffer(static_cast<char>(unicode));
+		}
+	}
+}
+
 void Scene::eraseFromStringBuffer() { 
 	
 	if(!mStringBuffer.size() <= 0)
@@ -219,5 +232,4 @@ Scene::~Scene() {
 
 		f.get();
 	}
-	mFutures.clear();
 }
