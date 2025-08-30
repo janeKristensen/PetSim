@@ -32,14 +32,15 @@ public:
 	void addItemToSlot(sf::Vector2f mousePosition, std::shared_ptr<Item> item);
 	void removeFromSlot(sf::Vector2f mousePosition, Item& item);
 	void dragItem(const sf::Vector2f mousePosition, Item& item);
+	
 
 private:;
 	const std::tuple<sf::Vector2f, int32_t> getSlotPosition(sf::Vector2f mousePosition) const;
 	const sf::Vector2f getSlotPositionAtIndex(size_t index) const;
 	size_t getFirstEmptySlot();
 	void adjustItemCount(int32_t value, size_t index);
-	void despawnItem(std::shared_ptr<Item> item);
 	std::shared_ptr<Item> spawnItem(const Item& item);
+	void despawnItem(std::shared_ptr<Item> item);
 
 	std::array<std::array<Slot, COLUMNS>, ROWS> mInventory;
 	std::vector<std::shared_ptr<Item>> mItems{ MAX_SLOTS, nullptr };

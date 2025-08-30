@@ -3,6 +3,7 @@
 #include <future>
 #include "Pet.h"
 #include "Model.h"
+#include "Item.h"
 
 
 enum class State {LOW, MEDIUM, HIGH, COUNT};
@@ -12,6 +13,7 @@ class NeedsSystem {
 public:
 	NeedsSystem(std::shared_ptr<Pet> pet, std::shared_future<std::shared_ptr<Model>> model) : mPet(pet), mModelFuture(model){}
 	void update(float dt);
+	void processItem(Item& item);
 
 private:
 	void decayValues(float dt);

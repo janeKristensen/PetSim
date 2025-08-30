@@ -10,6 +10,15 @@ void NeedsSystem::update(float dt) {
     updateSystemPrompt();
 }
 
+void NeedsSystem::processItem(Item& item) {
+
+    Food* food = dynamic_cast<Food*>(&item);
+    if (food) mPet->setHungerValue(food->getFeedValue());
+
+    GroomItem* groom = dynamic_cast<GroomItem*>(&item);
+    if (groom) mPet->setGroomValue(groom->getGroomValue());
+}
+
 void NeedsSystem::decayValues(float dt) {
 
     mTimeTracker += dt;

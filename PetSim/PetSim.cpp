@@ -72,6 +72,7 @@ void Game::handleDrag() {
 
     for (auto& item : mItems) {
 
+        if (!item) continue;
         if (item->getSprite().getGlobalBounds().contains(mouse_position)) {
 
             mInventorySystem->removeFromSlot(mouse_position, *item);
@@ -81,7 +82,17 @@ void Game::handleDrag() {
                 mouse_position = static_cast<sf::Vector2f>(sf::Mouse::getPosition(*mWindow));
                 mInventorySystem->dragItem(mouse_position, *item);
             }
-            mInventorySystem->addItemToSlot(mouse_position, item);
+
+            if (mPet->getSprite().getGlobalBounds().contains(mouse_position)) {
+
+                mNeedsSystem->processItem(*item);
+                item.reset();
+            }
+            else {
+
+                mInventorySystem->addItemToSlot(mouse_position, item);
+            }
+            
             break;
         }
     }
@@ -89,12 +100,7 @@ void Game::handleDrag() {
 
 void Game::update(float dt) {
     
-    /*for (auto& item : mItems) {
-
-        if (item && !item->isAlive()) {
-            item.reset();
-        }
-    }*/
+    mItems.erase(std::remove(mItems.begin(), mItems.end(), nullptr), mItems.end());
 
     mNeedsSystem->update(dt);
     mScene->update(dt);

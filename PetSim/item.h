@@ -42,7 +42,7 @@ class GroomItem : public Item {
 public:
 	GroomItem(uint32_t typeId, std::shared_ptr<sf::Texture> texture, sf::IntRect texRect, uint32_t groomValue) : mGroomValue(groomValue), Item(typeId, texture, texRect) {}
 	GroomItem(const GroomItem& other) : mGroomValue(other.mGroomValue), Item(other){}
-	const uint32_t getFeedValue() const { return mGroomValue; }
+	const uint32_t getGroomValue() const { return mGroomValue; }
 	void printStats() const override;
 	/*std::shared_ptr<Item> clone() const override {
 		return std::make_shared<GroomItem>(*this);
