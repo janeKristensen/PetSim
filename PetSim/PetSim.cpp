@@ -2,12 +2,7 @@
 
 
 
-constexpr sf::Vector2f screenSize{ 800.f, 600.f };
 
-static std::shared_ptr<Model> makeModel(std::string path, float p, float temp) {
-
-    return std::make_shared<Model>(path, p, temp);
-}
 
 Game::Game(sf::Font& font, std::shared_ptr<sf::RenderWindow> window) : mWindow(std::move(window)) {
 
@@ -31,7 +26,7 @@ Game::Game(sf::Font& font, std::shared_ptr<sf::RenderWindow> window) : mWindow(s
     mItems.push_back(food1);
     //mRenderItems.push_back(std::static_pointer_cast<sf::Drawable>(food1));
 
-    auto food2 = std::make_shared<Food>(1, mSpritesheet, sf::IntRect({ 0,0 }, { 32,32 }), 10);
+    auto food2 = std::make_shared<GroomItem>(2, mSpritesheet, sf::IntRect({ 32,0 }, { 32,32 }), 10);
     mItems.push_back(food2);
     //mRenderItems.push_back(std::static_pointer_cast<sf::Drawable>(food2));
 

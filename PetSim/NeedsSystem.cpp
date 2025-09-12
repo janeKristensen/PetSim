@@ -1,7 +1,7 @@
 #include "NeedsSystem.h"
 
 
-constexpr float DECAY_TIME = 1.0f;
+
 
 void NeedsSystem::update(float dt) {
 
@@ -13,10 +13,15 @@ void NeedsSystem::update(float dt) {
 void NeedsSystem::processItem(Item& item) {
 
     Food* food = dynamic_cast<Food*>(&item);
-    if (food) mPet->setHungerValue(food->getFeedValue());
+    if (food){
 
-    GroomItem* groom = dynamic_cast<GroomItem*>(&item);
-    if (groom) mPet->setGroomValue(groom->getGroomValue());
+        mPet->setHungerValue(food->getValue());
+    }
+    else {
+
+        GroomItem* groom = dynamic_cast<GroomItem*>(&item);
+        if (groom) mPet->setGroomValue(groom->getValue());
+    }   
 }
 
 void NeedsSystem::decayValues(float dt) {

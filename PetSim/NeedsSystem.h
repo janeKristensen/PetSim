@@ -7,6 +7,7 @@
 
 
 enum class State {LOW, MEDIUM, HIGH, COUNT};
+constexpr float DECAY_TIME = 2.0f;
 
 class NeedsSystem {
 

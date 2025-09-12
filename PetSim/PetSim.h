@@ -8,6 +8,12 @@
 #include "NeedsSystem.h"
 #include "InventorySystem.h"
 
+constexpr sf::Vector2f screenSize{ 800.f, 600.f };
+
+static std::shared_ptr<Model> makeModel(std::string path, float p, float temp) {
+
+	return std::make_shared<Model>(path, p, temp);
+}
 
 class Game {
 public:

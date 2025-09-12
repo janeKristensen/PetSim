@@ -3,8 +3,7 @@
 #include <chrono>
 
 
-constexpr float SCREEN_MARGIN = 10.f;
-constexpr float INV_WIDTH = 200.0f;
+
 
 Scene::Scene(std::shared_future<std::shared_ptr<Model>> model, std::shared_ptr<sf::Texture> spritesheet, std::shared_ptr<Pet> currentPet, sf::Vector2f screenSize, const sf::Font& font)
 	: mFont(font), mModelFuture(model), mSpritesheet(spritesheet), mPet(currentPet), mScreenSize(screenSize), 
@@ -97,6 +96,8 @@ Scene::Scene(std::shared_future<std::shared_ptr<Model>> model, std::shared_ptr<s
 		}
 	);
 
+	
+
 	mHealthText.setFillColor(sf::Color::Magenta);
 	mHealthText.setPosition(
 		{
@@ -126,9 +127,13 @@ Scene::Scene(std::shared_future<std::shared_ptr<Model>> model, std::shared_ptr<s
 
 void Scene::update(float dt) {
 
+#ifndef NDEBUG
 	mHealthText.setString(std::format("Health: {}", mPet->getHealthValue()));
 	mHungerText.setString(std::format("Hunger: {}", mPet->getHungerValue()));
 	mGroomText.setString(std::format("Grooming: {}", mPet->getGroomValue()));
+#endif
+	mFoodBar.resizeBar(mPet->getHungerValue());
+	mGroomBar.resizeBar(mPet->getGroomValue());
 	
 	if (mInTextField) { 
 		mPromptText.setString(mStringBuffer); 
@@ -168,6 +173,8 @@ void Scene::render(sf::RenderWindow& window) {
 	window.draw(mTextField);
 	window.draw(mPetTextField);
 	window.draw(mTextBlip);
+	window.draw(mFoodBar.getShape());
+	window.draw(mGroomBar.getShape());
 	window.draw(mPetText);
 	window.draw(mPromptText);
 	window.draw(mHealthText);

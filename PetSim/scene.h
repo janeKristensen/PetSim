@@ -1,14 +1,18 @@
 #pragma once
 #include "SFML/Graphics.hpp"
 #include <functional>
+#include "Item.h"
 #include "Pet.h"
 #include "Model.h"
+#include "UserInterface.h"
 #include <queue>
 #include <future>
 
 class Game;
 
 static void pushRequestToModel(std::string query, std::shared_ptr<Model> model) { model->userQuery(query); }
+constexpr float SCREEN_MARGIN = 10.f;
+constexpr float INV_WIDTH = 200.0f;
 
 class Scene {
 public:
@@ -49,6 +53,8 @@ private:
 	sf::Text mHungerText;
 	sf::Text mGroomText;
 	sf::Text mPetText;
+	ProgressBar mFoodBar = ProgressBar(sf::Vector2f{ 200, 10 }, sf::Vector2f{ SCREEN_MARGIN, SCREEN_MARGIN }, sf::Color::Red);
+	ProgressBar mGroomBar = ProgressBar(sf::Vector2f{ 200, 10 }, sf::Vector2f{ SCREEN_MARGIN, 2* SCREEN_MARGIN + 2}, sf::Color::Blue);
 	const sf::Font& mFont;
 	bool mInTextField = false;
 	float mBlipTracker = 0.f;

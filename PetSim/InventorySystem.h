@@ -34,7 +34,8 @@ public:
 	void dragItem(const sf::Vector2f mousePosition, Item& item);
 	
 
-private:;
+private:
+	const std::tuple<size_t, size_t> getRowColumnIndex(size_t index) const;
 	const std::tuple<sf::Vector2f, int32_t> getSlotPosition(sf::Vector2f mousePosition) const;
 	const sf::Vector2f getSlotPositionAtIndex(size_t index) const;
 	size_t getFirstEmptySlot();
