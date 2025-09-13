@@ -43,6 +43,12 @@ void Game::pollEvents() {
 
             mWindow->close();
         }
+        else  if (event->is<sf::Event::KeyPressed>() &&
+            event->getIf<sf::Event::KeyPressed>()->code == sf::Keyboard::Key::S) {
+
+            mSaveManager->save();
+            mSaveManager->showHistory();
+        }
         else if (event->is<sf::Event::MouseButtonReleased>() &&
             event->getIf<sf::Event::MouseButtonReleased>()->button == sf::Mouse::Button::Left) {
 

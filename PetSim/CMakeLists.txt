@@ -14,12 +14,14 @@ set(SFML_DIR ${CMAKE_SOURCE_DIR}/external/SFML-3.0.0)
 
 include_directories(PetSim
     ${SFML_DIR}/include
-    llm_model/include)
+    llm_model/include
+    save_system/include)
 
     # Link SFML libraries
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
     target_link_libraries(PetSim PUBLIC
     llm_model
+    save_system
     ${SFML_DIR}/lib/sfml-system-d.lib
     ${SFML_DIR}/lib/sfml-window-d.lib
     ${SFML_DIR}/lib/sfml-audio-d.lib
@@ -28,6 +30,7 @@ if(CMAKE_BUILD_TYPE STREQUAL "Debug")
 else()
     target_link_libraries(PetSim PUBLIC
     llm_model
+    save_system
     ${SFML_DIR}/lib/sfml-system.lib
     ${SFML_DIR}/lib/sfml-window.lib
     ${SFML_DIR}/lib/sfml-audio.lib
