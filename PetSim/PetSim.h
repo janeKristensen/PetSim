@@ -8,6 +8,7 @@
 #include "Memento.h"
 #include "NeedsSystem.h"
 #include "InventorySystem.h"
+#include <fstream>
 
 constexpr sf::Vector2f screenSize{ 800.f, 600.f };
 
@@ -23,12 +24,14 @@ public:
 	void update(float dt);
 	void render();
 	std::shared_ptr<Scene> getScene() { return mScene; }
-	
+	void saveGame();
+	void loadGame(const std::string& filename);
 
 private:
 	void handleDrag();
+	void setState();
 
-	std::string mState = "";
+	nlohmann::json mState;
 	std::vector<std::shared_ptr<Item>> mItems;
 	std::vector<std::shared_ptr<sf::Drawable>> mRenderItems;
 	std::vector<std::future<void>> mFutures;

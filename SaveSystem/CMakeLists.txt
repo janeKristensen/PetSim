@@ -10,7 +10,11 @@ endif()
 
 add_subdirectory ("include")
 
-target_include_directories(llm_model PUBLIC
+target_include_directories(save_system PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}/include
+    nlohmann_json
 )
 
+ target_link_libraries(save_system PUBLIC
+    nlohmann_json
+ )

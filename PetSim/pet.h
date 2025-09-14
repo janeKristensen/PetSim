@@ -1,10 +1,29 @@
 #pragma once
 #include <format>
 #include "SFML/Graphics.hpp"
+#include <nlohmann/json.hpp>
+#include "Memento.h"
 
 class Pet {
 public:
-	Pet(std::shared_ptr<sf::Texture> spritesheet, sf::IntRect texRect, std::string name, std::string species, std::string temper);
+	Pet(std::shared_ptr<sf::Texture> spritesheet, 
+		sf::IntRect texRect, 
+		std::string name, 
+		std::string species, 
+		std::string temper
+	);
+	Pet(std::shared_ptr<sf::Texture> spritesheet, 
+		sf::IntRect texRect, 
+		std::string name, 
+		std::string species, 
+		std::string temper, 
+		std::string initPrompt, 
+		std::string currentStatus, 
+		uint32_t hunger, 
+		uint32_t groom, 
+		uint32_t health
+	);
+
 	const std::string& getName() const { return mName; }
 	const std::string& getSpecies() const { return mSpecies; }
 	const std::string& getStatus() const { return mCurrentStatus; }
@@ -19,8 +38,13 @@ public:
 	void setHealthValue(int32_t value);
 	void decayValues();
 	void setSpritePosition(sf::Vector2f position);
+	nlohmann::json saveData();
 
 private:
+	void setState(nlohmann::json);
+	void toJson(nlohmann::json& j, const Pet& pet);
+	void from_json(const nlohmann::json& j, Pet& p);
+
 	std::string mName = "";
 	std::string mSpecies = "";
 	std::string mTemper = "";
@@ -31,4 +55,7 @@ private:
 	int32_t mHealth = 100;
 	std::shared_ptr<sf::Texture> mSpritesheet;
 	sf::Sprite mSprite;
+	nlohmann::json mState;
+	std::shared_ptr<SaveComponent> mSaveComponent = std::make_shared<SaveComponent>();
+	std::unique_ptr<SaveManager> mSaveManager = std::make_unique<SaveManager>(mSaveComponent);
 };

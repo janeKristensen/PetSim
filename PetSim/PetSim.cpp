@@ -1,9 +1,6 @@
 ﻿#include "PetSim.h"
 
 
-
-
-
 Game::Game(sf::Font& font, std::shared_ptr<sf::RenderWindow> window) : mWindow(std::move(window)) {
 
    
@@ -46,8 +43,7 @@ void Game::pollEvents() {
         else  if (event->is<sf::Event::KeyPressed>() &&
             event->getIf<sf::Event::KeyPressed>()->code == sf::Keyboard::Key::S) {
 
-            mSaveManager->save();
-            mSaveManager->showHistory();
+            saveGame();
         }
         else if (event->is<sf::Event::MouseButtonReleased>() &&
             event->getIf<sf::Event::MouseButtonReleased>()->button == sf::Mouse::Button::Left) {
@@ -120,5 +116,33 @@ void Game::render() {
     }
     
     mWindow->display();
+}
+
+void Game::saveGame() {
+    
+    setState();
+    mSaveManager->save();
+    mSaveManager->showHistory();
+}
+
+void Game::loadGame(const std::string& filename) {
+
+    std::ifstream i(filename);
+    nlohmann::json j;
+    i >> j;
+}
+
+
+void Game::setState() {
+
+    std::vector<nlohmann::json> items;
+    for (const auto& item : mItems) {
+
+       items.push_back(item->saveData());
+    }
+
+    mState["pet"] = mPet->saveData();
+    mState["items"] = items;
+    mSaveComponent->setState(mState);
 }
 
