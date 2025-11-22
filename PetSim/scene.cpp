@@ -1,12 +1,9 @@
 #include "Scene.h"
-#include <iostream>
-#include <chrono>
 
 
 
-
-Scene::Scene(std::shared_future<std::shared_ptr<Model>> model, std::shared_ptr<sf::Texture> spritesheet, std::shared_ptr<Pet> currentPet, sf::Vector2f screenSize, const sf::Font& font)
-	: mFont(font), mModelFuture(model), mSpritesheet(spritesheet), mPet(currentPet), mScreenSize(screenSize), 
+Scene::Scene(std::shared_ptr<sf::Texture> spritesheet, std::shared_ptr<Pet> currentPet, sf::Vector2f screenSize, const sf::Font& font)
+	: mFont(font), mSpritesheet(spritesheet), mPet(currentPet), mScreenSize(screenSize), 
 		mPromptText(font, "", 24), mHealthText(font, "", 24), mHungerText(font, "", 24), mGroomText(font, "", 24), mPetText(font, "", 24) {
 
 	mBorder = sf::RectangleShape(screenSize);
@@ -125,6 +122,11 @@ Scene::Scene(std::shared_future<std::shared_ptr<Model>> model, std::shared_ptr<s
 	
 }
 
+void Scene::setModel(std::shared_ptr<Model> model) {
+
+	mModel = model;
+}
+
 void Scene::update(float dt) {
 
 #ifndef NDEBUG
@@ -180,8 +182,6 @@ void Scene::render(sf::RenderWindow& window) {
 	window.draw(mHealthText);
 	window.draw(mHungerText);
 	window.draw(mGroomText);
-	
-	
 }
 
 void Scene::handleClick(sf::Vector2f mouseposition) {
@@ -190,18 +190,14 @@ void Scene::handleClick(sf::Vector2f mouseposition) {
 
 	if (mButton.getGlobalBounds().contains(mouseposition)) {
 
-		if (mModel == nullptr) {
+		if (mModel != nullptr) {
 
-			mModel = mModelFuture.get();
-			mModel->addSystemPrompt(mPet->getInitPrompt());
+			mTextBlip.setPosition({ -10, -10 });
+			std::string text = mPromptText.getString();
+			mFutures.push_back(std::async(std::launch::async, pushRequestToModel, text, mModel));
+
+			mPromptText.setString("");
 		}
-		
-		mTextBlip.setPosition({ -10, -10 });
-		std::string text = mPromptText.getString();
-		mFutures.push_back(std::async(std::launch::async, pushRequestToModel, text, mModel));
-
-		mPromptText.setString("");
-		
 	}
 	else if (mTextField.getGlobalBounds().contains(mouseposition)) {
 

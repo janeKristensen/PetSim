@@ -10,6 +10,7 @@ int main()
 
         sf::Font font("../ressources/Gabriola.ttf");
         Game game(font, window);
+        game.init();
 
         sf::Clock clock;
         float dt;

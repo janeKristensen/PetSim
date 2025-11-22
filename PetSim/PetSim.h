@@ -20,6 +20,7 @@ static std::shared_ptr<Model> makeModel(std::string path, float p, float temp) {
 class Game {
 public:
 	Game(sf::Font& font, std::shared_ptr<sf::RenderWindow> window);
+	void init();
 	void pollEvents();
 	void update(float dt);
 	void render();

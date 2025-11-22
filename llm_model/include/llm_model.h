@@ -1,5 +1,8 @@
 ﻿#pragma once
 #include "llama.h"
+#include <iostream>
+#include "common.h"
+#include <mutex>
 #include <string>
 #include <vector>
 #include <memory>
@@ -38,5 +41,6 @@ private:
 	llama_token token_eos;                
 	llama_token token_eot;
 
+	std::mutex m;
 };
 

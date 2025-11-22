@@ -12,7 +12,8 @@ constexpr float DECAY_TIME = 2.0f;
 class NeedsSystem {
 
 public:
-	NeedsSystem(std::shared_ptr<Pet> pet, std::shared_future<std::shared_ptr<Model>> model) : mPet(pet), mModelFuture(model){}
+	NeedsSystem(std::shared_ptr<Pet> pet) : mPet(pet){}
+	void setModel(std::shared_ptr<Model> model);
 	void update(float dt);
 	void processItem(Item& item);
 
@@ -25,7 +26,6 @@ private:
 
 	std::shared_ptr<Pet> mPet = nullptr;
 	std::shared_ptr<Model> mModel = nullptr;
-	std::shared_future<std::shared_ptr<Model>> mModelFuture;
 	float mTimeTracker = 0.f;
 	State mFeedState = State::HIGH;
 	State mGroomState = State::HIGH;
@@ -34,8 +34,8 @@ private:
 	const char* mStateTable[(int32_t)State::COUNT][(int32_t)State::COUNT] = {
 
 		// groom = LOW, MEDIUM, HIGH
-		{ "Urgently need Feeding and Grooming. Very unhappy.",	"Urgently needs feeding and maybe a groom.",	"Urgently needs Feeding." },   // hunger = LOW
-		{ "Urgently needs grooming and maybe a feeding.",       "Fairly content.",								"Very happy but could eat." },      // hunger = MEDIUM
-		{ "Urgently needs a grooming but is not hungry.",		"Full belly but needs a little grooming.",		"Very happy and content with everything" }   // hunger = HIGH
+		{ "You urgently need Feeding and Grooming. You are very unhappy.",	"You urgently need feeding and maybe a groom.",			"You urgently need Feeding." },   // hunger = LOW
+		{ "You urgently need grooming and maybe a feeding.",				"You are Fairly content.",								"Ýou are very happy but could eat." },      // hunger = MEDIUM
+		{ "You urgently need a grooming but is not hungry.",				"Your belly is full but you need a little grooming.",	"You are very happy and content with everything" }   // hunger = HIGH
 	};
 };

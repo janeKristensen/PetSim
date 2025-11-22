@@ -7,6 +7,8 @@
 #include "UserInterface.h"
 #include <queue>
 #include <future>
+#include <iostream>
+#include <chrono>
 
 class Game;
 
@@ -16,8 +18,9 @@ constexpr float INV_WIDTH = 200.0f;
 
 class Scene {
 public:
-	Scene(std::shared_future<std::shared_ptr<Model>> model, std::shared_ptr<sf::Texture> spritesheet, std::shared_ptr<Pet> currentPet, sf::Vector2f screenSize, const sf::Font& font);
+	Scene(std::shared_ptr<sf::Texture> spritesheet, std::shared_ptr<Pet> currentPet, sf::Vector2f screenSize, const sf::Font& font);
 	~Scene();
+	void setModel(std::shared_ptr<Model> model);
 	void render(sf::RenderWindow& window);
 	void update(float dt);
 	void handleClick(sf::Vector2f mouseposition);

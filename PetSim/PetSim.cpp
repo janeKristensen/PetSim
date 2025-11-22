@@ -14,8 +14,8 @@ Game::Game(sf::Font& font, std::shared_ptr<sf::RenderWindow> window) : mWindow(s
     mSpritesheet = std::make_shared<sf::Texture>("../ressources/spritesheet.png");
     mPet = std::make_shared<Pet>(mSpritesheet, sf::IntRect({ 0,128 }, { 64,64 }), "Kitty", "Cat", "Happy");
 
-    mNeedsSystem = std::make_unique<NeedsSystem>(mPet, mModelFuture);
-    mScene = std::make_unique<Scene>(mModelFuture, mSpritesheet, mPet, screenSize, font);
+    mNeedsSystem = std::make_unique<NeedsSystem>(mPet);
+    mScene = std::make_unique<Scene>(mSpritesheet, mPet, screenSize, font);
     mInventorySystem = std::make_unique<InventorySystem>(mScene->getInvSize(), mScene->getInvPosition(), font);
 
     auto food1 = std::make_shared<Food>(1, mSpritesheet, sf::IntRect({ 0,0 }, { 32,32 }), 10);
@@ -27,6 +27,14 @@ Game::Game(sf::Font& font, std::shared_ptr<sf::RenderWindow> window) : mWindow(s
     mItems.push_back(food2);
     //mRenderItems.push_back(std::static_pointer_cast<sf::Drawable>(food2));
 
+    
+}
+
+void Game::init() {
+
+    mModel = mModelFuture.get();
+    mScene->setModel(mModel);
+    mNeedsSystem->setModel(mModel);
 }
 
 void Game::pollEvents() {

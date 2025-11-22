@@ -1,13 +1,16 @@
 #include "NeedsSystem.h"
 
 
+void NeedsSystem::setModel(std::shared_ptr<Model> model) {
 
+    mModel = model;
+    mModel->addSystemPrompt(mPet->getInitPrompt());
+}
 
 void NeedsSystem::update(float dt) {
 
     decayValues(dt);
     updateState();
-    updateSystemPrompt();
 }
 
 void NeedsSystem::processItem(Item& item) {
@@ -39,12 +42,7 @@ void NeedsSystem::updateSystemPrompt() {
 
     auto newState = std::make_pair<int32_t, int32_t>((int32_t)mFeedState, (int32_t)mGroomState);
 
-    if (newState != mPreviousState) {
-
-        if (mModel == nullptr) {
-            mModel = mModelFuture.get();
-            mModel->addSystemPrompt(mPet->getInitPrompt());
-        }
+    if (newState != mPreviousState && mModel != nullptr) {
 
         std::string newPromt = mStateTable[(int32_t)mFeedState][(int32_t)mGroomState];
         mModel->addSystemPrompt(newPromt);
@@ -83,4 +81,6 @@ void NeedsSystem::updateState() {
 
         mGroomState = State::LOW;
     }
+
+    std::async(&NeedsSystem::updateSystemPrompt, this); 
 }

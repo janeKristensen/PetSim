@@ -1,7 +1,7 @@
 ﻿#include "llm_model.h"
-#include "llama.h"
-#include <iostream>
-#include "common.h"
+
+
+
 
 InferenceModel::InferenceModel (const std::string& path, float p, float temp) {
 
@@ -53,6 +53,7 @@ void InferenceModel::initModel(llama_context_params& ctxParams) {
 
 void InferenceModel::addMessage(const std::string& prompt, const char* role) {
 
+    std::lock_guard<std::mutex> lk(m);
     m_messages.push_back(llama_chat_message(role, strdup(prompt.c_str())));
 }
 
@@ -74,6 +75,10 @@ void InferenceModel::startInference(const std::string& query) {
     std::string prompt(m_formattedMessages.begin() + m_prevLen, m_formattedMessages.begin() + newLen);
     m_tokens = common_tokenize(m_ctx, prompt, true, true);
     m_batch = llama_batch_get_one(m_tokens.data(), (int)m_tokens.size());
+
+#ifndef NDEBUG
+    std::cout << prompt << std::endl;
+#endif // NDEBUG
 
 }
 
