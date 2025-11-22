@@ -133,6 +133,14 @@ void InventorySystem::adjustItemCount(int32_t value, size_t index) {
 	mInventory[row][col].setAmount(value);
 }
 
+void InventorySystem::addItemToSlotIndex(size_t index, std::shared_ptr<Item> item, int amount) {
+
+	auto position = getSlotPositionAtIndex(index);
+	item->setPosition(position);
+	adjustItemCount(amount, index);
+	mItems.push_back(item);
+}
+
 void InventorySystem::addItemToSlot(sf::Vector2f mousePosition, std::shared_ptr<Item> item) {
 
 	auto [position, index] = getSlotPosition(mousePosition);
@@ -175,17 +183,21 @@ void InventorySystem::addItemToSlot(sf::Vector2f mousePosition, std::shared_ptr<
 	}
 }
 
-void InventorySystem::removeFromSlot(sf::Vector2f mousePosition, Item& item) {
-
-	auto [position, index] = getSlotPosition(mousePosition);
-	if (index == -1 || !mItems[index]) return;
+void InventorySystem::removeFromSlotIndex(size_t index, Item& item) {
 
 	adjustItemCount(-1, index);
 	auto [row, col] = getRowColumnIndex(index);
 	uint32_t item_amount = mInventory[row][col].getAmount();
 
-	if(item_amount == 0) mItems[index] = nullptr;
-	else if(item_amount >= 1) { mItems[index] = spawnItem(item); }		
+	if (item_amount == 0) mItems[index] = nullptr;
+	else if (item_amount >= 1) { mItems[index] = spawnItem(item); }
+}
+
+void InventorySystem::removeFromSlot(sf::Vector2f mousePosition, Item& item) {
+
+	auto [position, index] = getSlotPosition(mousePosition);
+	if (index == -1 || !mItems[index]) return;
+	removeFromSlotIndex(index, item);
 }
 
 void InventorySystem::dragItem(const sf::Vector2f mousePosition, Item& item) {
@@ -210,4 +222,47 @@ std::shared_ptr<Item> InventorySystem::spawnItem(const Item& item) {
 
 	auto new_item = std::make_shared<Item>(item);
 	return new_item;
+}
+
+void InventorySystem::clearSlots() {
+
+	for (auto item : mItems) {
+		item = nullptr;
+	}
+
+	for (int i = 0; i < mInventory.size(); i++) {
+		for (int j = 0; j < mInventory[i].size(); j++) {
+
+			mInventory[i][j].clear();
+		}
+	}
+}
+
+
+void InventorySystem::toJson(nlohmann::json& j) {
+
+	std::array<int, MAX_SLOTS> values;
+	int index = 0;
+
+	for (int i = 0; i < mInventory.size(); i++) {
+		for (int j = 0; j < mInventory[i].size(); j++) {
+
+			values[index] = mInventory[i][j].getAmount();
+			index++;
+		}
+	}
+	
+	j = nlohmann::json{ { "slotValues", values } };
+}
+
+void InventorySystem::setState(nlohmann::json) {
+
+	toJson(mState);
+	mSaveComponent->setState(mState);
+}
+
+nlohmann::json InventorySystem::saveData() {
+
+	setState(mState);
+	return mState;
 }
