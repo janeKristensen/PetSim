@@ -17,7 +17,7 @@ void GroomItem::printStats() const {
 	std::string stats = std::format("+{} grooming", mValue);
 }
 
-void Item::toJson(nlohmann::json& j, const Item& pet) {
+void Item::toJson(nlohmann::json& j) {
 
 	std::array<float, 6> position;
 	auto intRect = mSprite.getTextureRect();
@@ -28,12 +28,16 @@ void Item::toJson(nlohmann::json& j, const Item& pet) {
 	position[4] = mSprite.getPosition().x;
 	position[5] = mSprite.getPosition().y;
 
-	j = nlohmann::json{ { "typeId", mTypeId }, {"position", position}, {"value", mValue}};
+	j = nlohmann::json{ 
+		{"typeId", mTypeId}, 
+		{"position", position}, 
+		{"value", mValue}
+	};
 }
 
 void Item::setState(nlohmann::json) {
 
-	toJson(mState, *this);
+	toJson(mState);
 	mSaveComponent->setState(mState);
 }
 

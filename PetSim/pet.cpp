@@ -77,51 +77,50 @@ void Pet::toJson(nlohmann::json& j, const Pet& pet) {
 		{ "hunger", mHunger },
 		{ "groom", mGroom },
 		{ "health", mHealth },
-		{ "sprite", 
-			{
-				{"position", 
-					{"x", mSprite.getPosition().x}, 
-					{"y", mSprite.getPosition().y}
-				},
-				{"tex_rect",
-					{
-						{"position",
-							{"x", tex_rect.position.x},
-							{"y", tex_rect.position.y}
-						},
-						{"size",
-							{"x", tex_rect.size.x},
-							{"y", tex_rect.size.y}
-						}
-					}	
+		{ "sprite", {
+			{ "position", 
+				{
+					{ "x", mSprite.getPosition().x },
+					{ "y", mSprite.getPosition().y }
 				}
-			}	
+			},
+			{ "tex_rect", {
+				{ "position", {
+					{ "x", tex_rect.position.x },
+					{ "y", tex_rect.position.y }
+				}},
+				{ "size", {
+					{ "x", tex_rect.size.x },
+					{ "y", tex_rect.size.y }
+				}}}
+			}}	
 		}
 	};
 }
 
-void Pet::from_json(const nlohmann::json& j, Pet& p) {
-	j.at("name").get_to(p.mName);
-	j.at("species").get_to(p.mSpecies);
-	j.at("temper").get_to(p.mTemper);
-	j.at("initPrompt").get_to(p.mInitPrompt);
-	j.at("currentStatus").get_to(p.mCurrentStatus);
-	j.at("hunger").get_to(p.mHunger);
-	j.at("groom").get_to(p.mGroom);
-	j.at("health").get_to(p.mHealth);
+void Pet::from_json(const nlohmann::json& j, std::shared_ptr<Pet> p) {
+	j.at("name").get_to(p->mName);
+	j.at("species").get_to(p->mSpecies);
+	j.at("temper").get_to(p->mTemper);
+	j.at("initPrompt").get_to(p->mInitPrompt);
+	j.at("currentStatus").get_to(p->mCurrentStatus);
+	j.at("hunger").get_to(p->mHunger);
+	j.at("groom").get_to(p->mGroom);
+	j.at("health").get_to(p->mHealth);
 	
-	sf::IntRect tex_rect(
-		{ 
-			j["sprite"]["text_rect"]["position"]["x"], 
-			j["sprite"]["text_rect"]["position"]["y"]
-		}, 
-		{
-			j["sprite"]["text_rect"]["size"]["x"], 
-			j["sprite"]["text_rect"]["size"]["y"]
-		}
-	);
-	
-	mSprite = sf::Sprite(*mSpritesheet, tex_rect);
+	sf::Vector2i position = { 
+		j["sprite"]["tex_rect"]["position"]["x"],
+		j["sprite"]["tex_rect"]["position"]["y"] 
+	};
+
+	sf::Vector2i size = {
+		j["sprite"]["tex_rect"]["size"]["x"],
+		j["sprite"]["tex_rect"]["size"]["y"]
+	};
+
+	sf::IntRect tex_rect(position, size);
+	p->mSprite.setTexture(*mSpritesheet);
+	p->mSprite.setTextureRect(tex_rect);
 }
 
 void Pet::setState(nlohmann::json) {

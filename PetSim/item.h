@@ -5,9 +5,14 @@
 #include <format>
 #include "Memento.h"
 
+enum class ItemType {
+	FOOD,
+	GROOM
+};
+
 class Item : public sf::Drawable{
 public:
-	Item(uint32_t typeId, uint32_t value, std::shared_ptr<sf::Texture> texture, sf::IntRect tex_rect) : mTypeId(typeId), mValue(value), mSpritesheet(texture), mSprite(*mSpritesheet, tex_rect){}
+	Item(ItemType typeId, uint32_t value, std::shared_ptr<sf::Texture> texture, sf::IntRect tex_rect) : mTypeId(typeId), mValue(value), mSpritesheet(texture), mSprite(*mSpritesheet, tex_rect){}
 	Item(const Item& other) : mTypeId(other.mTypeId), mValue(other.mValue), mSpritesheet(other.mSpritesheet), mSprite(other.mSprite) {}
 
 	bool operator==(const Item& other) const { return mTypeId == other.getTypeId(); }
@@ -26,11 +31,11 @@ protected:
 	uint32_t mValue;
 
 private:
-	const uint32_t getTypeId() const { return mTypeId; }
+	const ItemType getTypeId() const { return mTypeId; }
 	void setState(nlohmann::json);
-	void toJson(nlohmann::json& j, const Item& pet);
+	void toJson(nlohmann::json& j);
 
-	const uint32_t mTypeId;
+	const ItemType mTypeId;
 	bool mIsAlive = true;
 	std::shared_ptr<sf::Texture> mSpritesheet;
 	sf::Sprite mSprite;
@@ -41,7 +46,7 @@ private:
 
 class Food : public Item {
 public:
-	Food(uint32_t typeId, std::shared_ptr<sf::Texture> texture, sf::IntRect texRect, uint32_t value) : Item(typeId, value, texture, texRect) {}
+	Food(ItemType typeId, std::shared_ptr<sf::Texture> texture, sf::IntRect texRect, uint32_t value) : Item(typeId, value, texture, texRect) {}
 	void printStats() const override;
 
 private:
@@ -50,7 +55,7 @@ private:
 
 class GroomItem : public Item {
 public:
-	GroomItem(uint32_t typeId, std::shared_ptr<sf::Texture> texture, sf::IntRect texRect, uint32_t value) : Item(typeId, value, texture, texRect) {}
+	GroomItem(ItemType typeId, std::shared_ptr<sf::Texture> texture, sf::IntRect texRect, uint32_t value) : Item(typeId, value, texture, texRect) {}
 	void printStats() const override;
 
 private:

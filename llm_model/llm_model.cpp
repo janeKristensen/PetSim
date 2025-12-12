@@ -54,7 +54,8 @@ void InferenceModel::initModel(llama_context_params& ctxParams) {
 void InferenceModel::addMessage(const std::string& prompt, const char* role) {
 
     std::lock_guard<std::mutex> lk(m);
-    m_messages.push_back(llama_chat_message(role, strdup(prompt.c_str())));
+    auto message = llama_chat_message(role, strdup(prompt.c_str()));
+    m_messages.push_back(message);
 }
 
 void InferenceModel::startInference(const std::string& query) {

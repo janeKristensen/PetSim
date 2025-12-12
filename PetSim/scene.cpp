@@ -4,7 +4,7 @@
 
 Scene::Scene(std::shared_ptr<sf::Texture> spritesheet, std::shared_ptr<Pet> currentPet, sf::Vector2f screenSize, const sf::Font& font)
 	: mFont(font), mSpritesheet(spritesheet), mPet(currentPet), mScreenSize(screenSize), 
-		mPromptText(font, "", 24), mHealthText(font, "", 24), mHungerText(font, "", 24), mGroomText(font, "", 24), mPetText(font, "", 24) {
+		mPromptText(font, "", 24), mHealthText(font, "", 24), mHungerText(font, "", 24), mGroomText(font, "", 24), mPetText(font, "", 24), mStateText(font, "",24) {
 
 	mBorder = sf::RectangleShape(screenSize);
 	mBorder.setFillColor(sf::Color::Black);
@@ -94,7 +94,7 @@ Scene::Scene(std::shared_ptr<sf::Texture> spritesheet, std::shared_ptr<Pet> curr
 	);
 
 	
-
+#ifndef NDEBUG
 	mHealthText.setFillColor(sf::Color::Magenta);
 	mHealthText.setPosition(
 		{
@@ -119,6 +119,17 @@ Scene::Scene(std::shared_ptr<sf::Texture> spritesheet, std::shared_ptr<Pet> curr
 			mPetTextField.getPosition().y - SCREEN_MARGIN - mGroomText.getCharacterSize()
 		}
 	);
+
+	mStateText.setFillColor(sf::Color::Magenta);
+	mStateText.setPosition(
+		{
+			mPetPosition.x,
+			mPetTextField.getPosition().y - 3 * SCREEN_MARGIN - mGroomText.getCharacterSize()
+		}
+	);
+#endif
+
+	
 	
 }
 
@@ -133,6 +144,7 @@ void Scene::update(float dt) {
 	mHealthText.setString(std::format("Health: {}", mPet->getHealthValue()));
 	mHungerText.setString(std::format("Hunger: {}", mPet->getHungerValue()));
 	mGroomText.setString(std::format("Grooming: {}", mPet->getGroomValue()));
+	mStateText.setString(std::format("State: {}", mPet->getStatus()));
 #endif
 	mFoodBar.resizeBar(mPet->getHungerValue());
 	mGroomBar.resizeBar(mPet->getGroomValue());
@@ -179,9 +191,15 @@ void Scene::render(sf::RenderWindow& window) {
 	window.draw(mGroomBar.getShape());
 	window.draw(mPetText);
 	window.draw(mPromptText);
+
+#ifndef NDEBUG
 	window.draw(mHealthText);
 	window.draw(mHungerText);
 	window.draw(mGroomText);
+	window.draw(mStateText);
+#endif // !NDEBUG
+
+	
 }
 
 void Scene::handleClick(sf::Vector2f mouseposition) {

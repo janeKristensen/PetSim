@@ -6,7 +6,6 @@ constexpr float INV_MARGIN = 4.0;
 
 InventorySystem::InventorySystem(sf::Vector2f invDimensions, sf::Vector2f invPosition, const sf::Font& font) : mFont(font){
 	
-	
 	float slot_size_x = ((invDimensions.x - (COLUMNS + 1) * INV_MARGIN) / COLUMNS);
 	float slot_size_y = ((invDimensions.y - (ROWS + 1) * INV_MARGIN)/ ROWS);
 
@@ -138,18 +137,19 @@ void InventorySystem::addItemToSlotIndex(size_t index, std::shared_ptr<Item> ite
 	auto position = getSlotPositionAtIndex(index);
 	item->setPosition(position);
 	adjustItemCount(amount, index);
-	mItems.push_back(item);
+	mItems[index] = item;
 }
 
 void InventorySystem::addItemToSlot(sf::Vector2f mousePosition, std::shared_ptr<Item> item) {
 
 	auto [position, index] = getSlotPosition(mousePosition);
 
-	// if not dragged inside an inventory slot; check if there is an item of same type in inventory
+	// if not dragged inside an inventory slot
 	if (index == -1) {
 
+		// check if there is an item of same type in inventory
 		for (int i = 0; i < mItems.size(); i++) {
-
+			
 			if (*mItems[i] != nullptr && *mItems[i] == *item) {
 				index = i;
 				position = getSlotPositionAtIndex(index);
@@ -157,25 +157,26 @@ void InventorySystem::addItemToSlot(sf::Vector2f mousePosition, std::shared_ptr<
 			}
 		}
 
+		// if not, find next empty slot.
 		if (index == -1) {
-			// if not, find next empty slot.
+			
 			index = getFirstEmptySlot();
 			position = getSlotPositionAtIndex(index);
 		}
 	} 
-	
-	if (*mItems[index] != nullptr && *mItems[index] != *item) {
+	else if (*mItems[index] != nullptr && *mItems[index] != *item) {
 
-		// if not, find next empty slot.
+		// if item in slot not same type, find next empty slot.
 		index = getFirstEmptySlot();
 		position = getSlotPositionAtIndex(index);
 	}
 
-	// Set to postion of hovered over slot
+	// Set to postion of index
 	item->setPosition(position);
 	mItems[index] = item;
 	adjustItemCount(1, index);
 	
+	// only one item instance lives in the inventory slot
 	auto [row, col] = getRowColumnIndex(index);
 	if (mInventory[row][col].getAmount() > 1) {
 
@@ -189,7 +190,7 @@ void InventorySystem::removeFromSlotIndex(size_t index, Item& item) {
 	auto [row, col] = getRowColumnIndex(index);
 	uint32_t item_amount = mInventory[row][col].getAmount();
 
-	if (item_amount == 0) mItems[index] = nullptr;
+	if (item_amount == 0) mItems[index].reset();
 	else if (item_amount >= 1) { mItems[index] = spawnItem(item); }
 }
 
@@ -226,7 +227,9 @@ std::shared_ptr<Item> InventorySystem::spawnItem(const Item& item) {
 
 void InventorySystem::clearSlots() {
 
+	// clear inventory from items without deallocating memory
 	for (auto item : mItems) {
+
 		item = nullptr;
 	}
 
@@ -237,7 +240,6 @@ void InventorySystem::clearSlots() {
 		}
 	}
 }
-
 
 void InventorySystem::toJson(nlohmann::json& j) {
 
