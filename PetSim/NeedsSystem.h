@@ -27,8 +27,8 @@ private:
 	std::shared_ptr<Pet> mPet = nullptr;
 	std::shared_ptr<Model> mModel = nullptr;
 	float mTimeTracker = 0.f;
-	State mFeedState;
-	State mGroomState;
+	State mFeedState = State::COUNT;
+	State mGroomState = State::COUNT;
 	std::pair<int32_t, int32_t> mPreviousState;
 
 	const char* mStateTable[(int32_t)State::COUNT][(int32_t)State::COUNT] = {
