@@ -52,10 +52,14 @@ private:
 	sf::RectangleShape mTextField;
 	sf::RectangleShape mTextBlip;
 	sf::Text mPromptText;
+	sf::Text mPetText;
+#ifndef NDEBUG
 	sf::Text mHealthText;
 	sf::Text mHungerText;
 	sf::Text mGroomText;
-	sf::Text mPetText;
+	sf::Text mStateText;
+#endif
+
 	ProgressBar mFoodBar = ProgressBar(sf::Vector2f{ 200, 10 }, sf::Vector2f{ SCREEN_MARGIN, SCREEN_MARGIN }, sf::Color::Red);
 	ProgressBar mGroomBar = ProgressBar(sf::Vector2f{ 200, 10 }, sf::Vector2f{ SCREEN_MARGIN, 2* SCREEN_MARGIN + 2}, sf::Color::Blue);
 	const sf::Font& mFont;

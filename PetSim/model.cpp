@@ -2,14 +2,15 @@
 #include <iostream>
 #include <functional>
 
-Model::Model(const std::string& path, float p, float temp) {
-
+Model::Model(const std::string& path, float p, float temp) 
+{
     mModel = std::make_shared<InferenceModel>(path, p, temp);
 }
 
-void Model::inputLoop() {
-
-    while (true) {
+void Model::inputLoop() 
+{
+    while (true) 
+    {
         std::cout << "Enter query: " << std::endl;
         std::string query;
         std::getline(std::cin, query);
@@ -17,9 +18,9 @@ void Model::inputLoop() {
 
         mModel->startInference(query);
         std::string response;
-        while ((response = mModel->getResponse()) != "EOG") {
-
-            std::cout << response;
+        while ((response = mModel->getResponse()) != "EOG") 
+        {
+            std::cout << response << std::endl;
             std::fflush(stdout);
         }
 
@@ -28,21 +29,25 @@ void Model::inputLoop() {
     }
 }
 
-void Model::userQuery(const std::string& query) {
+void Model::userQuery(const std::string& query) 
+{
 
     std::lock_guard<std::mutex> guard(mModelMutex);
     mModel->startInference(query);
     std::string response;
     std::string line;
     std::string output;
-    while ((response = mModel->getResponse()) != "EOG") {
+    while ((response = mModel->getResponse()) != "EOG") 
+    {
 
-        if (line.size() + response.size() > 70) {
+        if (line.size() + response.size() > 70) 
+        {
 
             output += (line + '\n');
             line = response;
         }
-        else {
+        else 
+        {
             line += response;
         }
     }
@@ -57,14 +62,19 @@ void Model::userQuery(const std::string& query) {
     mModel->stopInference();
 }
 
-void Model::addSystemPrompt(const std::string& prompt) {
-
+void Model::addSystemPrompt(const std::string& prompt) 
+{
     mModel->addMessage(prompt, "system");
 }
 
-std::string Model::getModelStringBuffer() { 
-
+std::string Model::getModelStringBuffer() 
+{ 
     std::string str = mStringBuffer; 
     mStringBuffer.clear(); 
     return str; 
+}
+
+void Model::clearModelStringBuffer() 
+{
+    //mStringBuffer.clear();
 }

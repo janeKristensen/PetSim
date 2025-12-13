@@ -6,7 +6,6 @@ constexpr float INV_MARGIN = 4.0;
 
 InventorySystem::InventorySystem(sf::Vector2f invDimensions, sf::Vector2f invPosition, const sf::Font& font) : mFont(font){
 	
-	
 	float slot_size_x = ((invDimensions.x - (COLUMNS + 1) * INV_MARGIN) / COLUMNS);
 	float slot_size_y = ((invDimensions.y - (ROWS + 1) * INV_MARGIN)/ ROWS);
 
@@ -133,15 +132,24 @@ void InventorySystem::adjustItemCount(int32_t value, size_t index) {
 	mInventory[row][col].setAmount(value);
 }
 
+void InventorySystem::addItemToSlotIndex(size_t index, std::shared_ptr<Item> item, int amount) {
+
+	auto position = getSlotPositionAtIndex(index);
+	item->setPosition(position);
+	adjustItemCount(amount, index);
+	mItems[index] = item;
+}
+
 void InventorySystem::addItemToSlot(sf::Vector2f mousePosition, std::shared_ptr<Item> item) {
 
 	auto [position, index] = getSlotPosition(mousePosition);
 
-	// if not dragged inside an inventory slot; check if there is an item of same type in inventory
+	// if not dragged inside an inventory slot
 	if (index == -1) {
 
+		// check if there is an item of same type in inventory
 		for (int i = 0; i < mItems.size(); i++) {
-
+			
 			if (*mItems[i] != nullptr && *mItems[i] == *item) {
 				index = i;
 				position = getSlotPositionAtIndex(index);
@@ -149,25 +157,26 @@ void InventorySystem::addItemToSlot(sf::Vector2f mousePosition, std::shared_ptr<
 			}
 		}
 
+		// if not, find next empty slot.
 		if (index == -1) {
-			// if not, find next empty slot.
+			
 			index = getFirstEmptySlot();
 			position = getSlotPositionAtIndex(index);
 		}
 	} 
-	
-	if (*mItems[index] != nullptr && *mItems[index] != *item) {
+	else if (*mItems[index] != nullptr && *mItems[index] != *item) {
 
-		// if not, find next empty slot.
+		// if item in slot not same type, find next empty slot.
 		index = getFirstEmptySlot();
 		position = getSlotPositionAtIndex(index);
 	}
 
-	// Set to postion of hovered over slot
+	// Set to postion of index
 	item->setPosition(position);
 	mItems[index] = item;
 	adjustItemCount(1, index);
 	
+	// only one item instance lives in the inventory slot
 	auto [row, col] = getRowColumnIndex(index);
 	if (mInventory[row][col].getAmount() > 1) {
 
@@ -175,17 +184,21 @@ void InventorySystem::addItemToSlot(sf::Vector2f mousePosition, std::shared_ptr<
 	}
 }
 
-void InventorySystem::removeFromSlot(sf::Vector2f mousePosition, Item& item) {
-
-	auto [position, index] = getSlotPosition(mousePosition);
-	if (index == -1 || !mItems[index]) return;
+void InventorySystem::removeFromSlotIndex(size_t index, Item& item) {
 
 	adjustItemCount(-1, index);
 	auto [row, col] = getRowColumnIndex(index);
 	uint32_t item_amount = mInventory[row][col].getAmount();
 
-	if(item_amount == 0) mItems[index] = nullptr;
-	else if(item_amount >= 1) { mItems[index] = spawnItem(item); }		
+	if (item_amount == 0) mItems[index].reset();
+	else if (item_amount >= 1) { mItems[index] = spawnItem(item); }
+}
+
+void InventorySystem::removeFromSlot(sf::Vector2f mousePosition, Item& item) {
+
+	auto [position, index] = getSlotPosition(mousePosition);
+	if (index == -1 || !mItems[index]) return;
+	removeFromSlotIndex(index, item);
 }
 
 void InventorySystem::dragItem(const sf::Vector2f mousePosition, Item& item) {
@@ -210,4 +223,48 @@ std::shared_ptr<Item> InventorySystem::spawnItem(const Item& item) {
 
 	auto new_item = std::make_shared<Item>(item);
 	return new_item;
+}
+
+void InventorySystem::clearSlots() {
+
+	// clear inventory from items without deallocating memory
+	for (auto item : mItems) {
+
+		item = nullptr;
+	}
+
+	for (int i = 0; i < mInventory.size(); i++) {
+		for (int j = 0; j < mInventory[i].size(); j++) {
+
+			mInventory[i][j].clear();
+		}
+	}
+}
+
+void InventorySystem::toJson(nlohmann::json& j) {
+
+	std::array<int, MAX_SLOTS> values;
+	int index = 0;
+
+	for (int i = 0; i < mInventory.size(); i++) {
+		for (int j = 0; j < mInventory[i].size(); j++) {
+
+			values[index] = mInventory[i][j].getAmount();
+			index++;
+		}
+	}
+	
+	j = nlohmann::json{ { "slotValues", values } };
+}
+
+void InventorySystem::setState(nlohmann::json) {
+
+	toJson(mState);
+	mSaveComponent->setState(mState);
+}
+
+nlohmann::json InventorySystem::saveData() {
+
+	setState(mState);
+	return mState;
 }

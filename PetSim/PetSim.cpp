@@ -18,16 +18,15 @@ Game::Game(sf::Font& font, std::shared_ptr<sf::RenderWindow> window) : mWindow(s
     mScene = std::make_unique<Scene>(mSpritesheet, mPet, screenSize, font);
     mInventorySystem = std::make_unique<InventorySystem>(mScene->getInvSize(), mScene->getInvPosition(), font);
 
-    auto food1 = std::make_shared<Food>(1, mSpritesheet, sf::IntRect({ 0,0 }, { 32,32 }), 10);
-    mInventorySystem->addItemToSlot({590, 25}, food1);
+    auto food1 = std::make_shared<Food>(ItemType::FOOD, mSpritesheet, sf::IntRect({0,0}, {32,32}), 10);
+    mInventorySystem->addItemToSlot({0, 0}, food1);
     mItems.push_back(food1);
     //mRenderItems.push_back(std::static_pointer_cast<sf::Drawable>(food1));
 
-    auto food2 = std::make_shared<GroomItem>(2, mSpritesheet, sf::IntRect({ 32,0 }, { 32,32 }), 10);
+    auto food2 = std::make_shared<GroomItem>(ItemType::GROOM, mSpritesheet, sf::IntRect({32,0}, {32,32}), 10);
+    mInventorySystem->addItemToSlot({ 0, 0 }, food2);
     mItems.push_back(food2);
-    //mRenderItems.push_back(std::static_pointer_cast<sf::Drawable>(food2));
-
-    
+    //mRenderItems.push_back(std::static_pointer_cast<sf::Drawable>(food2)); 
 }
 
 void Game::init() {
@@ -48,10 +47,16 @@ void Game::pollEvents() {
 
             mWindow->close();
         }
-        else  if (event->is<sf::Event::KeyPressed>() &&
-            event->getIf<sf::Event::KeyPressed>()->code == sf::Keyboard::Key::S) {
+        else if (event->is<sf::Event::KeyPressed>()){
+            
+            auto key = event->getIf<sf::Event::KeyPressed>()->code;
+            if (key == sf::Keyboard::Key::S) {
 
-            saveGame();
+                saveGame();
+            }
+            else if (key == sf::Keyboard::Key::Q) {
+                loadGame("pretty.json");
+            }
         }
         else if (event->is<sf::Event::MouseButtonReleased>() &&
             event->getIf<sf::Event::MouseButtonReleased>()->button == sf::Mouse::Button::Left) {
@@ -118,8 +123,10 @@ void Game::render() {
     mScene->render(*mWindow);
     mInventorySystem->render(*mWindow);
     for (auto obj : mItems) {
-
         if (!obj) continue;
+#ifndef NDEBUG
+        //std::cout << obj->getSprite().getPosition().x << std::endl;
+#endif
         mWindow->draw(obj->getSprite());
     }
     
@@ -133,11 +140,60 @@ void Game::saveGame() {
     mSaveManager->showHistory();
 }
 
+std::shared_ptr<Item> Game::createItemFromType(const ItemType type, sf::IntRect texRect, uint32_t value)
+{
+    std::shared_ptr<Item> item = nullptr;
+    
+    switch (type) {
+    case ItemType::FOOD:
+        item = std::make_shared<Food>(type, mSpritesheet, texRect, value);
+        break;
+    case ItemType::GROOM:
+        item = std::make_shared<GroomItem>(type, mSpritesheet, texRect, value);
+        break;
+    }
+    return item;
+}
+
 void Game::loadGame(const std::string& filename) {
 
-    std::ifstream i(filename);
+    // load json save file
+    std::ifstream ifs(filename);
     nlohmann::json j;
-    i >> j;
+    ifs >> j;
+
+    mItems.clear();
+    mInventorySystem->clearSlots();
+    
+    // set items in inventory
+    auto slotValues = j["inventory"]["slotValues"].get<std::array<int, MAX_SLOTS>>();
+
+    for (const auto& element : j["items"]) {
+
+        // Get item texture rect
+        sf::IntRect texRect;
+        auto arr = element["position"].get<std::array<float, 6>>();
+        texRect.position.x = arr[0];
+        texRect.position.y = arr[1];
+        texRect.size.x = arr[2];
+        texRect.size.y = arr[3];
+
+        // create new item instance from typeId
+        auto typeId = element["typeId"].get<ItemType>();
+        uint32_t value = element["value"].get<uint32_t>();
+        auto item = createItemFromType(typeId, texRect, value);
+        mItems.push_back(item);
+
+        item->setPosition(sf::Vector2f{ arr[4], arr[5] });
+        auto slot = mInventorySystem->getSlotPosition(item->getSprite().getPosition());
+        mInventorySystem->addItemToSlotIndex(std::get<1>(slot), item, slotValues[std::get<1>(slot)]);
+    }
+   
+    // Load Pet status from json
+    mPet->from_json(j["pet"], mPet);
+    std::string initPrompt = mPet->getInitPrompt() + mPet->getStatus();
+    mModel->clearModelStringBuffer();
+    mModel->addSystemPrompt(initPrompt);
 }
 
 
@@ -151,6 +207,7 @@ void Game::setState() {
 
     mState["pet"] = mPet->saveData();
     mState["items"] = items;
+    mState["inventory"] = mInventorySystem->saveData();
     mSaveComponent->setState(mState);
 }
 

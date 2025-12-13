@@ -31,6 +31,7 @@ public:
 private:
 	void handleDrag();
 	void setState();
+	std::shared_ptr<Item> createItemFromType(const ItemType type, sf::IntRect texRect, uint32_t value);
 
 	nlohmann::json mState;
 	std::vector<std::shared_ptr<Item>> mItems;

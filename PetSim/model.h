@@ -20,6 +20,8 @@ public:
 	void userQuery(const std::string& query);
 	void addSystemPrompt(const std::string& prompt);
 	std::string getModelStringBuffer();
+	void clearModelStringBuffer();
+
 private:
 	std::shared_ptr<InferenceModel> mModel = nullptr;
 	std::string mStringBuffer = "";

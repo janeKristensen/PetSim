@@ -36,14 +36,16 @@ public:
 	void setHungerValue(int32_t value);
 	void setGroomValue(int32_t value);
 	void setHealthValue(int32_t value);
+	void setStatus(const std::string& str) { mCurrentStatus = str; }
 	void decayValues();
 	void setSpritePosition(sf::Vector2f position);
+	void from_json(const nlohmann::json& j, std::shared_ptr<Pet> p);
 	nlohmann::json saveData();
 
 private:
 	void setState(nlohmann::json);
 	void toJson(nlohmann::json& j, const Pet& pet);
-	void from_json(const nlohmann::json& j, Pet& p);
+	
 
 	std::string mName = "";
 	std::string mSpecies = "";

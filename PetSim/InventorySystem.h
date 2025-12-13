@@ -11,6 +11,7 @@ class Slot {
 public:
 	sf::RectangleShape& getShape() { return mShape; }
 	const sf::RectangleShape& getShape() const { return mShape; }
+	void clear() { mAmount = 0; }
 	const int32_t getAmount() const { return mAmount; }
 	void setAmount(int32_t value) { 
 		mAmount += value; 
@@ -29,14 +30,17 @@ public:
 	InventorySystem(sf::Vector2f invDimensions, sf::Vector2f invPosition, const sf::Font& font);
 	void update();
 	void render(sf::RenderWindow& window);
+	const std::tuple<sf::Vector2f, int32_t> getSlotPosition(sf::Vector2f mousePosition) const;
 	void addItemToSlot(sf::Vector2f mousePosition, std::shared_ptr<Item> item);
+	void addItemToSlotIndex(size_t index, std::shared_ptr<Item> item, int amount);
 	void removeFromSlot(sf::Vector2f mousePosition, Item& item);
+	void removeFromSlotIndex(size_t index, Item& item);
 	void dragItem(const sf::Vector2f mousePosition, Item& item);
-	
+	void clearSlots();
+	nlohmann::json saveData();
 
 private:
 	const std::tuple<size_t, size_t> getRowColumnIndex(size_t index) const;
-	const std::tuple<sf::Vector2f, int32_t> getSlotPosition(sf::Vector2f mousePosition) const;
 	const sf::Vector2f getSlotPositionAtIndex(size_t index) const;
 	size_t getFirstEmptySlot();
 	void adjustItemCount(int32_t value, size_t index);
@@ -48,4 +52,9 @@ private:
 	std::vector<sf::Text> mAmountText;
 	const sf::Font& mFont;
 
+	nlohmann::json mState;
+	std::shared_ptr<SaveComponent> mSaveComponent = std::make_shared<SaveComponent>();
+	std::unique_ptr<SaveManager> mSaveManager = std::make_unique<SaveManager>(mSaveComponent);
+	void setState(nlohmann::json);
+	void toJson(nlohmann::json& j);
 };
