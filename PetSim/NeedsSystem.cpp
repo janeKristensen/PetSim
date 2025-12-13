@@ -46,7 +46,7 @@ void NeedsSystem::updateSystemPrompt() {
 
         std::string newPrompt = mStateTable[(int32_t)mFeedState][(int32_t)mGroomState];
         mPet->setStatus(newPrompt);
-        mModel->addSystemPrompt(newPrompt);
+        mModel->addSystemPrompt(std::format("{} {}", mPet->getInitPrompt(), newPrompt));
     }
 }
 

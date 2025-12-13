@@ -9,7 +9,7 @@ constexpr int32_t DECAY_VALUE = -1;
 Pet::Pet(std::shared_ptr<sf::Texture> spritesheet, sf::IntRect texRect, std::string name, std::string species, std::string temper) 
 	: mSpritesheet(std::move(spritesheet)), mSprite(*mSpritesheet, texRect), mName(name), mSpecies(species), mTemper(temper) {
 
-	mInitPrompt = std::format("You are a {} named {}. You are a companion pet. Your are {}. Give short and cute replies to messages and don't use emoji.", mSpecies, mName, mTemper);
+	mInitPrompt = std::format("Pretend to be a {} named {}. You are my pet not a chatbot. Give short and cute replies to messages and don't use emoji.", mSpecies, mName);
 	mSprite.setScale({6.2,6.2});
 }
 

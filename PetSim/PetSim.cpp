@@ -19,15 +19,14 @@ Game::Game(sf::Font& font, std::shared_ptr<sf::RenderWindow> window) : mWindow(s
     mInventorySystem = std::make_unique<InventorySystem>(mScene->getInvSize(), mScene->getInvPosition(), font);
 
     auto food1 = std::make_shared<Food>(ItemType::FOOD, mSpritesheet, sf::IntRect({0,0}, {32,32}), 10);
-    mInventorySystem->addItemToSlot({590, 25}, food1);
+    mInventorySystem->addItemToSlot({0, 0}, food1);
     mItems.push_back(food1);
     //mRenderItems.push_back(std::static_pointer_cast<sf::Drawable>(food1));
 
     auto food2 = std::make_shared<GroomItem>(ItemType::GROOM, mSpritesheet, sf::IntRect({32,0}, {32,32}), 10);
+    mInventorySystem->addItemToSlot({ 0, 0 }, food2);
     mItems.push_back(food2);
-    //mRenderItems.push_back(std::static_pointer_cast<sf::Drawable>(food2));
-
-    
+    //mRenderItems.push_back(std::static_pointer_cast<sf::Drawable>(food2)); 
 }
 
 void Game::init() {
@@ -141,6 +140,21 @@ void Game::saveGame() {
     mSaveManager->showHistory();
 }
 
+std::shared_ptr<Item> Game::createItemFromType(const ItemType type, sf::IntRect texRect, uint32_t value)
+{
+    std::shared_ptr<Item> item = nullptr;
+    
+    switch (type) {
+    case ItemType::FOOD:
+        item = std::make_shared<Food>(type, mSpritesheet, texRect, value);
+        break;
+    case ItemType::GROOM:
+        item = std::make_shared<GroomItem>(type, mSpritesheet, texRect, value);
+        break;
+    }
+    return item;
+}
+
 void Game::loadGame(const std::string& filename) {
 
     // load json save file
@@ -166,7 +180,8 @@ void Game::loadGame(const std::string& filename) {
 
         // create new item instance from typeId
         auto typeId = element["typeId"].get<ItemType>();
-        auto item = std::make_shared<Item>(typeId, element["value"].get<uint32_t>(), mSpritesheet, texRect);
+        uint32_t value = element["value"].get<uint32_t>();
+        auto item = createItemFromType(typeId, texRect, value);
         mItems.push_back(item);
 
         item->setPosition(sf::Vector2f{ arr[4], arr[5] });

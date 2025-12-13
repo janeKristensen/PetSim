@@ -76,5 +76,5 @@ std::string Model::getModelStringBuffer()
 
 void Model::clearModelStringBuffer() 
 {
-    mStringBuffer.clear();
+    //mStringBuffer.clear();
 }
