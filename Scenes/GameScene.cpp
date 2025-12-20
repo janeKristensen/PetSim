@@ -77,7 +77,7 @@ Game_Scene::Game_Scene(std::shared_ptr<Pet> currentPet, sf::Vector2f screenSize)
 		}
 	);
 	mPet->setSpritePosition(mPetPosition);
-	mPet->scaleSprite({5, 5});
+	//mPet->scaleSprite({6, 6});
 
 	
 	// Text output field
@@ -203,10 +203,23 @@ void Game_Scene::update(float dt)
 
 void Game_Scene::render(sf::RenderWindow& window)
 {
-	Scene::render(window);
+	window.draw(mSceneObjects.at(SceneObject::BORDER));
+	window.draw(mSceneObjects.at(SceneObject::BACKGROUND));
 	window.draw(mPet->getSprite());
+
+	for (auto& obj : mSceneObjects)
+	{
+		if (obj.first == SceneObject::BACKGROUND || obj.first == SceneObject::BORDER) continue;
+		window.draw(obj.second);
+	}
+
 	window.draw(mFoodBar.getShape());
-	window.draw(mGroomBar.getShape());	
+	window.draw(mGroomBar.getShape());
+
+	for (auto& txt : mSceneText)
+	{
+		window.draw(txt.second);
+	}	
 }
 
 void Game_Scene::setModel(std::shared_ptr<Model> model) 

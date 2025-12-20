@@ -28,15 +28,7 @@ void Scene::update(float dt) {
 
 void Scene::render(sf::RenderWindow& window) {
 
-	for (auto& obj : mSceneObjects)
-	{
-		window.draw(obj.second);
-	}
-
-	for (auto& txt : mSceneText)
-	{
-		window.draw(txt.second);
-	}
+	
 }
 
 void Scene::addSceneObject(SceneObject object, sf::RectangleShape&& shape)

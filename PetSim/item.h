@@ -13,9 +13,9 @@ enum class ItemType {
 
 class Item : public sf::Drawable{
 public:
-	Item(ItemType typeId, uint32_t value, Texture tex_name, sf::IntRect tex_rect) 
-		: mTypeId(typeId), mValue(value), mSprite(TextureManager::getInstance()->getTexture(tex_name), tex_rect){}
-	Item(const Item& other) : mTypeId(other.mTypeId), mValue(other.mValue), mSprite(other.mSprite) {}
+	Item(ItemType typeId, uint32_t value, Texture texName, sf::IntRect tex_rect) 
+		: mTypeId(typeId), mValue(value), mTexture(texName), mSprite(TextureManager::getInstance()->getTexture(texName), tex_rect){}
+	Item(const Item& other) : mTypeId(other.mTypeId), mValue(other.mValue), mTexture(other.mTexture), mSprite(other.mSprite) {}
 
 	bool operator==(const Item& other) const { return mTypeId == other.getTypeId(); }
 	bool operator==(const std::nullptr_t) const { return this == nullptr; }
@@ -40,6 +40,7 @@ private:
 	const ItemType mTypeId;
 	bool mIsAlive = true;
 	sf::Sprite mSprite;
+	Texture mTexture;
 	nlohmann::json mState;
 	std::shared_ptr<SaveComponent> mSaveComponent = std::make_shared<SaveComponent>();
 	std::unique_ptr<SaveManager> mSaveManager = std::make_unique<SaveManager>(mSaveComponent);

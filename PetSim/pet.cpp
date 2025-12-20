@@ -81,6 +81,7 @@ void Pet::toJson(nlohmann::json& j, const Pet& pet) {
 		{ "hunger", mHunger },
 		{ "groom", mGroom },
 		{ "health", mHealth },
+		{"texName", mTexture},
 		{ "sprite", {
 			{ "position", 
 				{

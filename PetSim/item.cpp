@@ -31,7 +31,8 @@ void Item::toJson(nlohmann::json& j) {
 	j = nlohmann::json{ 
 		{"typeId", mTypeId}, 
 		{"position", position}, 
-		{"value", mValue}
+		{"value", mValue},
+		{"texName", mTexture}
 	};
 }
 
