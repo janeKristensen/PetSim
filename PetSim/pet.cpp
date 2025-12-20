@@ -23,6 +23,7 @@ Pet::Pet(Texture texName,
 	uint32_t groom,
 	uint32_t health
 ) : mSprite(TextureManager::getInstance()->getTexture(texName), texRect),
+	mTexture(texName),
 	mName(name), mSpecies(species), 
 	mTemper(temper), 
 	mInitPrompt(initPrompt), 
@@ -60,6 +61,11 @@ void Pet::decayValues() {
 void Pet::setSpritePosition(sf::Vector2f position){
 
 	mSprite.setPosition(position);
+}
+
+void Pet::scaleSprite(sf::Vector2f factors) {
+
+	mSprite.setScale(factors);
 }
 
 void Pet::toJson(nlohmann::json& j, const Pet& pet) {

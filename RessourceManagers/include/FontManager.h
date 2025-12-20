@@ -12,12 +12,14 @@ public:
 	void loadFont(FontName fontName, const std::string& filename)
 	{
 		sf::Font font;
-		font.openFromFile(filename);
-		mFonts.insert({fontName, font});
+		if (font.openFromFile(filename)) 
+		{
+			mFonts.insert({ fontName, font });
+		}
 	}
 	const sf::Font& getFont(FontName fontName)
 	{
-		return mFonts[fontName];
+		return mFonts.at(fontName);
 	}
 
 protected:

@@ -2,8 +2,8 @@
 #include <future>
 #include "SFML/Graphics.hpp"
 #include "Item.h"
-#include "Pet.h"
-#include "Scene.h"
+
+#include "GameScene.h"
 #include "Model.h"
 #include "Memento.h"
 #include "TextureManager.h"

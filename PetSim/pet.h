@@ -42,6 +42,7 @@ public:
 	void setStatus(const std::string& str) { mCurrentStatus = str; }
 	void decayValues();
 	void setSpritePosition(sf::Vector2f position);
+	void scaleSprite(sf::Vector2f factors);
 	void from_json(const nlohmann::json& j, std::shared_ptr<Pet> p);
 	nlohmann::json saveData();
 

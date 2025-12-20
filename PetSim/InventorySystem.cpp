@@ -4,8 +4,8 @@
 constexpr float INV_MARGIN = 0.0;
 
 
-InventorySystem::InventorySystem(sf::Vector2f invDimensions, sf::Vector2f invPosition, const sf::Font& font, Texture texName) 
-	: mFont(font), mTexture(texName){
+InventorySystem::InventorySystem(sf::Vector2f invDimensions, sf::Vector2f invPosition, Texture texName) 
+	: mTexture(texName){
 	
 	float slot_size_x = ((invDimensions.x - (COLUMNS + 1) * INV_MARGIN) / COLUMNS);
 	float slot_size_y = ((invDimensions.y - (ROWS + 1) * INV_MARGIN)/ ROWS);
@@ -19,12 +19,12 @@ InventorySystem::InventorySystem(sf::Vector2f invDimensions, sf::Vector2f invPos
 		for (auto& slot : column) {
 
 			if (i < ROWS) slot_position = { 
-				invPosition.x + INV_MARGIN, 
-				invPosition.y + INV_MARGIN + i * (slot_size_y + INV_MARGIN) 
+				invPosition.x, 
+				invPosition.y + i * slot_size_y 
 			};
 			else slot_position = { 
-				invPosition.x + slot_size_x + 2*INV_MARGIN, 
-				invPosition.y + INV_MARGIN + (i - ROWS) * (slot_size_y + INV_MARGIN) 
+				invPosition.x + slot_size_x, 
+				invPosition.y +  (i - ROWS) * slot_size_y 
 			};
 
 			auto& slot_rect = slot.getShape();
@@ -32,11 +32,9 @@ InventorySystem::InventorySystem(sf::Vector2f invDimensions, sf::Vector2f invPos
 			slot_rect.setPosition(slot_position);
 			slot_rect.setTexture(&TextureManager::getInstance()->getTexture(mTexture));
 			slot_rect.setTextureRect(sf::IntRect({159,0}, {32,32}));
-#ifndef NDEBUG
-			//slot_rect.setFillColor(sf::Color::Blue);
-#endif
 			slot.setAmount(0);
 
+			auto& font = FontManager::getInstance()->getFont(FontName::TITLE);
 			mAmountText.push_back(sf::Text(font, "", 36));
 			auto char_size = mAmountText[i].getCharacterSize();
 			auto text_position_x = slot_position.x + INV_MARGIN;
@@ -127,6 +125,8 @@ size_t InventorySystem::getFirstEmptySlot() {
 
 		if (mItems[i] == nullptr) return i;
 	}
+
+	return -1;
 }
 
 void InventorySystem::adjustItemCount(int32_t value, size_t index) {

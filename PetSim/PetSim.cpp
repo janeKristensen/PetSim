@@ -17,8 +17,8 @@ Game::Game(sf::Font& font, std::shared_ptr<sf::RenderWindow> window) : mWindow(s
     mPet = std::make_shared<Pet>(Texture::SPRITESHEET, sf::IntRect({ 0,128 }, { 64,64 }), "Kitty", "Cat", "Happy");
 
     mNeedsSystem = std::make_unique<NeedsSystem>(mPet);
-    mScene = std::make_unique<Scene>(mPet, screenSize, font);
-    mInventorySystem = std::make_unique<InventorySystem>(mScene->getInvSize(), mScene->getInvPosition(), font, Texture::SPRITESHEET);
+    mScene = std::make_unique<Game_Scene>(mPet, screenSize);
+    mInventorySystem = std::make_unique<InventorySystem>(mScene->getObjectSize(SceneObject::INVENTORY), mScene->getObjectPosition(SceneObject::INVENTORY), Texture::SPRITESHEET);
     
     auto food1 = std::make_shared<Food>(ItemType::FOOD, Texture::SPRITESHEET, sf::IntRect({0,0}, {32,32}), 10);
     mInventorySystem->addItemToSlot({0, 0}, food1);
@@ -31,9 +31,13 @@ Game::Game(sf::Font& font, std::shared_ptr<sf::RenderWindow> window) : mWindow(s
 
 void Game::init() {
 
-    mModel = mModelFuture.get();
-    mScene->setModel(mModel);
-    mNeedsSystem->setModel(mModel);
+    Game_Scene* scene = dynamic_cast<Game_Scene*>(mScene.get());
+    if (scene)
+    {
+        mModel = mModelFuture.get();
+        scene->setModel(mModel);
+        mNeedsSystem->setModel(mModel);
+    }
 }
 
 void Game::pollEvents() {

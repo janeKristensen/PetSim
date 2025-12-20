@@ -2,6 +2,7 @@
 #include "Item.h"
 #include <array>
 #include "TextureManager.h"
+#include "FontManager.h"
 #include <iostream>
 
 constexpr size_t ROWS = 6;
@@ -28,7 +29,7 @@ private:
 
 class InventorySystem {
 public:
-	InventorySystem(sf::Vector2f invDimensions, sf::Vector2f invPosition, const sf::Font& font, Texture texName);
+	InventorySystem(sf::Vector2f invDimensions, sf::Vector2f invPosition, Texture texName);
 	void update();
 	void render(sf::RenderWindow& window);
 	const std::tuple<sf::Vector2f, int32_t> getSlotPosition(sf::Vector2f mousePosition) const;
@@ -52,7 +53,6 @@ private:
 	std::vector<std::shared_ptr<Item>> mItems{ MAX_SLOTS, nullptr };
 	Texture mTexture;
 	std::vector<sf::Text> mAmountText;
-	const sf::Font& mFont;
 
 	nlohmann::json mState;
 	std::shared_ptr<SaveComponent> mSaveComponent = std::make_shared<SaveComponent>();

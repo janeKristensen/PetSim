@@ -18,5 +18,6 @@ add_subdirectory ("llm_model")
 add_subdirectory ("ressources")
 add_subdirectory ("SaveSystem")
 add_subdirectory ("RessourceManagers")
+add_subdirectory ("Scenes")
 add_subdirectory ("PetSim")
 

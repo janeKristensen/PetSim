@@ -1,7 +1,7 @@
 #pragma once
 #include "SFML//Graphics.hpp"
 
-class ProgressBar {
+class ProgressBar : public sf::RectangleShape{
 public:
 	ProgressBar(sf::Vector2f size, sf::Vector2f position, sf::Color color) : mFullSize(size){
 		mBar.setSize(size);

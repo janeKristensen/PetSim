@@ -1,7 +1,7 @@
 #include "FontManager.h"
 
 
-static FontManager* FontManager::mInstance = nullptr;
+FontManager* FontManager::mInstance = nullptr;
 
 FontManager* FontManager::getInstance()
 {
