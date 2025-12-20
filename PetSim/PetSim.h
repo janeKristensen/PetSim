@@ -6,6 +6,8 @@
 #include "Scene.h"
 #include "Model.h"
 #include "Memento.h"
+#include "TextureManager.h"
+#include "FontManager.h"
 #include "NeedsSystem.h"
 #include "InventorySystem.h"
 #include <fstream>
@@ -31,13 +33,12 @@ public:
 private:
 	void handleDrag();
 	void setState();
-	std::shared_ptr<Item> createItemFromType(const ItemType type, sf::IntRect texRect, uint32_t value);
+	std::shared_ptr<Item> createItemFromType(const ItemType type, Texture texName, sf::IntRect texRect, uint32_t value);
 
 	nlohmann::json mState;
 	std::vector<std::shared_ptr<Item>> mItems;
 	std::vector<std::shared_ptr<sf::Drawable>> mRenderItems;
 	std::vector<std::future<void>> mFutures;
-	std::shared_ptr<sf::Texture> mSpritesheet = nullptr;
 	std::unique_ptr<NeedsSystem> mNeedsSystem;
 	std::unique_ptr<InventorySystem> mInventorySystem;
 	std::shared_ptr<SaveComponent> mSaveComponent = std::make_shared<SaveComponent>(); 

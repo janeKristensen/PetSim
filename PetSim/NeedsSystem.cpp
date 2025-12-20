@@ -4,7 +4,6 @@
 void NeedsSystem::setModel(std::shared_ptr<Model> model) {
 
     mModel = model;
-    mModel->addSystemPrompt(mPet->getInitPrompt());
 }
 
 void NeedsSystem::update(float dt) {

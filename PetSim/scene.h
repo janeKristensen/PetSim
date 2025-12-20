@@ -18,7 +18,7 @@ constexpr float INV_WIDTH = 200.0f;
 
 class Scene {
 public:
-	Scene(std::shared_ptr<sf::Texture> spritesheet, std::shared_ptr<Pet> currentPet, sf::Vector2f screenSize, const sf::Font& font);
+	Scene(std::shared_ptr<Pet> currentPet, sf::Vector2f screenSize, const sf::Font& font);
 	~Scene();
 	void setModel(std::shared_ptr<Model> model);
 	void render(sf::RenderWindow& window);
@@ -35,7 +35,6 @@ private:
 	void eraseFromStringBuffer();
 	bool isInTextField() { return mInTextField; }
 
-	std::shared_ptr<sf::Texture> mSpritesheet = nullptr;
 	std::shared_ptr<Pet> mPet = nullptr;
 	std::shared_ptr<Model> mModel = nullptr;
 	std::shared_future<std::shared_ptr<Model>> mModelFuture;

@@ -1,10 +1,11 @@
 #include "InventorySystem.h"
 
 
-constexpr float INV_MARGIN = 4.0;
+constexpr float INV_MARGIN = 0.0;
 
 
-InventorySystem::InventorySystem(sf::Vector2f invDimensions, sf::Vector2f invPosition, const sf::Font& font) : mFont(font){
+InventorySystem::InventorySystem(sf::Vector2f invDimensions, sf::Vector2f invPosition, const sf::Font& font, Texture texName) 
+	: mFont(font), mTexture(texName){
 	
 	float slot_size_x = ((invDimensions.x - (COLUMNS + 1) * INV_MARGIN) / COLUMNS);
 	float slot_size_y = ((invDimensions.y - (ROWS + 1) * INV_MARGIN)/ ROWS);
@@ -29,8 +30,10 @@ InventorySystem::InventorySystem(sf::Vector2f invDimensions, sf::Vector2f invPos
 			auto& slot_rect = slot.getShape();
 			slot_rect.setSize({slot_size_x, slot_size_y});
 			slot_rect.setPosition(slot_position);
+			slot_rect.setTexture(&TextureManager::getInstance()->getTexture(mTexture));
+			slot_rect.setTextureRect(sf::IntRect({159,0}, {32,32}));
 #ifndef NDEBUG
-			slot_rect.setFillColor(sf::Color::Blue);
+			//slot_rect.setFillColor(sf::Color::Blue);
 #endif
 			slot.setAmount(0);
 
@@ -268,3 +271,4 @@ nlohmann::json InventorySystem::saveData() {
 	setState(mState);
 	return mState;
 }
+

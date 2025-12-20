@@ -1,8 +1,6 @@
 ﻿#include "llm_model.h"
 
 
-
-
 InferenceModel::InferenceModel (const std::string& path, float p, float temp) {
 
     llama_context_params ctxParams = llama_context_default_params();

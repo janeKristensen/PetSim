@@ -2,8 +2,8 @@
 
 
 
-Scene::Scene(std::shared_ptr<sf::Texture> spritesheet, std::shared_ptr<Pet> currentPet, sf::Vector2f screenSize, const sf::Font& font)
-	: mFont(font), mSpritesheet(spritesheet), mPet(currentPet), mScreenSize(screenSize), 
+Scene::Scene(std::shared_ptr<Pet> currentPet, sf::Vector2f screenSize, const sf::Font& font)
+	: mFont(font), mPet(currentPet), mScreenSize(screenSize), 
 		mPromptText(font, "", 24), mHealthText(font, "", 24), mHungerText(font, "", 24), mGroomText(font, "", 24), mPetText(font, "", 24), mStateText(font, "",24) {
 
 	mBorder = sf::RectangleShape(screenSize);

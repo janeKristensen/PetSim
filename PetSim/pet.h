@@ -2,17 +2,20 @@
 #include <format>
 #include "SFML/Graphics.hpp"
 #include <nlohmann/json.hpp>
+#include "TextureManager.h"
 #include "Memento.h"
+
+
 
 class Pet {
 public:
-	Pet(std::shared_ptr<sf::Texture> spritesheet, 
+	Pet(Texture tex_name, 
 		sf::IntRect texRect, 
 		std::string name, 
 		std::string species, 
 		std::string temper
 	);
-	Pet(std::shared_ptr<sf::Texture> spritesheet, 
+	Pet(Texture tex_name, 
 		sf::IntRect texRect, 
 		std::string name, 
 		std::string species, 
@@ -55,7 +58,7 @@ private:
 	int32_t mHunger = 100;
 	int32_t mGroom = 100;
 	int32_t mHealth = 100;
-	std::shared_ptr<sf::Texture> mSpritesheet;
+	Texture mTexture;
 	sf::Sprite mSprite;
 	nlohmann::json mState;
 	std::shared_ptr<SaveComponent> mSaveComponent = std::make_shared<SaveComponent>();
