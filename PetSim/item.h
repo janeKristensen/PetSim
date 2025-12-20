@@ -2,6 +2,7 @@
 #include <cstdint>
 #include "SFML/Graphics.hpp"
 #include <nlohmann/json.hpp>
+#include "TextureManager.h"
 #include <format>
 #include "Memento.h"
 
@@ -12,8 +13,9 @@ enum class ItemType {
 
 class Item : public sf::Drawable{
 public:
-	Item(ItemType typeId, uint32_t value, std::shared_ptr<sf::Texture> texture, sf::IntRect tex_rect) : mTypeId(typeId), mValue(value), mSpritesheet(texture), mSprite(*mSpritesheet, tex_rect){}
-	Item(const Item& other) : mTypeId(other.mTypeId), mValue(other.mValue), mSpritesheet(other.mSpritesheet), mSprite(other.mSprite) {}
+	Item(ItemType typeId, uint32_t value, Texture texName, sf::IntRect tex_rect) 
+		: mTypeId(typeId), mValue(value), mTexture(texName), mSprite(TextureManager::getInstance()->getTexture(texName), tex_rect){}
+	Item(const Item& other) : mTypeId(other.mTypeId), mValue(other.mValue), mTexture(other.mTexture), mSprite(other.mSprite) {}
 
 	bool operator==(const Item& other) const { return mTypeId == other.getTypeId(); }
 	bool operator==(const std::nullptr_t) const { return this == nullptr; }
@@ -37,8 +39,8 @@ private:
 
 	const ItemType mTypeId;
 	bool mIsAlive = true;
-	std::shared_ptr<sf::Texture> mSpritesheet;
 	sf::Sprite mSprite;
+	Texture mTexture;
 	nlohmann::json mState;
 	std::shared_ptr<SaveComponent> mSaveComponent = std::make_shared<SaveComponent>();
 	std::unique_ptr<SaveManager> mSaveManager = std::make_unique<SaveManager>(mSaveComponent);
@@ -46,7 +48,7 @@ private:
 
 class Food : public Item {
 public:
-	Food(ItemType typeId, std::shared_ptr<sf::Texture> texture, sf::IntRect texRect, uint32_t value) : Item(typeId, value, texture, texRect) {}
+	Food(ItemType typeId, Texture tex_name, sf::IntRect texRect, uint32_t value) : Item(typeId, value, tex_name, texRect) {}
 	void printStats() const override;
 
 private:
@@ -55,7 +57,7 @@ private:
 
 class GroomItem : public Item {
 public:
-	GroomItem(ItemType typeId, std::shared_ptr<sf::Texture> texture, sf::IntRect texRect, uint32_t value) : Item(typeId, value, texture, texRect) {}
+	GroomItem(ItemType typeId, Texture tex_name, sf::IntRect texRect, uint32_t value) : Item(typeId, value, tex_name, texRect) {}
 	void printStats() const override;
 
 private:

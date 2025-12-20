@@ -11,29 +11,33 @@ Game::Game(sf::Font& font, std::shared_ptr<sf::RenderWindow> window) : mWindow(s
     std::string model_path = "../llm_model/models/SmolLM2-1.7B-Instruct-IQ4_XS.gguf";
     mModelFuture = std::async(std::launch::async, makeModel, model_path, 0.2, 1.5);
 
-    mSpritesheet = std::make_shared<sf::Texture>("../ressources/spritesheet.png");
-    mPet = std::make_shared<Pet>(mSpritesheet, sf::IntRect({ 0,128 }, { 64,64 }), "Kitty", "Cat", "Happy");
+    TextureManager::getInstance()->loadTexture(Texture::SPRITESHEET, "../ressources/spritesheet.png");
+    FontManager::getInstance()->loadFont(FontName::TITLE, "../ressources/Gabriola.ttf");
+
+    mPet = std::make_shared<Pet>(Texture::SPRITESHEET, sf::IntRect({ 0,128 }, { 64,64 }), "Kitty", "Cat", "Happy");
 
     mNeedsSystem = std::make_unique<NeedsSystem>(mPet);
-    mScene = std::make_unique<Scene>(mSpritesheet, mPet, screenSize, font);
-    mInventorySystem = std::make_unique<InventorySystem>(mScene->getInvSize(), mScene->getInvPosition(), font);
-
-    auto food1 = std::make_shared<Food>(ItemType::FOOD, mSpritesheet, sf::IntRect({0,0}, {32,32}), 10);
+    mScene = std::make_unique<Game_Scene>(mPet, screenSize);
+    mInventorySystem = std::make_unique<InventorySystem>(mScene->getObjectSize(SceneObject::INVENTORY), mScene->getObjectPosition(SceneObject::INVENTORY), Texture::SPRITESHEET);
+    
+    auto food1 = std::make_shared<Food>(ItemType::FOOD, Texture::SPRITESHEET, sf::IntRect({0,0}, {32,32}), 10);
     mInventorySystem->addItemToSlot({0, 0}, food1);
     mItems.push_back(food1);
-    //mRenderItems.push_back(std::static_pointer_cast<sf::Drawable>(food1));
-
-    auto food2 = std::make_shared<GroomItem>(ItemType::GROOM, mSpritesheet, sf::IntRect({32,0}, {32,32}), 10);
+ 
+    auto food2 = std::make_shared<GroomItem>(ItemType::GROOM, Texture::SPRITESHEET, sf::IntRect({32,0}, {32,32}), 10);
     mInventorySystem->addItemToSlot({ 0, 0 }, food2);
     mItems.push_back(food2);
-    //mRenderItems.push_back(std::static_pointer_cast<sf::Drawable>(food2)); 
 }
 
 void Game::init() {
 
-    mModel = mModelFuture.get();
-    mScene->setModel(mModel);
-    mNeedsSystem->setModel(mModel);
+    Game_Scene* scene = dynamic_cast<Game_Scene*>(mScene.get());
+    if (scene)
+    {
+        mModel = mModelFuture.get();
+        scene->setModel(mModel);
+        mNeedsSystem->setModel(mModel);
+    }
 }
 
 void Game::pollEvents() {
@@ -140,16 +144,16 @@ void Game::saveGame() {
     mSaveManager->showHistory();
 }
 
-std::shared_ptr<Item> Game::createItemFromType(const ItemType type, sf::IntRect texRect, uint32_t value)
+std::shared_ptr<Item> Game::createItemFromType(const ItemType type, Texture texName, sf::IntRect texRect, uint32_t value)
 {
     std::shared_ptr<Item> item = nullptr;
     
     switch (type) {
     case ItemType::FOOD:
-        item = std::make_shared<Food>(type, mSpritesheet, texRect, value);
+        item = std::make_shared<Food>(type, texName, texRect, value);
         break;
     case ItemType::GROOM:
-        item = std::make_shared<GroomItem>(type, mSpritesheet, texRect, value);
+        item = std::make_shared<GroomItem>(type, texName, texRect, value);
         break;
     }
     return item;
@@ -181,7 +185,8 @@ void Game::loadGame(const std::string& filename) {
         // create new item instance from typeId
         auto typeId = element["typeId"].get<ItemType>();
         uint32_t value = element["value"].get<uint32_t>();
-        auto item = createItemFromType(typeId, texRect, value);
+        Texture texName = element["texName"].get<Texture>();
+        auto item = createItemFromType(typeId, texName, texRect, value);
         mItems.push_back(item);
 
         item->setPosition(sf::Vector2f{ arr[4], arr[5] });

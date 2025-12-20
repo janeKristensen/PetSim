@@ -2,29 +2,32 @@
 # project specific logic here.
 #
 
-# Add source to this project's executable.
-add_executable (PetSim "PetSim.cpp" "PetSim.h" "Pet.h" "Pet.cpp" "Item.h" "Item.cpp" "Model.h" "Model.cpp" "Main.cpp" "NeedsSystem.h" "NeedsSystem.cpp" "InventorySystem.h" "InventorySystem.cpp" "UserInterface.h" "UserInterface.cpp" )
+add_library(scenes STATIC "scene.cpp" "include/scene.h" "GameScene.cpp" "include/GameScene.h" )
 
 if (CMAKE_VERSION VERSION_GREATER 3.12)
-  set_property(TARGET PetSim PROPERTY CXX_STANDARD 20)
+  set_property(TARGET scenes PROPERTY CXX_STANDARD 20)
 endif()
+
+add_subdirectory ("include")
 
 # Set the SFML path
 set(SFML_DIR ${CMAKE_SOURCE_DIR}/external/SFML-3.0.0)
 
-include_directories(PetSim
+target_include_directories(scenes PUBLIC
+    ${CMAKE_SOURCE_DIR}/PetSim
     ${SFML_DIR}/include
     llm_model/include
     save_system/include
     ressource_managers/include
-    scenes/include)
+    ${CMAKE_CURRENT_SOURCE_DIR}/include
+    
+)
 
-    # Link SFML libraries
+   # Link SFML libraries
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
-    target_link_libraries(PetSim PUBLIC
+    target_link_libraries(scenes PUBLIC
     llm_model
     save_system
-    scenes
     ressource_managers
     ${SFML_DIR}/lib/sfml-system-d.lib
     ${SFML_DIR}/lib/sfml-window-d.lib
@@ -32,10 +35,9 @@ if(CMAKE_BUILD_TYPE STREQUAL "Debug")
     ${SFML_DIR}/lib/sfml-graphics-d.lib
     )
 else()
-    target_link_libraries(PetSim PUBLIC
+    target_link_libraries(scenes PUBLIC
     llm_model
     save_system
-    scenes
     ressource_managers
     ${SFML_DIR}/lib/sfml-system.lib
     ${SFML_DIR}/lib/sfml-window.lib

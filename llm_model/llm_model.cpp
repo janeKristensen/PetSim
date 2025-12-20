@@ -1,8 +1,6 @@
 ﻿#include "llm_model.h"
 
 
-
-
 InferenceModel::InferenceModel (const std::string& path, float p, float temp) {
 
     llama_context_params ctxParams = llama_context_default_params();
@@ -126,10 +124,17 @@ InferenceModel::~InferenceModel() {
         delete message.content;
     }
   
-    llama_kv_self_clear(m_ctx);
-    llama_sampler_free(m_sampler);
-    llama_free(m_ctx);
-    llama_model_free(m_model);
+    try {
+        llama_kv_self_clear(m_ctx);
+        llama_sampler_free(m_sampler);
+        llama_free(m_ctx);
+        llama_model_free(m_model);
+    }
+    catch(std::exception e)
+    { 
+        return; 
+    }
+    
 }
 
 

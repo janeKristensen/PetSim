@@ -6,14 +6,13 @@ constexpr int32_t MIN_VALUE = 0;
 constexpr int32_t LIMIT_VALUE = 50;
 constexpr int32_t DECAY_VALUE = -1;
 
-Pet::Pet(std::shared_ptr<sf::Texture> spritesheet, sf::IntRect texRect, std::string name, std::string species, std::string temper) 
-	: mSpritesheet(std::move(spritesheet)), mSprite(*mSpritesheet, texRect), mName(name), mSpecies(species), mTemper(temper) {
-
+Pet::Pet(Texture texName, sf::IntRect texRect, std::string name, std::string species, std::string temper) 
+	: mSprite(TextureManager::getInstance()->getTexture(texName), texRect), mTexture(texName), mName(name), mSpecies(species), mTemper(temper) {
 	mInitPrompt = std::format("Pretend to be a {} named {}. You are my pet not a chatbot. Give short and cute replies to messages and don't use emoji.", mSpecies, mName);
 	mSprite.setScale({6.2,6.2});
 }
 
-Pet::Pet(std::shared_ptr<sf::Texture> spritesheet,
+Pet::Pet(Texture texName,
 	sf::IntRect texRect,
 	std::string name,
 	std::string species,
@@ -23,8 +22,8 @@ Pet::Pet(std::shared_ptr<sf::Texture> spritesheet,
 	uint32_t hunger,
 	uint32_t groom,
 	uint32_t health
-) : mSpritesheet(std::move(spritesheet)), 
-	mSprite(*mSpritesheet, texRect), 
+) : mSprite(TextureManager::getInstance()->getTexture(texName), texRect),
+	mTexture(texName),
 	mName(name), mSpecies(species), 
 	mTemper(temper), 
 	mInitPrompt(initPrompt), 
@@ -64,6 +63,11 @@ void Pet::setSpritePosition(sf::Vector2f position){
 	mSprite.setPosition(position);
 }
 
+void Pet::scaleSprite(sf::Vector2f factors) {
+
+	mSprite.setScale(factors);
+}
+
 void Pet::toJson(nlohmann::json& j, const Pet& pet) {
 
 	auto tex_rect = mSprite.getTextureRect();
@@ -77,6 +81,7 @@ void Pet::toJson(nlohmann::json& j, const Pet& pet) {
 		{ "hunger", mHunger },
 		{ "groom", mGroom },
 		{ "health", mHealth },
+		{"texName", mTexture},
 		{ "sprite", {
 			{ "position", 
 				{
@@ -107,6 +112,7 @@ void Pet::from_json(const nlohmann::json& j, std::shared_ptr<Pet> p) {
 	j.at("hunger").get_to(p->mHunger);
 	j.at("groom").get_to(p->mGroom);
 	j.at("health").get_to(p->mHealth);
+	j.at("texName").get_to(p->mTexture);
 	
 	sf::Vector2i position = { 
 		j["sprite"]["tex_rect"]["position"]["x"],
@@ -119,7 +125,7 @@ void Pet::from_json(const nlohmann::json& j, std::shared_ptr<Pet> p) {
 	};
 
 	sf::IntRect tex_rect(position, size);
-	p->mSprite.setTexture(*mSpritesheet);
+	p->mSprite.setTexture(TextureManager::getInstance()->getTexture(mTexture));
 	p->mSprite.setTextureRect(tex_rect);
 }
 
