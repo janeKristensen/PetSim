@@ -310,7 +310,17 @@ void Game_Scene::handleClick(sf::Vector2f mouseposition) {
 		mStringBuffer = "";
 		mInTextField = true;
 	}
+}
 
+void Game_Scene::handleKeyPress(sf::Keyboard::Key key)
+{
+	if (key == sf::Keyboard::Key::M) {
+
+		SceneManager::getInstance()->changeScene(std::make_shared<Menu_Scene>(mScreenSize));
+	}
+	else if (key == sf::Keyboard::Key::Q) {
+		//scene->loadGame("pretty.json");
+	}
 }
 
 void Game_Scene::handleDrag(std::shared_ptr<sf::RenderWindow> window) {

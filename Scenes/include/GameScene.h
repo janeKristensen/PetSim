@@ -2,6 +2,7 @@
 #include <future>
 #include "Model.h"
 #include "scene.h"
+#include "MenuScene.h"
 #include "Pet.h"
 #include "Model.h"
 #include "UserInterface.h"
@@ -17,6 +18,7 @@ public:
 	void render(sf::RenderWindow& window) override;
 	void setModel(std::shared_ptr<Model> model);
 	void handleClick(sf::Vector2f mouseposition) override;
+	void handleKeyPress(sf::Keyboard::Key key) override;
 	void handleDrag(std::shared_ptr<sf::RenderWindow> window) override;
 	void handleTextEntry(const sf::Event& event) override;
 	nlohmann::json setState() override;

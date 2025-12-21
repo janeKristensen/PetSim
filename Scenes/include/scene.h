@@ -54,6 +54,7 @@ public:
 	virtual void render(sf::RenderWindow& window);
 	virtual void update(float dt);
 	virtual void handleClick(sf::Vector2f mouseposition);
+	virtual void handleKeyPress(sf::Keyboard::Key key) {};
 	virtual void handleDrag(std::shared_ptr<sf::RenderWindow> window);
 	virtual void handleTextEntry(const sf::Event& event);
 	virtual void loadGame(const std::string& filename) {};

@@ -12,12 +12,14 @@ public:
 	void operator=(const SceneManager& other) = delete;
 	static SceneManager* getInstance();
 
-	void addScene(std::shared_ptr<Scene> scene) { mScenes.push(std::move(scene)); };
+	void replaceScene(std::shared_ptr<Scene> scene);
+	void changeScene(std::shared_ptr<Scene> scene);
 	std::shared_ptr<Scene> getScene() { return mScenes.top(); }
-	void removeScene() { mScenes.pop(); };
+	void removeScene();
 
 private:
 	SceneManager() {};
 	static SceneManager* mInstance;
+	std::shared_ptr<Scene> mCurrentScene;
 	std::stack<std::shared_ptr<Scene>> mScenes;
 };

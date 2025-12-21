@@ -7,7 +7,7 @@ Game::Game(std::shared_ptr<sf::RenderWindow> window) : mWindow(std::move(window)
     TextureManager::getInstance()->loadTexture(Texture::TITLE_MENU, "../ressources/title_menu.png");
     FontManager::getInstance()->loadFont(FontName::TITLE, "../ressources/Gabriola.ttf");
 
-    SceneManager::getInstance()->addScene(std::make_shared<Menu_Scene>(screenSize));
+    SceneManager::getInstance()->changeScene(std::make_shared<Title_Scene>(screenSize));
 }
 
 
@@ -26,13 +26,7 @@ void Game::pollEvents() {
         else if (event->is<sf::Event::KeyPressed>()){
             
             auto key = event->getIf<sf::Event::KeyPressed>()->code;
-            if (key == sf::Keyboard::Key::S) {
-
-                saveGame();
-            }
-            else if (key == sf::Keyboard::Key::Q) {
-                scene->loadGame("pretty.json");
-            }
+            scene->handleKeyPress(key);
         }
         else if (event->is<sf::Event::MouseButtonReleased>() &&
             event->getIf<sf::Event::MouseButtonReleased>()->button == sf::Mouse::Button::Left) {

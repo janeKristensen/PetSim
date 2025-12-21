@@ -1,7 +1,7 @@
-#include "MenuScene.h"
+#include "TitleScene.h"
 
 
-Menu_Scene::Menu_Scene(sf::Vector2f screenSize) : Scene(screenSize), mScreenSize(screenSize)
+Title_Scene::Title_Scene(sf::Vector2f screenSize) : Scene(screenSize), mScreenSize(screenSize)
 {
 	addSceneObject(SceneObject::START_MENU, sf::RectangleShape({
 			mScreenSize.x / 2,
@@ -17,20 +17,20 @@ Menu_Scene::Menu_Scene(sf::Vector2f screenSize) : Scene(screenSize), mScreenSize
 
 	addSceneObject(SceneObject::SAVE_BUTTON, sf::RectangleShape({ 300,100 }));
 	auto& save_button = mSceneObjects.at(SceneObject::SAVE_BUTTON);
-	save_button.setPosition({start_button.getPosition().x, start_button.getPosition().y + 2 * start_button.getSize().y});
+	save_button.setPosition({ start_button.getPosition().x, start_button.getPosition().y + 2 * start_button.getSize().y });
 
 	addSceneObject(SceneObject::QUIT_BUTTON, sf::RectangleShape({ 300,100 }));
 	auto& quit_button = mSceneObjects.at(SceneObject::QUIT_BUTTON);
 	quit_button.setPosition({ save_button.getPosition().x, save_button.getPosition().y + 2 * save_button.getSize().y });
 }
 
-void Menu_Scene::update(float dt)
+void Title_Scene::update(float dt)
 {
 
 }
 
 
-void Menu_Scene::render(sf::RenderWindow& window)
+void Title_Scene::render(sf::RenderWindow& window)
 {
 	for (auto& obj : mSceneObjects)
 	{
@@ -45,11 +45,11 @@ void Menu_Scene::render(sf::RenderWindow& window)
 }
 
 
-void Menu_Scene::handleClick(sf::Vector2f mouseposition)
+void Title_Scene::handleClick(sf::Vector2f mouseposition)
 {
-	if (mSceneObjects.at(SceneObject::START_BUTTON).getGlobalBounds().contains(mouseposition)) 
+	if (mSceneObjects.at(SceneObject::START_BUTTON).getGlobalBounds().contains(mouseposition))
 	{
-		SceneManager::getInstance()->removeScene();
+		SceneManager::getInstance()->replaceScene(std::make_shared<Game_Scene>(mScreenSize));
 	}
 	else if (mSceneObjects.at(SceneObject::QUIT_BUTTON).getGlobalBounds().contains(mouseposition))
 	{
@@ -58,7 +58,7 @@ void Menu_Scene::handleClick(sf::Vector2f mouseposition)
 }
 
 
-void Menu_Scene::handleTextEntry(const sf::Event& event)
+void Title_Scene::handleTextEntry(const sf::Event& event)
 {
 
 }
