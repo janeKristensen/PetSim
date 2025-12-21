@@ -47,6 +47,11 @@ void Scene::handleClick(sf::Vector2f mouseposition) {
 
 }
 
+void Scene::handleDrag(std::shared_ptr<sf::RenderWindow> window)
+{
+
+}
+
 void Scene::handleTextEntry(const sf::Event& event) {
 
 	

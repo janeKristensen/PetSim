@@ -8,10 +8,7 @@ int main()
         auto window = std::make_shared<sf::RenderWindow>(sf::VideoMode({ 800, 600 }), "PetSim");
         window->setFramerateLimit(60);
 
-        sf::Font font("../ressources/Gabriola.ttf");
-        Game game(font, window);
-        game.init();
-
+        Game game(window);
         sf::Clock clock;
         float dt;
         

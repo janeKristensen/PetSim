@@ -1,8 +1,20 @@
 #include "GameScene.h"
 
 
-Game_Scene::Game_Scene(std::shared_ptr<Pet> currentPet, sf::Vector2f screenSize)
-	: mPet(currentPet), Scene(screenSize) {
+static std::shared_ptr<Model> makeModel(std::string path, float p, float temp) {
+
+	return std::make_shared<Model>(path, p, temp);
+}
+
+Game_Scene::Game_Scene(sf::Vector2f screenSize)
+	: Scene(screenSize) {
+
+	/* *******************************************************************************
+	*   Loading the llm model
+	* ****************************************************************************/
+	std::string model_path = "../llm_model/models/SmolLM2-1.7B-Instruct-IQ4_XS.gguf";
+	mModelFuture = std::async(std::launch::async, makeModel, model_path, 0.2, 1.5);
+
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -76,7 +88,7 @@ Game_Scene::Game_Scene(std::shared_ptr<Pet> currentPet, sf::Vector2f screenSize)
 			bg_start_Y + SCREEN_MARGIN
 		}
 	);
-	mPet->setSpritePosition(mPetPosition);
+	
 	//mPet->scaleSprite({6, 6});
 
 	
@@ -153,11 +165,41 @@ Game_Scene::Game_Scene(std::shared_ptr<Pet> currentPet, sf::Vector2f screenSize)
 	
 
 #endif
+
+
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+	// Adding scene systems and items
+
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+	mPet = std::make_shared<Pet>(Texture::SPRITESHEET, sf::IntRect({ 0,128 }, { 64,64 }), "Kitty", "Cat", "Happy");
+	mPet->setSpritePosition(mPetPosition);
+
+	mNeedsSystem = std::make_unique<NeedsSystem>(mPet);
+	mInventorySystem = std::make_unique<InventorySystem>(getObjectSize(SceneObject::INVENTORY), getObjectPosition(SceneObject::INVENTORY), Texture::SPRITESHEET);
+
+	auto food1 = std::make_shared<Food>(ItemType::FOOD, Texture::SPRITESHEET, sf::IntRect({ 0,0 }, { 32,32 }), 10);
+	mInventorySystem->addItemToSlot({ 0, 0 }, food1);
+	mItems.push_back(food1);
+
+	auto food2 = std::make_shared<GroomItem>(ItemType::GROOM, Texture::SPRITESHEET, sf::IntRect({ 32,0 }, { 32,32 }), 10);
+	mInventorySystem->addItemToSlot({ 0, 0 }, food2);
+	mItems.push_back(food2);
+
+	// Initialize the model
+	mModel = mModelFuture.get();
+	mNeedsSystem->setModel(mModel);
 }
 
 
 void Game_Scene::update(float dt)
 {
+	mItems.erase(std::remove(mItems.begin(), mItems.end(), nullptr), mItems.end());
+
+	mNeedsSystem->update(dt);
+	mInventorySystem->update();
+
 #ifndef NDEBUG
 	mSceneText.at(SceneText::HEALTH_VALUE).setString(std::format("Health: {}", mPet->getHealthValue()));
 	mSceneText.at(SceneText::HUNGER_VALUE).setString(std::format("Hunger: {}", mPet->getHungerValue()));
@@ -212,7 +254,14 @@ void Game_Scene::render(sf::RenderWindow& window)
 		if (obj.first == SceneObject::BACKGROUND || obj.first == SceneObject::BORDER) continue;
 		window.draw(obj.second);
 	}
-
+	mInventorySystem->render(window);
+	for (auto obj : mItems) {
+		if (!obj) continue;
+#ifndef NDEBUG
+		//std::cout << obj->getSprite().getPosition().x << std::endl;
+#endif
+		window.draw(obj->getSprite());
+	}
 	window.draw(mFoodBar.getShape());
 	window.draw(mGroomBar.getShape());
 
@@ -220,6 +269,8 @@ void Game_Scene::render(sf::RenderWindow& window)
 	{
 		window.draw(txt.second);
 	}	
+
+	
 }
 
 void Game_Scene::setModel(std::shared_ptr<Model> model) 
@@ -262,6 +313,40 @@ void Game_Scene::handleClick(sf::Vector2f mouseposition) {
 
 }
 
+void Game_Scene::handleDrag(std::shared_ptr<sf::RenderWindow> window) {
+
+	if (mItems.empty()) return;
+
+	auto mouse_position = static_cast<sf::Vector2f>(sf::Mouse::getPosition(*window));
+
+	for (auto& item : mItems) {
+
+		if (!item) continue;
+		if (item->getSprite().getGlobalBounds().contains(mouse_position)) {
+
+			mInventorySystem->removeFromSlot(mouse_position, *item);
+
+			while (!mCurrentEvent.value().is<sf::Event::MouseButtonReleased>()) {
+
+				mouse_position = static_cast<sf::Vector2f>(sf::Mouse::getPosition(*window));
+				mInventorySystem->dragItem(mouse_position, *item);
+			}
+
+			if (mPet->getSprite().getGlobalBounds().contains(mouse_position)) {
+
+				mNeedsSystem->processItem(*item);
+				item.reset();
+			}
+			else {
+
+				mInventorySystem->addItemToSlot(mouse_position, item);
+			}
+
+			break;
+		}
+	}
+}
+
 void Game_Scene::handleTextEntry(const sf::Event& event) {
 
 	if (isInTextField()) {
@@ -282,6 +367,82 @@ void Game_Scene::eraseFromStringBuffer() {
 	if (!mStringBuffer.size() <= 0)
 		mStringBuffer.pop_back();
 }
+
+nlohmann::json Game_Scene::setState() {
+
+	std::vector<nlohmann::json> items;
+	for (const auto& item : mItems) {
+
+		items.push_back(item->saveData());
+	}
+
+	mState["pet"] = mPet->saveData();
+	mState["items"] = items;
+	mState["inventory"] = mInventorySystem->saveData();
+
+	return mState;
+}
+
+
+// Move to item manager
+std::shared_ptr<Item> Game_Scene::createItemFromType(const ItemType type, Texture texName, sf::IntRect texRect, uint32_t value)
+{
+	std::shared_ptr<Item> item = nullptr;
+
+	switch (type) {
+	case ItemType::FOOD:
+		item = std::make_shared<Food>(type, texName, texRect, value);
+		break;
+	case ItemType::GROOM:
+		item = std::make_shared<GroomItem>(type, texName, texRect, value);
+		break;
+	}
+	return item;
+}
+
+
+void Game_Scene::loadGame(const std::string& filename) {
+
+	// load json save file
+	std::ifstream ifs(filename);
+	nlohmann::json j;
+	ifs >> j;
+
+	mItems.clear();
+	mInventorySystem->clearSlots();
+
+	// set items in inventory
+	auto slotValues = j["inventory"]["slotValues"].get<std::array<int, MAX_SLOTS>>();
+
+	for (const auto& element : j["items"]) {
+
+		// Get item texture rect
+		sf::IntRect texRect;
+		auto arr = element["position"].get<std::array<float, 6>>();
+		texRect.position.x = arr[0];
+		texRect.position.y = arr[1];
+		texRect.size.x = arr[2];
+		texRect.size.y = arr[3];
+
+		// create new item instance from typeId
+		auto typeId = element["typeId"].get<ItemType>();
+		uint32_t value = element["value"].get<uint32_t>();
+		Texture texName = element["texName"].get<Texture>();
+		auto item = createItemFromType(typeId, texName, texRect, value);
+		mItems.push_back(item);
+
+		item->setPosition(sf::Vector2f{ arr[4], arr[5] });
+		auto slot = mInventorySystem->getSlotPosition(item->getSprite().getPosition());
+		mInventorySystem->addItemToSlotIndex(std::get<1>(slot), item, slotValues[std::get<1>(slot)]);
+	}
+
+	// Load Pet status from json
+	mPet->from_json(j["pet"], mPet);
+	std::string initPrompt = mPet->getInitPrompt() + mPet->getStatus();
+	mModel->clearModelStringBuffer();
+	mModel->addSystemPrompt(initPrompt);
+}
+
 
 
 Game_Scene::~Game_Scene() {

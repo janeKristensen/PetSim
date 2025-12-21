@@ -2,7 +2,7 @@
 # project specific logic here.
 #
 
-add_library(scenes STATIC "scene.cpp" "include/scene.h" "GameScene.cpp" "include/GameScene.h" )
+add_library(scenes STATIC "scene.cpp" "include/scene.h" "GameScene.cpp" "include/GameScene.h"  "SceneManager.cpp" "include/SceneManager.h" "include/MenuScene.h" "MenuScene.cpp")
 
 if (CMAKE_VERSION VERSION_GREATER 3.12)
   set_property(TARGET scenes PROPERTY CXX_STANDARD 20)
@@ -26,6 +26,7 @@ target_include_directories(scenes PUBLIC
    # Link SFML libraries
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
     target_link_libraries(scenes PUBLIC
+    PetSim
     llm_model
     save_system
     ressource_managers
@@ -36,6 +37,7 @@ if(CMAKE_BUILD_TYPE STREQUAL "Debug")
     )
 else()
     target_link_libraries(scenes PUBLIC
+    PetSim
     llm_model
     save_system
     ressource_managers
