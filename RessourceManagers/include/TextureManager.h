@@ -4,7 +4,8 @@
 
 enum class Texture {
 	SPRITESHEET,
-	TITLE_MENU
+	TITLE_MENU,
+	LOADING_SCREEN
 };
 
 class TextureManager

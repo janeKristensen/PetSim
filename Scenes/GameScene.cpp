@@ -1,20 +1,10 @@
 #include "GameScene.h"
 
 
-static std::shared_ptr<Model> makeModel(std::string path, float p, float temp) {
 
-	return std::make_shared<Model>(path, p, temp);
-}
 
-Game_Scene::Game_Scene(sf::Vector2f screenSize)
-	: Scene(screenSize) {
-
-	/* *******************************************************************************
-	*   Loading the llm model
-	* ****************************************************************************/
-	std::string model_path = "../llm_model/models/SmolLM2-1.7B-Instruct-IQ4_XS.gguf";
-	mModelFuture = std::async(std::launch::async, makeModel, model_path, 0.2, 1.5);
-
+Game_Scene::Game_Scene(sf::Vector2f screenSize, std::shared_ptr<Model> model)
+	: Scene(screenSize), mModel(model) {
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -49,8 +39,8 @@ Game_Scene::Game_Scene(sf::Vector2f screenSize)
 	inventory.setFillColor(sf::Color::Red);
 	inventory.setPosition(
 		{
-			bg_start_X + bg_X - INV_WIDTH - SCREEN_MARGIN,
-			bg_start_Y + SCREEN_MARGIN
+			bg_start_X + bg_X - INV_WIDTH,
+			bg_start_Y
 		}
 	);
 	
@@ -177,6 +167,7 @@ Game_Scene::Game_Scene(sf::Vector2f screenSize)
 	mPet->setSpritePosition(mPetPosition);
 
 	mNeedsSystem = std::make_unique<NeedsSystem>(mPet);
+	mNeedsSystem->setModel(mModel);
 	mInventorySystem = std::make_unique<InventorySystem>(getObjectSize(SceneObject::INVENTORY), getObjectPosition(SceneObject::INVENTORY), Texture::SPRITESHEET);
 
 	auto food1 = std::make_shared<Food>(ItemType::FOOD, Texture::SPRITESHEET, sf::IntRect({ 0,0 }, { 32,32 }), 10);
@@ -187,9 +178,7 @@ Game_Scene::Game_Scene(sf::Vector2f screenSize)
 	mInventorySystem->addItemToSlot({ 0, 0 }, food2);
 	mItems.push_back(food2);
 
-	// Initialize the model
-	mModel = mModelFuture.get();
-	mNeedsSystem->setModel(mModel);
+	
 }
 
 

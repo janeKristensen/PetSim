@@ -3,6 +3,7 @@
 #include "Model.h"
 #include "scene.h"
 #include "MenuScene.h"
+#include "LoadingScene.h"
 #include "Pet.h"
 #include "Model.h"
 #include "UserInterface.h"
@@ -12,7 +13,7 @@ static void pushRequestToModel(std::string query, std::shared_ptr<Model> model) 
 class Game_Scene : public Scene {
 
 public:
-	Game_Scene(sf::Vector2f screenSize);
+	Game_Scene(sf::Vector2f screenSize, std::shared_ptr<Model> model);
 	~Game_Scene();
 	void update(float dt) override;
 	void render(sf::RenderWindow& window) override;
@@ -39,7 +40,6 @@ private:
 	std::unique_ptr<InventorySystem> mInventorySystem;
 	std::shared_ptr<Pet> mPet = nullptr;
 	std::shared_ptr<Model> mModel = nullptr;
-	std::shared_future<std::shared_ptr<Model>> mModelFuture;
 	std::vector<std::future<void>> mFutures;
 	nlohmann::json mState;
 	std::string mStringBuffer;

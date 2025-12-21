@@ -21,16 +21,6 @@ Scene::Scene(sf::Vector2f screenSize)
 }
 
 
-void Scene::update(float dt) {
-
-
-}
-
-void Scene::render(sf::RenderWindow& window) {
-
-	
-}
-
 void Scene::addSceneObject(SceneObject object, sf::RectangleShape&& shape)
 {
 	mSceneObjects.emplace(object, std::move(shape));
@@ -41,21 +31,6 @@ void Scene::addTextObject(SceneText object, sf::Text&& text)
 	mSceneText.emplace(object, std::move(text));
 }
 
-
-void Scene::handleClick(sf::Vector2f mouseposition) {
-
-
-}
-
-void Scene::handleDrag(std::shared_ptr<sf::RenderWindow> window)
-{
-
-}
-
-void Scene::handleTextEntry(const sf::Event& event) {
-
-	
-}
 
 Scene::~Scene() {
 

@@ -53,7 +53,7 @@ private:
 	std::vector<std::shared_ptr<Item>> mItems{ MAX_SLOTS, nullptr };
 	Texture mTexture;
 	std::vector<sf::Text> mAmountText;
-
+	sf::Vector2f mSlotSize;
 	nlohmann::json mState;
 	std::shared_ptr<SaveComponent> mSaveComponent = std::make_shared<SaveComponent>();
 	std::unique_ptr<SaveManager> mSaveManager = std::make_unique<SaveManager>(mSaveComponent);

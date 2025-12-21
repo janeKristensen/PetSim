@@ -3,8 +3,12 @@
 
 Game::Game(std::shared_ptr<sf::RenderWindow> window) : mWindow(std::move(window)) {
 
-    TextureManager::getInstance()->loadTexture(Texture::SPRITESHEET, "../ressources/spritesheet.png");
-    TextureManager::getInstance()->loadTexture(Texture::TITLE_MENU, "../ressources/title_menu.png");
+    auto tm = TextureManager::getInstance();
+    tm->loadTexture(Texture::SPRITESHEET, "../ressources/spritesheet.png");
+    tm->loadTexture(Texture::TITLE_MENU, "../ressources/title_menu.png");
+    tm->loadTexture(Texture::LOADING_SCREEN, "../ressources/loading.png");
+   
+
     FontManager::getInstance()->loadFont(FontName::TITLE, "../ressources/Gabriola.ttf");
 
     SceneManager::getInstance()->changeScene(std::make_shared<Title_Scene>(screenSize));

@@ -22,3 +22,12 @@ private:
 	sf::RectangleShape mBar;
 	sf::Vector2f mFullSize;
 };
+
+
+//class LoadingSpinner : public sf::CircleShape {
+//public:
+//	LoadingSpinner(float radius, size_t size) : sf::CircleShape(radius, size){}
+//
+//
+//private:
+//};

@@ -7,8 +7,8 @@ constexpr float INV_MARGIN = 0.0;
 InventorySystem::InventorySystem(sf::Vector2f invDimensions, sf::Vector2f invPosition, Texture texName) 
 	: mTexture(texName){
 	
-	float slot_size_x = ((invDimensions.x - (COLUMNS + 1) * INV_MARGIN) / COLUMNS);
-	float slot_size_y = ((invDimensions.y - (ROWS + 1) * INV_MARGIN)/ ROWS);
+	mSlotSize.x = ((invDimensions.x - (COLUMNS + 1) * INV_MARGIN) / COLUMNS);
+	mSlotSize.y = ((invDimensions.y - (ROWS + 1) * INV_MARGIN)/ ROWS);
 
 	mAmountText.reserve(MAX_SLOTS * sizeof(sf::Text));
 	sf::Vector2f slot_position;
@@ -20,15 +20,15 @@ InventorySystem::InventorySystem(sf::Vector2f invDimensions, sf::Vector2f invPos
 
 			if (i < ROWS) slot_position = { 
 				invPosition.x, 
-				invPosition.y + i * slot_size_y 
+				invPosition.y + i * mSlotSize.y
 			};
 			else slot_position = { 
-				invPosition.x + slot_size_x, 
-				invPosition.y +  (i - ROWS) * slot_size_y 
+				invPosition.x + mSlotSize.x,
+				invPosition.y +  (i - ROWS) * mSlotSize.y
 			};
 
 			auto& slot_rect = slot.getShape();
-			slot_rect.setSize({slot_size_x, slot_size_y});
+			slot_rect.setSize(mSlotSize);
 			slot_rect.setPosition(slot_position);
 			slot_rect.setTexture(&TextureManager::getInstance()->getTexture(mTexture));
 			slot_rect.setTextureRect(sf::IntRect({159,0}, {32,32}));
@@ -37,8 +37,8 @@ InventorySystem::InventorySystem(sf::Vector2f invDimensions, sf::Vector2f invPos
 			auto& font = FontManager::getInstance()->getFont(FontName::TITLE);
 			mAmountText.push_back(sf::Text(font, "", 36));
 			auto char_size = mAmountText[i].getCharacterSize();
-			auto text_position_x = slot_position.x + INV_MARGIN;
-			auto text_position_y = slot_position.y + slot_size_y - char_size - INV_MARGIN;
+			auto text_position_x = slot_position.x + 15;
+			auto text_position_y = slot_position.y + mSlotSize.y - char_size - 5;
 			mAmountText[i].setPosition({text_position_x, text_position_y});
 			mAmountText[i].setFillColor(sf::Color::White);
 			mAmountText[i].setStyle(sf::Text::Bold);
@@ -138,6 +138,7 @@ void InventorySystem::adjustItemCount(int32_t value, size_t index) {
 void InventorySystem::addItemToSlotIndex(size_t index, std::shared_ptr<Item> item, int amount) {
 
 	auto position = getSlotPositionAtIndex(index);
+	position = { position.x + mSlotSize.x / 3, position.y + mSlotSize.y / 1.5f };
 	item->setPosition(position);
 	adjustItemCount(amount, index);
 	mItems[index] = item;
@@ -175,6 +176,7 @@ void InventorySystem::addItemToSlot(sf::Vector2f mousePosition, std::shared_ptr<
 	}
 
 	// Set to postion of index
+	position = { position.x + mSlotSize.x / 4, position.y + mSlotSize.y / 4.f };
 	item->setPosition(position);
 	mItems[index] = item;
 	adjustItemCount(1, index);
