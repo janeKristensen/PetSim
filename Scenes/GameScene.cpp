@@ -1,10 +1,10 @@
 #include "GameScene.h"
-
-
-
+#include "ShopScene.h"
+#include "MenuScene.h"
+#include "LoadingScene.h"
 
 Game_Scene::Game_Scene(sf::Vector2f screenSize, std::shared_ptr<Model> model)
-	: Scene(screenSize), mModel(model) {
+	: Scene(screenSize), mModel(model), mScreenSize(screenSize) {
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -12,7 +12,12 @@ Game_Scene::Game_Scene(sf::Vector2f screenSize, std::shared_ptr<Model> model)
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+	mFoodBar = ProgressBar{ sf::Vector2f{ 200, 13.5 }, sf::Vector2f{ SCREEN_MARGIN, 2*SCREEN_MARGIN }, sf::Color::Red };
+	auto foodbar_pos = mFoodBar.getShape().getPosition();
+	mGroomBar = ProgressBar{ sf::Vector2f{ 200, 13.5 }, sf::Vector2f{ SCREEN_MARGIN, foodbar_pos.y + mFoodBar.getSize().y + SCREEN_MARGIN/2 }, sf::Color::Blue };
+
 	auto& bg = mSceneObjects.at(SceneObject::BACKGROUND);
+	bg.setFillColor(sf::Color::Black);
 	float bg_start_X = bg.getPosition().x;
 	float bg_start_Y = bg.getPosition().y;
 	float bg_X = bg.getSize().x;
@@ -31,6 +36,12 @@ Game_Scene::Game_Scene(sf::Vector2f screenSize, std::shared_ptr<Model> model)
 		}
 	);
 	
+	// Shop button
+	addSceneObject(SceneObject::SHOP_BUTTON, sf::RectangleShape({ 32,32 }));
+	auto& shop_button = mSceneObjects.at(SceneObject::SHOP_BUTTON);
+	shop_button.setPosition({foodbar_pos.x + mFoodBar.getFullSize().x + 4 * SCREEN_MARGIN, 2*SCREEN_MARGIN});
+	shop_button.setFillColor(sf::Color::Blue);
+
 
 	// Inventory container object
 	float inv_height = bg_Y - (3 * SCREEN_MARGIN) - button_height;
@@ -39,8 +50,8 @@ Game_Scene::Game_Scene(sf::Vector2f screenSize, std::shared_ptr<Model> model)
 	inventory.setFillColor(sf::Color::Red);
 	inventory.setPosition(
 		{
-			bg_start_X + bg_X - INV_WIDTH,
-			bg_start_Y
+			bg_start_X + bg_X - INV_WIDTH - SCREEN_MARGIN,
+			bg_start_Y + SCREEN_MARGIN
 		}
 	);
 	
@@ -70,17 +81,14 @@ Game_Scene::Game_Scene(sf::Vector2f screenSize, std::shared_ptr<Model> model)
 		}
 	);
 
-
 	// Place pet sprite on screen
 	mPetPosition = sf::Vector2f(
 		{
-			bg_start_X + SCREEN_MARGIN,
-			bg_start_Y + SCREEN_MARGIN
+			bg_start_X + 2*SCREEN_MARGIN,
+			bg_start_Y + 2*SCREEN_MARGIN
 		}
 	);
 	
-	//mPet->scaleSprite({6, 6});
-
 	
 	// Text output field
 	addSceneObject(SceneObject::TEXT_OUTPUT, sf::RectangleShape({ txt_width, txt_height }));
@@ -282,10 +290,10 @@ void Game_Scene::handleClick(sf::Vector2f mouseposition) {
 
 	mInTextField = false;
 
-	if (mSceneObjects.at(SceneObject::ADD_BUTTON).getGlobalBounds().contains(mouseposition)) {
-
-		if (mModel != nullptr) {
-
+	if (mSceneObjects.at(SceneObject::ADD_BUTTON).getGlobalBounds().contains(mouseposition)) 
+	{
+		if (mModel != nullptr) 
+		{
 			//////////////////////////
 			// TODO: is it more optimal to create a new blip every time the text field is clicked? Or create a new UI element to add a draw flag?
 			/////////////////////
@@ -294,10 +302,14 @@ void Game_Scene::handleClick(sf::Vector2f mouseposition) {
 			mSceneText.at(SceneText::PROMPT_TEXT).setString("");
 		}
 	}
-	else if (mSceneObjects.at(SceneObject::TEXT_INPUT).getGlobalBounds().contains(mouseposition)) {
-
+	else if (mSceneObjects.at(SceneObject::TEXT_INPUT).getGlobalBounds().contains(mouseposition)) 
+	{
 		mStringBuffer = "";
 		mInTextField = true;
+	}
+	else if (mSceneObjects.at(SceneObject::SHOP_BUTTON).getGlobalBounds().contains(mouseposition)) 
+	{
+		SceneManager::getInstance()->changeScene(std::make_shared<Shop_Scene>(mScreenSize, *this));
 	}
 }
 
@@ -442,7 +454,19 @@ void Game_Scene::loadGame(const std::string& filename) {
 	mModel->addSystemPrompt(initPrompt);
 }
 
+void Game_Scene::addItemToInventory(std::shared_ptr<Item> item, std::uint32_t amount)
+{
+	mItems.push_back(item);
+	auto success = mInventorySystem->spawnInInventory(item, amount);
+	if (!success)
+	{
+		std::cout << "No room in inventory" << std::endl;
+		return;
+	}
 
+	
+	// withdraw money for object
+}
 
 Game_Scene::~Game_Scene() {
 

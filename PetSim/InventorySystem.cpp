@@ -31,7 +31,7 @@ InventorySystem::InventorySystem(sf::Vector2f invDimensions, sf::Vector2f invPos
 			slot_rect.setSize(mSlotSize);
 			slot_rect.setPosition(slot_position);
 			slot_rect.setTexture(&TextureManager::getInstance()->getTexture(mTexture));
-			slot_rect.setTextureRect(sf::IntRect({159,0}, {32,32}));
+			slot_rect.setTextureRect(sf::IntRect({160,0}, {32,32}));
 			slot.setAmount(0);
 
 			auto& font = FontManager::getInstance()->getFont(FontName::TITLE);
@@ -144,7 +144,7 @@ void InventorySystem::addItemToSlotIndex(size_t index, std::shared_ptr<Item> ite
 	mItems[index] = item;
 }
 
-void InventorySystem::addItemToSlot(sf::Vector2f mousePosition, std::shared_ptr<Item> item) {
+size_t InventorySystem::addItemToSlot(sf::Vector2f mousePosition, std::shared_ptr<Item> item) {
 
 	auto [position, index] = getSlotPosition(mousePosition);
 
@@ -165,6 +165,7 @@ void InventorySystem::addItemToSlot(sf::Vector2f mousePosition, std::shared_ptr<
 		if (index == -1) {
 			
 			index = getFirstEmptySlot();
+			if(index < 0) return index;
 			position = getSlotPositionAtIndex(index);
 		}
 	} 
@@ -172,6 +173,7 @@ void InventorySystem::addItemToSlot(sf::Vector2f mousePosition, std::shared_ptr<
 
 		// if item in slot not same type, find next empty slot.
 		index = getFirstEmptySlot();
+		if (index < 0) return index;
 		position = getSlotPositionAtIndex(index);
 	}
 
@@ -187,6 +189,19 @@ void InventorySystem::addItemToSlot(sf::Vector2f mousePosition, std::shared_ptr<
 
 		despawnItem(item);
 	}
+
+	return index;
+}
+
+bool InventorySystem::spawnInInventory(std::shared_ptr<Item> item, std::uint32_t amount)
+{
+	auto index = addItemToSlot({0,0},item);
+	if (index < 0)
+	{
+		despawnItem(item);
+	}
+
+	return (index >= 0);
 }
 
 void InventorySystem::removeFromSlotIndex(size_t index, Item& item) {

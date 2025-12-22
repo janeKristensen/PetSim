@@ -1,13 +1,16 @@
 #pragma once
 #include "SFML//Graphics.hpp"
 
-class ProgressBar : public sf::RectangleShape{
+class ProgressBar {
 public:
+	ProgressBar() {}
+	
 	ProgressBar(sf::Vector2f size, sf::Vector2f position, sf::Color color) : mFullSize(size){
 		mBar.setSize(size);
 		mBar.setPosition(position);
 		mBar.setFillColor(color);
 	}
+	
 
 	void resizeBar(float value) {
 
@@ -17,6 +20,7 @@ public:
 
 	sf::RectangleShape& getShape() { return mBar; }
 	sf::Vector2f getSize() { return mBar.getSize(); }
+	sf::Vector2f getFullSize() { return mFullSize; }
 
 private:
 	sf::RectangleShape mBar;

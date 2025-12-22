@@ -8,7 +8,6 @@ Game::Game(std::shared_ptr<sf::RenderWindow> window) : mWindow(std::move(window)
     tm->loadTexture(Texture::TITLE_MENU, "../ressources/title_menu.png");
     tm->loadTexture(Texture::LOADING_SCREEN, "../ressources/loading.png");
    
-
     FontManager::getInstance()->loadFont(FontName::TITLE, "../ressources/Gabriola.ttf");
 
     SceneManager::getInstance()->changeScene(std::make_shared<Title_Scene>(screenSize));

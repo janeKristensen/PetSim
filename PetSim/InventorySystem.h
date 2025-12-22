@@ -33,8 +33,9 @@ public:
 	void update();
 	void render(sf::RenderWindow& window);
 	const std::tuple<sf::Vector2f, int32_t> getSlotPosition(sf::Vector2f mousePosition) const;
-	void addItemToSlot(sf::Vector2f mousePosition, std::shared_ptr<Item> item);
+	size_t addItemToSlot(sf::Vector2f mousePosition, std::shared_ptr<Item> item);
 	void addItemToSlotIndex(size_t index, std::shared_ptr<Item> item, int amount);
+	bool spawnInInventory(std::shared_ptr<Item> item, std::uint32_t amount);
 	void removeFromSlot(sf::Vector2f mousePosition, Item& item);
 	void removeFromSlotIndex(size_t index, Item& item);
 	void dragItem(const sf::Vector2f mousePosition, Item& item);

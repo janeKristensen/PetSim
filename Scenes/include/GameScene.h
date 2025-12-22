@@ -2,8 +2,8 @@
 #include <future>
 #include "Model.h"
 #include "scene.h"
-#include "MenuScene.h"
-#include "LoadingScene.h"
+
+
 #include "Pet.h"
 #include "Model.h"
 #include "UserInterface.h"
@@ -24,6 +24,7 @@ public:
 	void handleTextEntry(const sf::Event& event) override;
 	nlohmann::json setState() override;
 	void loadGame(const std::string& filename) override;
+	void addItemToInventory(std::shared_ptr<Item> item, std::uint32_t amount);
 
 private:
 	std::string getPrompt();
@@ -46,12 +47,10 @@ private:
 	std::string mStringLine;
 	sf::Vector2f mPetPosition;
 	sf::Vector2f mScreenSize;
-	ProgressBar mFoodBar = ProgressBar(sf::Vector2f{ 200, 10 }, sf::Vector2f{ SCREEN_MARGIN, SCREEN_MARGIN }, sf::Color::Red);
-	ProgressBar mGroomBar = ProgressBar(sf::Vector2f{ 200, 10 }, sf::Vector2f{ SCREEN_MARGIN, 2 * SCREEN_MARGIN + 2 }, sf::Color::Blue);
+	ProgressBar mFoodBar;
+	ProgressBar mGroomBar;
 
 	bool mInTextField = false;
 	float mBlipTracker = 0.f;
 	float mResponseTracker = 0.f;
-
-	
 };

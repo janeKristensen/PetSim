@@ -17,7 +17,7 @@ Scene::Scene(sf::Vector2f screenSize)
 	));
 	auto& background = mSceneObjects.at(SceneObject::BACKGROUND);
 	background.setPosition({ SCREEN_MARGIN, SCREEN_MARGIN });
-	background.setFillColor(sf::Color::Green);
+	
 }
 
 
