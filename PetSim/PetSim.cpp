@@ -10,59 +10,61 @@ Game::Game(std::shared_ptr<sf::RenderWindow> window) : mWindow(std::move(window)
    
     FontManager::getInstance()->loadFont(FontName::TITLE, "../ressources/Gabriola.ttf");
 
-    SceneManager::getInstance()->changeScene(std::make_shared<Title_Scene>(screenSize));
+    SceneManager::getInstance()->changeScene(std::make_shared<TitleScene>(screenSize));
 }
 
 
-void Game::pollEvents() {
-
-    while (std::optional event = mWindow->pollEvent()) {
-
+void Game::pollEvents() 
+{
+    while (std::optional event = mWindow->pollEvent()) 
+    {
+        auto mouse_position = static_cast<sf::Vector2f>(sf::Mouse::getPosition(*mWindow));
         auto scene = SceneManager::getInstance()->getScene();
         scene->setEvent(event);
 
         if (event->is<sf::Event::Closed>() || (event->is<sf::Event::KeyPressed>() &&
-            event->getIf<sf::Event::KeyPressed>()->code == sf::Keyboard::Key::Escape)) {
-
+            event->getIf<sf::Event::KeyPressed>()->code == sf::Keyboard::Key::Escape)) 
+        {
             mWindow->close();
         }
-        else if (event->is<sf::Event::KeyPressed>()){
-            
+        else if (event->is<sf::Event::KeyPressed>())
+        {
             auto key = event->getIf<sf::Event::KeyPressed>()->code;
             scene->handleKeyPress(key);
         }
         else if (event->is<sf::Event::MouseButtonReleased>() &&
-            event->getIf<sf::Event::MouseButtonReleased>()->button == sf::Mouse::Button::Left) {
-
-                auto mouse_position = static_cast<sf::Vector2f>(sf::Mouse::getPosition(*mWindow));
+            event->getIf<sf::Event::MouseButtonReleased>()->button == sf::Mouse::Button::Left) 
+        {
                 scene->handleClick(mouse_position);
         }
-        else if (event->is<sf::Event::TextEntered>()) {
-
+        else if (event->is<sf::Event::TextEntered>()) 
+        {
             scene->handleTextEntry(*event);
         }
-        else if (event->is<sf::Event::MouseButtonPressed>() && event->getIf<sf::Event::MouseButtonPressed>()->button == sf::Mouse::Button::Left) {
-
+        else if (event->is<sf::Event::MouseButtonPressed>() && event->getIf<sf::Event::MouseButtonPressed>()->button == sf::Mouse::Button::Left) 
+        {
             mFutures.push_back(std::async(std::launch::async, &Scene::handleDrag, scene, mWindow));
         }
+
+        mFutures.push_back(std::async(std::launch::async, &Scene::handleHover, scene, mouse_position));
     }
 }
 
 
-void Game::update(float dt) {
-    
+void Game::update(float dt) 
+{
     SceneManager::getInstance()->getScene()->update(dt);
 }
 
-void Game::render() {
-
+void Game::render() 
+{
     mWindow->clear();
     SceneManager::getInstance()->getScene()->render(*mWindow);
     mWindow->display();
 }
 
-void Game::saveGame() {
-    
+void Game::saveGame() 
+{
     setState();
     mSaveManager->save();
     mSaveManager->showHistory();

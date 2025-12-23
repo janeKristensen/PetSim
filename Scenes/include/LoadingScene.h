@@ -3,10 +3,10 @@
 #include "GameScene.h"
 
 
-class Loading_Scene : public Scene{
+class LoadingScene : public Scene{
 
 public:
-	Loading_Scene(sf::Vector2f screenSize);
+	LoadingScene(sf::Vector2f screenSize);
 	void update(float dt) override;
 	void render(sf::RenderWindow& window) override;
 

@@ -2,7 +2,7 @@
 
 constexpr float BUTTON_MARGIN = 30.0;
 
-Menu_Scene::Menu_Scene(sf::Vector2f screenSize) : Scene(screenSize)
+MenuScene::MenuScene(sf::Vector2f screenSize) : Scene(screenSize)
 {
 	auto tm = TextureManager::getInstance();
 
@@ -34,13 +34,13 @@ Menu_Scene::Menu_Scene(sf::Vector2f screenSize) : Scene(screenSize)
 	quit_button.setPosition({ save_button.getPosition().x, save_button.getPosition().y + save_button.getSize().y + BUTTON_MARGIN });
 }
 
-void Menu_Scene::update(float dt)
+void MenuScene::update(float dt)
 {
 
 }
 
 
-void Menu_Scene::render(sf::RenderWindow& window)
+void MenuScene::render(sf::RenderWindow& window)
 {
 	for (auto& obj : mSceneObjects)
 	{
@@ -55,7 +55,7 @@ void Menu_Scene::render(sf::RenderWindow& window)
 }
 
 
-void Menu_Scene::handleClick(sf::Vector2f mouseposition)
+void MenuScene::handleClick(sf::Vector2f mouseposition)
 {
 	if (mSceneObjects.at(SceneObject::START_BUTTON).getGlobalBounds().contains(mouseposition)) 
 	{
@@ -72,7 +72,7 @@ void Menu_Scene::handleClick(sf::Vector2f mouseposition)
 }
 
 
-void Menu_Scene::handleTextEntry(const sf::Event& event)
+void MenuScene::handleTextEntry(const sf::Event& event)
 {
 
 }

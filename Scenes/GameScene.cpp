@@ -3,7 +3,7 @@
 #include "MenuScene.h"
 #include "LoadingScene.h"
 
-Game_Scene::Game_Scene(sf::Vector2f screenSize, std::shared_ptr<Model> model)
+GameScene::GameScene(sf::Vector2f screenSize, std::shared_ptr<Model> model)
 	: Scene(screenSize), mModel(model), mScreenSize(screenSize) {
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -190,7 +190,7 @@ Game_Scene::Game_Scene(sf::Vector2f screenSize, std::shared_ptr<Model> model)
 }
 
 
-void Game_Scene::update(float dt)
+void GameScene::update(float dt)
 {
 	mItems.erase(std::remove(mItems.begin(), mItems.end(), nullptr), mItems.end());
 
@@ -240,7 +240,7 @@ void Game_Scene::update(float dt)
 
 }
 
-void Game_Scene::render(sf::RenderWindow& window)
+void GameScene::render(sf::RenderWindow& window)
 {
 	window.draw(mSceneObjects.at(SceneObject::BORDER));
 	window.draw(mSceneObjects.at(SceneObject::BACKGROUND));
@@ -270,12 +270,12 @@ void Game_Scene::render(sf::RenderWindow& window)
 	
 }
 
-void Game_Scene::setModel(std::shared_ptr<Model> model) 
+void GameScene::setModel(std::shared_ptr<Model> model) 
 {
 	mModel = model;
 }
 
-std::string Game_Scene::getPrompt() 
+std::string GameScene::getPrompt() 
 { 
 	if (mSceneText.contains(SceneText::PROMPT_TEXT))
 	{
@@ -286,7 +286,7 @@ std::string Game_Scene::getPrompt()
 }
 
 
-void Game_Scene::handleClick(sf::Vector2f mouseposition) {
+void GameScene::handleClick(sf::Vector2f mouseposition) {
 
 	mInTextField = false;
 
@@ -309,22 +309,22 @@ void Game_Scene::handleClick(sf::Vector2f mouseposition) {
 	}
 	else if (mSceneObjects.at(SceneObject::SHOP_BUTTON).getGlobalBounds().contains(mouseposition)) 
 	{
-		SceneManager::getInstance()->changeScene(std::make_shared<Shop_Scene>(mScreenSize, *this));
+		SceneManager::getInstance()->changeScene(std::make_shared<ShopScene>(mScreenSize, *this));
 	}
 }
 
-void Game_Scene::handleKeyPress(sf::Keyboard::Key key)
+void GameScene::handleKeyPress(sf::Keyboard::Key key)
 {
 	if (key == sf::Keyboard::Key::M) {
 
-		SceneManager::getInstance()->changeScene(std::make_shared<Menu_Scene>(mScreenSize));
+		SceneManager::getInstance()->changeScene(std::make_shared<MenuScene>(mScreenSize));
 	}
 	else if (key == sf::Keyboard::Key::Q) {
 		//scene->loadGame("pretty.json");
 	}
 }
 
-void Game_Scene::handleDrag(std::shared_ptr<sf::RenderWindow> window) {
+void GameScene::handleDrag(std::shared_ptr<sf::RenderWindow> window) {
 
 	if (mItems.empty()) return;
 
@@ -358,7 +358,7 @@ void Game_Scene::handleDrag(std::shared_ptr<sf::RenderWindow> window) {
 	}
 }
 
-void Game_Scene::handleTextEntry(const sf::Event& event) {
+void GameScene::handleTextEntry(const sf::Event& event) {
 
 	if (isInTextField()) {
 		auto unicode = event.getIf<sf::Event::TextEntered>()->unicode;
@@ -373,13 +373,13 @@ void Game_Scene::handleTextEntry(const sf::Event& event) {
 	}
 }
 
-void Game_Scene::eraseFromStringBuffer() {
+void GameScene::eraseFromStringBuffer() {
 
 	if (!mStringBuffer.size() <= 0)
 		mStringBuffer.pop_back();
 }
 
-nlohmann::json Game_Scene::setState() {
+nlohmann::json GameScene::setState() {
 
 	std::vector<nlohmann::json> items;
 	for (const auto& item : mItems) {
@@ -396,7 +396,7 @@ nlohmann::json Game_Scene::setState() {
 
 
 // Move to item manager
-std::shared_ptr<Item> Game_Scene::createItemFromType(const ItemType type, Texture texName, sf::IntRect texRect, uint32_t value)
+std::shared_ptr<Item> GameScene::createItemFromType(const ItemType type, Texture texName, sf::IntRect texRect, uint32_t value)
 {
 	std::shared_ptr<Item> item = nullptr;
 
@@ -412,7 +412,7 @@ std::shared_ptr<Item> Game_Scene::createItemFromType(const ItemType type, Textur
 }
 
 
-void Game_Scene::loadGame(const std::string& filename) {
+void GameScene::loadGame(const std::string& filename) {
 
 	// load json save file
 	std::ifstream ifs(filename);
@@ -454,7 +454,7 @@ void Game_Scene::loadGame(const std::string& filename) {
 	mModel->addSystemPrompt(initPrompt);
 }
 
-void Game_Scene::addItemToInventory(std::shared_ptr<Item> item, std::uint32_t amount)
+void GameScene::addItemToInventory(std::shared_ptr<Item> item, std::uint32_t amount)
 {
 	mItems.push_back(item);
 	auto success = mInventorySystem->spawnInInventory(item, amount);
@@ -468,7 +468,7 @@ void Game_Scene::addItemToInventory(std::shared_ptr<Item> item, std::uint32_t am
 	// withdraw money for object
 }
 
-Game_Scene::~Game_Scene() {
+GameScene::~GameScene() {
 
 	for (auto& f : mFutures) {
 

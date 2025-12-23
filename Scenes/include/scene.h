@@ -14,6 +14,7 @@
 
 
 constexpr float SCREEN_MARGIN = 10.f;
+constexpr float TEXT_MARGIN = 20.f;
 constexpr float INV_WIDTH = 200.0f;
 
 enum class SceneObject
@@ -58,6 +59,7 @@ public:
 	virtual void update(float dt) {};
 	virtual void handleClick(sf::Vector2f mouseposition) {}
 	virtual void handleKeyPress(sf::Keyboard::Key key) {}
+	virtual void handleHover(sf::Vector2f mouseposition) {};
 	virtual void handleDrag(std::shared_ptr<sf::RenderWindow> window) {}
 	virtual void handleTextEntry(const sf::Event& event) {}
 	virtual void loadGame(const std::string& filename) {}

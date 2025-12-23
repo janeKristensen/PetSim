@@ -6,7 +6,7 @@ static std::shared_ptr<Model> makeModel(std::string path, float p, float temp) {
 	return std::make_shared<Model>(path, p, temp);
 }
 
-Loading_Scene::Loading_Scene(sf::Vector2f screenSize) : Scene(screenSize)
+LoadingScene::LoadingScene(sf::Vector2f screenSize) : Scene(screenSize)
 {
 	/* *******************************************************************************
 	*   Loading the llm model
@@ -27,7 +27,7 @@ Loading_Scene::Loading_Scene(sf::Vector2f screenSize) : Scene(screenSize)
 	mSpinner.setOrigin((sf::Vector2f)mSpinner.getLocalBounds().size / 2.f);
 }
 
-void Loading_Scene::update(float dt)
+void LoadingScene::update(float dt)
 {
 	mElapsedTime += dt;
 
@@ -38,7 +38,7 @@ void Loading_Scene::update(float dt)
 
 		if (mModel)
 		{
-			SceneManager::getInstance()->replaceScene(std::make_shared<Game_Scene>(mScreenSize, mModel));
+			SceneManager::getInstance()->replaceScene(std::make_shared<GameScene>(mScreenSize, mModel));
 		}
 	}
 
@@ -46,7 +46,7 @@ void Loading_Scene::update(float dt)
 }
 
 
-void Loading_Scene::render(sf::RenderWindow& window)
+void LoadingScene::render(sf::RenderWindow& window)
 {
 	for (auto& obj : mSceneObjects)
 	{

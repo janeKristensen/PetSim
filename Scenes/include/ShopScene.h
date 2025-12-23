@@ -1,17 +1,21 @@
 #pragma once
 #include "scene.h"
+#include "UserInterface.h"
 
-class Game_Scene;
+class GameScene;
 
 
-class Shop_Scene : public Scene {
+class ShopScene : public Scene {
 public:
-	Shop_Scene(sf::Vector2f screenSize, Game_Scene& game);
+	ShopScene(sf::Vector2f screenSize, GameScene& game);
 	void update(float dt) override;
 	void render(sf::RenderWindow& window) override;
+	void handleHover(sf::Vector2f mouseposition) override;
 	void handleClick(sf::Vector2f mouseposition) override;
 	void handleTextEntry(const sf::Event& event) override;
 
 private:
-	Game_Scene& mGame;
+	GameScene& mGame;
+	std::vector<std::tuple<std::unique_ptr<Item>, uint32_t>> mShopItems;
+	std::vector<ShopTile> mShopTiles;
 };

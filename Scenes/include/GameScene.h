@@ -2,19 +2,18 @@
 #include <future>
 #include "Model.h"
 #include "scene.h"
-
-
 #include "Pet.h"
 #include "Model.h"
 #include "UserInterface.h"
 
 static void pushRequestToModel(std::string query, std::shared_ptr<Model> model) { model->userQuery(query); }
 
-class Game_Scene : public Scene {
+class GameScene : public Scene {
 
 public:
-	Game_Scene(sf::Vector2f screenSize, std::shared_ptr<Model> model);
-	~Game_Scene();
+	GameScene(sf::Vector2f screenSize, std::shared_ptr<Model> model);
+	~GameScene();
+
 	void update(float dt) override;
 	void render(sf::RenderWindow& window) override;
 	void setModel(std::shared_ptr<Model> model);

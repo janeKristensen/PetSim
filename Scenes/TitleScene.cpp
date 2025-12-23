@@ -3,7 +3,7 @@
 
 constexpr float BUTTON_MARGIN = 30.0;
 
-Title_Scene::Title_Scene(sf::Vector2f screenSize) : Scene(screenSize), mScreenSize(screenSize)
+TitleScene::TitleScene(sf::Vector2f screenSize) : Scene(screenSize), mScreenSize(screenSize)
 {
 	auto tm = TextureManager::getInstance();
 
@@ -32,13 +32,13 @@ Title_Scene::Title_Scene(sf::Vector2f screenSize) : Scene(screenSize), mScreenSi
 	quit_button.setPosition({ start_button.getPosition().x, start_button.getPosition().y + start_button.getSize().y + BUTTON_MARGIN});
 }
 
-void Title_Scene::update(float dt)
+void TitleScene::update(float dt)
 {
 
 }
 
 
-void Title_Scene::render(sf::RenderWindow& window)
+void TitleScene::render(sf::RenderWindow& window)
 {
 	for (auto& obj : mSceneObjects)
 	{
@@ -53,11 +53,11 @@ void Title_Scene::render(sf::RenderWindow& window)
 }
 
 
-void Title_Scene::handleClick(sf::Vector2f mouseposition)
+void TitleScene::handleClick(sf::Vector2f mouseposition)
 {
 	if (mSceneObjects.at(SceneObject::START_BUTTON).getGlobalBounds().contains(mouseposition))
 	{
-		SceneManager::getInstance()->changeScene(std::make_shared<Loading_Scene>(mScreenSize));
+		SceneManager::getInstance()->changeScene(std::make_shared<LoadingScene>(mScreenSize));
 	}
 	else if (mSceneObjects.at(SceneObject::QUIT_BUTTON).getGlobalBounds().contains(mouseposition))
 	{
@@ -66,7 +66,7 @@ void Title_Scene::handleClick(sf::Vector2f mouseposition)
 }
 
 
-void Title_Scene::handleTextEntry(const sf::Event& event)
+void TitleScene::handleTextEntry(const sf::Event& event)
 {
 
 }
