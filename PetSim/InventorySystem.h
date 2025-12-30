@@ -36,8 +36,8 @@ public:
 	size_t addItemToSlot(sf::Vector2f mousePosition, std::shared_ptr<Item> item);
 	void addItemToSlotIndex(size_t index, std::shared_ptr<Item> item, int amount);
 	bool spawnInInventory(std::shared_ptr<Item> item, std::uint32_t amount);
-	void removeFromSlot(sf::Vector2f mousePosition, Item& item);
-	void removeFromSlotIndex(size_t index, Item& item);
+	std::shared_ptr<Item>  removeFromSlot(sf::Vector2f mousePosition, Item& item);
+	std::shared_ptr<Item>  removeFromSlotIndex(size_t index, Item& item);
 	void dragItem(const sf::Vector2f mousePosition, Item& item);
 	void clearSlots();
 	nlohmann::json saveData();

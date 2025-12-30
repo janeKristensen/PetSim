@@ -35,7 +35,7 @@ void Game::pollEvents()
         else if (event->is<sf::Event::MouseButtonReleased>() &&
             event->getIf<sf::Event::MouseButtonReleased>()->button == sf::Mouse::Button::Left) 
         {
-                scene->handleClick(mouse_position);
+            SceneManager::getInstance()->getScene()->handleClick(mouse_position);
         }
         else if (event->is<sf::Event::TextEntered>()) 
         {
@@ -43,10 +43,10 @@ void Game::pollEvents()
         }
         else if (event->is<sf::Event::MouseButtonPressed>() && event->getIf<sf::Event::MouseButtonPressed>()->button == sf::Mouse::Button::Left) 
         {
-            mFutures.push_back(std::async(std::launch::async, &Scene::handleDrag, scene, mWindow));
+            mFutures.push_back(std::async(std::launch::async, &Scene::handleDrag, SceneManager::getInstance()->getScene(), mWindow));
         }
 
-        mFutures.push_back(std::async(std::launch::async, &Scene::handleHover, scene, mouse_position));
+        mFutures.push_back(std::async(std::launch::async, &Scene::handleHover, SceneManager::getInstance()->getScene(), mouse_position));
     }
 }
 

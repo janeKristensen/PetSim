@@ -1,8 +1,8 @@
 #include "UserInterface.h"
 
-ShopTile::ShopTile(sf::Vector2f size, sf::Vector2f position, std::tuple<std::unique_ptr<Item>, uint32_t>& item)
-	: mItem(item), mPriceText(sf::Text(FontManager::getInstance()->getFont(FontName::TITLE), std::format("{}", std::get<1>(mItem)))),
-	mDescription(sf::Text(sf::Text(FontManager::getInstance()->getFont(FontName::TITLE), std::get<0>(mItem)->getDescription())))
+ShopTile::ShopTile(sf::Vector2f size, sf::Vector2f position, std::tuple<std::unique_ptr<Item>, uint32_t>& item, const sf::Font& font)
+	: mItem(item), mPriceText(sf::Text(font, std::format("{}", std::get<1>(mItem)))),
+	mDescription(sf::Text(font, std::get<0>(mItem)->getDescription()))
 {
 	float TEXT_MARGIN = 20.f;
 
@@ -34,4 +34,10 @@ void ShopTile::render(sf::RenderWindow& window)
 		window.draw(mHoverTile);
 		window.draw(mDescription);
 	}
+}
+
+Item ShopTile::getItem() 
+{ 
+	Item item = *std::get<0>(mItem); 
+	return item; 
 }

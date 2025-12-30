@@ -36,6 +36,7 @@ private:
 	std::shared_ptr<Item> createItemFromType(const ItemType type, Texture texName, sf::IntRect texRect, uint32_t value);
 
 	std::vector<std::shared_ptr<Item>> mItems;
+	std::vector<std::shared_ptr<Item>> mItemsToAdd;
 	std::unique_ptr<NeedsSystem> mNeedsSystem;
 	std::unique_ptr<InventorySystem> mInventorySystem;
 	std::shared_ptr<Pet> mPet = nullptr;

@@ -38,13 +38,12 @@ ShopScene::ShopScene(sf::Vector2f screenSize, GameScene& game) : Scene(screenSiz
 	title_text.setFillColor(sf::Color::White);
 	title_text.setPosition({ start_pos.x, start_pos.y - title_text.getCharacterSize() - TEXT_MARGIN});
 
+	const auto& font = FontManager::getInstance()->getFont(FontName::TITLE);
 	for (auto& item : mShopItems)
 	{
-		mShopTiles.push_back(ShopTile(tile_size, start_pos, item));
+		mShopTiles.push_back(ShopTile(tile_size, start_pos, item, font));
 		start_pos.x += tile_size.x + TEXT_MARGIN;
 	}
-
-	
 }
 
 void ShopScene::update(float dt)
@@ -106,15 +105,18 @@ void ShopScene::handleClick(sf::Vector2f mouseposition)
 	else if(mSceneObjects.at(SceneObject::BUY_BUTTON).getGlobalBounds().contains(mouseposition))
 	{
 		// Add item to inventory
-		//mGame.addItemToInventory(item, 1);
+		auto item = std::make_shared<Item>(mSelectedTile->getItem());
+		mGame.addItemToInventory(item, 1);
 	}
 	else 
 	{
+		mSelectedTile = nullptr;
 		for (auto& tile : mShopTiles)
 		{
 			if (tile.getBounds().contains(mouseposition))
 			{
 				tile.selectTile(true);
+				mSelectedTile = &tile;
 			}
 			else 
 			{

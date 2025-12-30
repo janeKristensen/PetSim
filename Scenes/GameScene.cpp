@@ -192,8 +192,22 @@ GameScene::GameScene(sf::Vector2f screenSize, std::shared_ptr<Model> model)
 
 void GameScene::update(float dt)
 {
+	for (auto& item : mItems)
+	{
+		if (!item->isAlive()) item = nullptr;
+	}
+
 	mItems.erase(std::remove(mItems.begin(), mItems.end(), nullptr), mItems.end());
 
+	if (mItemsToAdd.size() != 0)
+	{
+		for (auto& item : mItemsToAdd)
+		{
+			mItems.push_back(item);
+		}
+		mItemsToAdd.erase(mItemsToAdd.begin(), mItemsToAdd.end());
+	}
+	
 	mNeedsSystem->update(dt);
 	mInventorySystem->update();
 
@@ -332,15 +346,21 @@ void GameScene::handleDrag(std::shared_ptr<sf::RenderWindow> window) {
 
 	for (auto& item : mItems) {
 
-		if (!item) continue;
-		if (item->getSprite().getGlobalBounds().contains(mouse_position)) {
+		if (item == nullptr) continue;
+		else if (item->getSprite().getGlobalBounds().contains(mouse_position)) {
 
-			mInventorySystem->removeFromSlot(mouse_position, *item);
-
+			auto remove_item = mInventorySystem->removeFromSlot(mouse_position, *item);
+			
+			// multithread?
 			while (!mCurrentEvent.value().is<sf::Event::MouseButtonReleased>()) {
 
 				mouse_position = static_cast<sf::Vector2f>(sf::Mouse::getPosition(*window));
 				mInventorySystem->dragItem(mouse_position, *item);
+			}
+
+			if (remove_item)
+			{
+				mItemsToAdd.push_back(remove_item);
 			}
 
 			if (mPet->getSprite().getGlobalBounds().contains(mouse_position)) {
@@ -456,7 +476,7 @@ void GameScene::loadGame(const std::string& filename) {
 
 void GameScene::addItemToInventory(std::shared_ptr<Item> item, std::uint32_t amount)
 {
-	mItems.push_back(item);
+	
 	auto success = mInventorySystem->spawnInInventory(item, amount);
 	if (!success)
 	{

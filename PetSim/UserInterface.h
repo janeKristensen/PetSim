@@ -35,12 +35,14 @@ private:
 
 class ShopTile {
 public:
-	ShopTile(sf::Vector2f size, sf::Vector2f position, std::tuple<std::unique_ptr<Item>, uint32_t>& item);
+	ShopTile(sf::Vector2f size, sf::Vector2f position, std::tuple<std::unique_ptr<Item>, uint32_t>& item, const sf::Font& font);
 	void render(sf::RenderWindow& window);
 	void update();
 	void setHoverState(bool state) { mIsHovering = state; }
 	void selectTile(bool state) { mIsSelected = state; };
+	Item getItem();
 	sf::FloatRect getBounds() { return mTile.getGlobalBounds(); }
+
 private:
 	sf::RectangleShape mTile;
 	sf::RectangleShape mHoverTile;

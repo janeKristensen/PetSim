@@ -27,7 +27,7 @@ public:
 	void setScale(sf::Vector2f scale) { mSprite.setScale(scale); }
 	void setAlive(bool value) { mIsAlive = value; }
 	const bool isAlive() const { return mIsAlive; }
-	
+	const ItemType getTypeId() const { return mTypeId; }
 	
 	sf::Sprite& getSprite() { return mSprite; }
 	const uint32_t getValue() const { return mValue; };
@@ -37,7 +37,7 @@ protected:
 	uint32_t mValue;
 
 private:
-	const ItemType getTypeId() const { return mTypeId; }
+	
 	void setState(nlohmann::json);
 	void toJson(nlohmann::json& j);
 

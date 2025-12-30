@@ -18,4 +18,5 @@ private:
 	GameScene& mGame;
 	std::vector<std::tuple<std::unique_ptr<Item>, uint32_t>> mShopItems;
 	std::vector<ShopTile> mShopTiles;
+	ShopTile* mSelectedTile;
 };

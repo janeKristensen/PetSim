@@ -204,7 +204,7 @@ bool InventorySystem::spawnInInventory(std::shared_ptr<Item> item, std::uint32_t
 	return (index >= 0);
 }
 
-void InventorySystem::removeFromSlotIndex(size_t index, Item& item) {
+std::shared_ptr<Item> InventorySystem::removeFromSlotIndex(size_t index, Item& item) {
 
 	adjustItemCount(-1, index);
 	auto [row, col] = getRowColumnIndex(index);
@@ -212,13 +212,16 @@ void InventorySystem::removeFromSlotIndex(size_t index, Item& item) {
 
 	if (item_amount == 0) mItems[index].reset();
 	else if (item_amount >= 1) { mItems[index] = spawnItem(item); }
+
+	return mItems[index];
 }
 
-void InventorySystem::removeFromSlot(sf::Vector2f mousePosition, Item& item) {
+std::shared_ptr<Item>  InventorySystem::removeFromSlot(sf::Vector2f mousePosition, Item& item) {
 
 	auto [position, index] = getSlotPosition(mousePosition);
-	if (index == -1 || !mItems[index]) return;
-	removeFromSlotIndex(index, item);
+	if (index == -1 || !mItems[index]) return nullptr;
+	auto remove_item = removeFromSlotIndex(index, item);
+	return remove_item;
 }
 
 void InventorySystem::dragItem(const sf::Vector2f mousePosition, Item& item) {
@@ -231,7 +234,7 @@ void InventorySystem::despawnItem(std::shared_ptr<Item> item) {
 #ifndef NDEBUG
 	std::cout << "Despawned item" << std::endl;
 #endif
-
+	item->setAlive(false);
 	item.reset();	
 }
 
@@ -241,8 +244,8 @@ std::shared_ptr<Item> InventorySystem::spawnItem(const Item& item) {
 	std::cout << "Spawned item" << std::endl;
 #endif
 
-	auto new_item = std::make_shared<Item>(item);
-	return new_item;
+	Item new_item(item);
+	return std::make_shared<Item>(new_item);
 }
 
 void InventorySystem::clearSlots() {
