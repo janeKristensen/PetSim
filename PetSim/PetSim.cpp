@@ -30,6 +30,7 @@ void Game::pollEvents()
         else if (event->is<sf::Event::KeyPressed>())
         {
             auto key = event->getIf<sf::Event::KeyPressed>()->code;
+            if (key == sf::Keyboard::Key::S) saveGame();
             scene->handleKeyPress(key);
         }
         else if (event->is<sf::Event::MouseButtonReleased>() &&

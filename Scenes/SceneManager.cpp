@@ -11,18 +11,23 @@ SceneManager* SceneManager::getInstance()
 
 void SceneManager::replaceScene(std::shared_ptr<Scene> scene) 
 { 
-	mCurrentScene = mScenes.top();
+	mPreviousScene = mScenes.top();
 	mScenes.pop();
 	mScenes.push(scene); 
 };
 
 void SceneManager::changeScene(std::shared_ptr<Scene> scene)
 {
+	if (mScenes.size() > 0)
+	{
+		mPreviousScene = mScenes.top();
+	}
+	
 	mScenes.push(scene);
 };
 
 void SceneManager::removeScene() 
 { 
-	mCurrentScene = mScenes.top();
+	mPreviousScene = mScenes.top();
 	mScenes.pop(); 
 };

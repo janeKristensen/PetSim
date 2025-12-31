@@ -194,6 +194,7 @@ void GameScene::update(float dt)
 {
 	for (auto& item : mItems)
 	{
+		if (!item) continue;
 		if (!item->isAlive()) item = nullptr;
 	}
 
@@ -334,7 +335,7 @@ void GameScene::handleKeyPress(sf::Keyboard::Key key)
 		SceneManager::getInstance()->changeScene(std::make_shared<MenuScene>(mScreenSize));
 	}
 	else if (key == sf::Keyboard::Key::Q) {
-		//scene->loadGame("pretty.json");
+		loadGame("pretty.json");
 	}
 }
 
@@ -351,13 +352,13 @@ void GameScene::handleDrag(std::shared_ptr<sf::RenderWindow> window) {
 
 			auto remove_item = mInventorySystem->removeFromSlot(mouse_position, *item);
 			
-			// multithread?
 			while (!mCurrentEvent.value().is<sf::Event::MouseButtonReleased>()) {
 
 				mouse_position = static_cast<sf::Vector2f>(sf::Mouse::getPosition(*window));
 				mInventorySystem->dragItem(mouse_position, *item);
 			}
 
+			// This needs fixing - item should not collide with mouse but should spawn immediately when dragging item from slot
 			if (remove_item)
 			{
 				mItemsToAdd.push_back(remove_item);
@@ -484,7 +485,8 @@ void GameScene::addItemToInventory(std::shared_ptr<Item> item, std::uint32_t amo
 		return;
 	}
 
-	
+	mItems.push_back(item);
+
 	// withdraw money for object
 }
 

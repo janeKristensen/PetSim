@@ -138,7 +138,7 @@ void InventorySystem::adjustItemCount(int32_t value, size_t index) {
 void InventorySystem::addItemToSlotIndex(size_t index, std::shared_ptr<Item> item, int amount) {
 
 	auto position = getSlotPositionAtIndex(index);
-	position = { position.x + mSlotSize.x / 3, position.y + mSlotSize.y / 1.5f };
+	position = { position.x + mSlotSize.x / 4, position.y + mSlotSize.y / 4.f };
 	item->setPosition(position);
 	adjustItemCount(amount, index);
 	mItems[index] = item;
