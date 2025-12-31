@@ -19,7 +19,8 @@ void Game::pollEvents()
     while (std::optional event = mWindow->pollEvent()) 
     {
         auto mouse_position = static_cast<sf::Vector2f>(sf::Mouse::getPosition(*mWindow));
-        auto scene = SceneManager::getInstance()->getScene();
+        auto scene_manager = SceneManager::getInstance();
+        auto scene = scene_manager->getScene();
         scene->setEvent(event);
 
         if (event->is<sf::Event::Closed>() || (event->is<sf::Event::KeyPressed>() &&
@@ -36,7 +37,7 @@ void Game::pollEvents()
         else if (event->is<sf::Event::MouseButtonReleased>() &&
             event->getIf<sf::Event::MouseButtonReleased>()->button == sf::Mouse::Button::Left) 
         {
-            SceneManager::getInstance()->getScene()->handleClick(mouse_position);
+            scene->handleClick(mouse_position);
         }
         else if (event->is<sf::Event::TextEntered>()) 
         {
@@ -44,10 +45,10 @@ void Game::pollEvents()
         }
         else if (event->is<sf::Event::MouseButtonPressed>() && event->getIf<sf::Event::MouseButtonPressed>()->button == sf::Mouse::Button::Left) 
         {
-            mFutures.push_back(std::async(std::launch::async, &Scene::handleDrag, SceneManager::getInstance()->getScene(), mWindow));
+            mFutures.push_back(std::async(std::launch::async, &Scene::handleDrag, scene, mWindow));
         }
 
-        mFutures.push_back(std::async(std::launch::async, &Scene::handleHover, SceneManager::getInstance()->getScene(), mouse_position));
+        mFutures.push_back(std::async(std::launch::async, &Scene::handleHover, scene, mouse_position));
     }
 }
 

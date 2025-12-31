@@ -17,6 +17,7 @@ public:
 	std::shared_ptr<Scene> getScene() { return mScenes.top(); }
 	std::shared_ptr<Scene> getPreviousScene() { return mPreviousScene; }
 	void removeScene();
+	void setStateOfScenes();
 
 private:
 	SceneManager() {};

@@ -31,3 +31,4 @@ void SceneManager::removeScene()
 	mPreviousScene = mScenes.top();
 	mScenes.pop(); 
 };
+

@@ -334,9 +334,6 @@ void GameScene::handleKeyPress(sf::Keyboard::Key key)
 
 		SceneManager::getInstance()->changeScene(std::make_shared<MenuScene>(mScreenSize));
 	}
-	else if (key == sf::Keyboard::Key::Q) {
-		loadGame("pretty.json");
-	}
 }
 
 void GameScene::handleDrag(std::shared_ptr<sf::RenderWindow> window) {

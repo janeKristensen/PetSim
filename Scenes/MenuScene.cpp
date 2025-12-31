@@ -78,7 +78,7 @@ void MenuScene::handleClick(sf::Vector2f mouseposition)
 	}
 	else if (mSceneObjects.at(SceneObject::SAVE_BUTTON).getGlobalBounds().contains(mouseposition))
 	{
-		// Action/event to save game
+		// How to call saveGame from here?
 	}
 	else if (mSceneObjects.at(SceneObject::QUIT_BUTTON).getGlobalBounds().contains(mouseposition))
 	{
