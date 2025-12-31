@@ -7,8 +7,8 @@ constexpr float INV_MARGIN = 0.0;
 InventorySystem::InventorySystem(sf::Vector2f invDimensions, sf::Vector2f invPosition, Texture texName) 
 	: mTexture(texName){
 	
-	float slot_size_x = ((invDimensions.x - (COLUMNS + 1) * INV_MARGIN) / COLUMNS);
-	float slot_size_y = ((invDimensions.y - (ROWS + 1) * INV_MARGIN)/ ROWS);
+	mSlotSize.x = ((invDimensions.x - (COLUMNS + 1) * INV_MARGIN) / COLUMNS);
+	mSlotSize.y = ((invDimensions.y - (ROWS + 1) * INV_MARGIN)/ ROWS);
 
 	mAmountText.reserve(MAX_SLOTS * sizeof(sf::Text));
 	sf::Vector2f slot_position;
@@ -20,25 +20,25 @@ InventorySystem::InventorySystem(sf::Vector2f invDimensions, sf::Vector2f invPos
 
 			if (i < ROWS) slot_position = { 
 				invPosition.x, 
-				invPosition.y + i * slot_size_y 
+				invPosition.y + i * mSlotSize.y
 			};
 			else slot_position = { 
-				invPosition.x + slot_size_x, 
-				invPosition.y +  (i - ROWS) * slot_size_y 
+				invPosition.x + mSlotSize.x,
+				invPosition.y +  (i - ROWS) * mSlotSize.y
 			};
 
 			auto& slot_rect = slot.getShape();
-			slot_rect.setSize({slot_size_x, slot_size_y});
+			slot_rect.setSize(mSlotSize);
 			slot_rect.setPosition(slot_position);
 			slot_rect.setTexture(&TextureManager::getInstance()->getTexture(mTexture));
-			slot_rect.setTextureRect(sf::IntRect({159,0}, {32,32}));
+			slot_rect.setTextureRect(sf::IntRect({160,0}, {32,32}));
 			slot.setAmount(0);
 
 			auto& font = FontManager::getInstance()->getFont(FontName::TITLE);
 			mAmountText.push_back(sf::Text(font, "", 36));
 			auto char_size = mAmountText[i].getCharacterSize();
-			auto text_position_x = slot_position.x + INV_MARGIN;
-			auto text_position_y = slot_position.y + slot_size_y - char_size - INV_MARGIN;
+			auto text_position_x = slot_position.x + 15;
+			auto text_position_y = slot_position.y + mSlotSize.y - char_size - 5;
 			mAmountText[i].setPosition({text_position_x, text_position_y});
 			mAmountText[i].setFillColor(sf::Color::White);
 			mAmountText[i].setStyle(sf::Text::Bold);
@@ -138,12 +138,13 @@ void InventorySystem::adjustItemCount(int32_t value, size_t index) {
 void InventorySystem::addItemToSlotIndex(size_t index, std::shared_ptr<Item> item, int amount) {
 
 	auto position = getSlotPositionAtIndex(index);
+	position = { position.x + mSlotSize.x / 4, position.y + mSlotSize.y / 4.f };
 	item->setPosition(position);
 	adjustItemCount(amount, index);
 	mItems[index] = item;
 }
 
-void InventorySystem::addItemToSlot(sf::Vector2f mousePosition, std::shared_ptr<Item> item) {
+size_t InventorySystem::addItemToSlot(sf::Vector2f mousePosition, std::shared_ptr<Item> item) {
 
 	auto [position, index] = getSlotPosition(mousePosition);
 
@@ -164,6 +165,7 @@ void InventorySystem::addItemToSlot(sf::Vector2f mousePosition, std::shared_ptr<
 		if (index == -1) {
 			
 			index = getFirstEmptySlot();
+			if(index < 0) return index;
 			position = getSlotPositionAtIndex(index);
 		}
 	} 
@@ -171,10 +173,12 @@ void InventorySystem::addItemToSlot(sf::Vector2f mousePosition, std::shared_ptr<
 
 		// if item in slot not same type, find next empty slot.
 		index = getFirstEmptySlot();
+		if (index < 0) return index;
 		position = getSlotPositionAtIndex(index);
 	}
 
 	// Set to postion of index
+	position = { position.x + mSlotSize.x / 4, position.y + mSlotSize.y / 4.f };
 	item->setPosition(position);
 	mItems[index] = item;
 	adjustItemCount(1, index);
@@ -185,9 +189,22 @@ void InventorySystem::addItemToSlot(sf::Vector2f mousePosition, std::shared_ptr<
 
 		despawnItem(item);
 	}
+
+	return index;
 }
 
-void InventorySystem::removeFromSlotIndex(size_t index, Item& item) {
+bool InventorySystem::spawnInInventory(std::shared_ptr<Item> item, std::uint32_t amount)
+{
+	auto index = addItemToSlot({0,0},item);
+	if (index < 0)
+	{
+		despawnItem(item);
+	}
+
+	return (index >= 0);
+}
+
+std::shared_ptr<Item> InventorySystem::removeFromSlotIndex(size_t index, Item& item) {
 
 	adjustItemCount(-1, index);
 	auto [row, col] = getRowColumnIndex(index);
@@ -195,13 +212,16 @@ void InventorySystem::removeFromSlotIndex(size_t index, Item& item) {
 
 	if (item_amount == 0) mItems[index].reset();
 	else if (item_amount >= 1) { mItems[index] = spawnItem(item); }
+
+	return mItems[index];
 }
 
-void InventorySystem::removeFromSlot(sf::Vector2f mousePosition, Item& item) {
+std::shared_ptr<Item>  InventorySystem::removeFromSlot(sf::Vector2f mousePosition, Item& item) {
 
 	auto [position, index] = getSlotPosition(mousePosition);
-	if (index == -1 || !mItems[index]) return;
-	removeFromSlotIndex(index, item);
+	if (index == -1 || !mItems[index]) return nullptr;
+	auto remove_item = removeFromSlotIndex(index, item);
+	return remove_item;
 }
 
 void InventorySystem::dragItem(const sf::Vector2f mousePosition, Item& item) {
@@ -214,7 +234,7 @@ void InventorySystem::despawnItem(std::shared_ptr<Item> item) {
 #ifndef NDEBUG
 	std::cout << "Despawned item" << std::endl;
 #endif
-
+	item->setAlive(false);
 	item.reset();	
 }
 
@@ -224,8 +244,8 @@ std::shared_ptr<Item> InventorySystem::spawnItem(const Item& item) {
 	std::cout << "Spawned item" << std::endl;
 #endif
 
-	auto new_item = std::make_shared<Item>(item);
-	return new_item;
+	Item new_item(item);
+	return std::make_shared<Item>(new_item);
 }
 
 void InventorySystem::clearSlots() {

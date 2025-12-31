@@ -1,6 +1,11 @@
 #pragma once
 #include "SFML/Graphics.hpp"
+#include "TextureManager.h"
 #include "FontManager.h"
+#include "SceneManager.h"
+#include "NeedsSystem.h"
+#include "item.h"
+#include "InventorySystem.h"
 #include <functional>
 #include <queue>
 #include <future>
@@ -9,13 +14,22 @@
 
 
 constexpr float SCREEN_MARGIN = 10.f;
+constexpr float TEXT_MARGIN = 20.f;
 constexpr float INV_WIDTH = 200.0f;
 
 enum class SceneObject
 {
 	BORDER,
 	BACKGROUND,
+	START_MENU,
+	START_BUTTON,
+	LOAD_BUTTON,
+	RETURN_BUTTON,
+	SAVE_BUTTON,
+	QUIT_BUTTON,
 	ADD_BUTTON,
+	SHOP_BUTTON,
+	BUY_BUTTON,
 	INVENTORY,
 	TEXT_INPUT,
 	TEXT_OUTPUT,
@@ -35,16 +49,24 @@ enum class SceneText
 	STATE_VALUE,
 };
 
+
 class Scene {
+
 public:
 	Scene(sf::Vector2f screenSize);
 	~Scene();
 
-	virtual void render(sf::RenderWindow& window);
-	virtual void update(float dt);
-	virtual void handleClick(sf::Vector2f mouseposition);
-	virtual void handleTextEntry(const sf::Event& event);
+	virtual void render(sf::RenderWindow& window) {};
+	virtual void update(float dt) {};
+	virtual void handleClick(sf::Vector2f mouseposition) {}
+	virtual void handleKeyPress(sf::Keyboard::Key key) {}
+	virtual void handleHover(sf::Vector2f mouseposition) {};
+	virtual void handleDrag(std::shared_ptr<sf::RenderWindow> window) {}
+	virtual void handleTextEntry(const sf::Event& event) {}
+	virtual void loadGame(const std::string& filename) {}
+	virtual nlohmann::json setState() { nlohmann::json state; state["empty"] = ""; return state; };
 
+	void setEvent(std::optional<sf::Event> event) { mCurrentEvent = event; }
 	void addSceneObject(SceneObject object, sf::RectangleShape&& shape);
 	void addTextObject(SceneText object, sf::Text&& text);
 	sf::Vector2f getObjectSize(SceneObject object) { return mSceneObjects[object].getSize(); }
@@ -52,10 +74,13 @@ public:
 
 protected:
 	sf::Vector2f mScreenSize;
+	std::optional<sf::Event> mCurrentEvent;
 	std::unordered_map<SceneObject, sf::RectangleShape> mSceneObjects;
 	std::unordered_map<SceneText, sf::Text> mSceneText;
 
 private:
+
+	
 	
 };
 

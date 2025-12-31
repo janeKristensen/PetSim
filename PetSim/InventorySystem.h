@@ -33,10 +33,11 @@ public:
 	void update();
 	void render(sf::RenderWindow& window);
 	const std::tuple<sf::Vector2f, int32_t> getSlotPosition(sf::Vector2f mousePosition) const;
-	void addItemToSlot(sf::Vector2f mousePosition, std::shared_ptr<Item> item);
+	size_t addItemToSlot(sf::Vector2f mousePosition, std::shared_ptr<Item> item);
 	void addItemToSlotIndex(size_t index, std::shared_ptr<Item> item, int amount);
-	void removeFromSlot(sf::Vector2f mousePosition, Item& item);
-	void removeFromSlotIndex(size_t index, Item& item);
+	bool spawnInInventory(std::shared_ptr<Item> item, std::uint32_t amount);
+	std::shared_ptr<Item>  removeFromSlot(sf::Vector2f mousePosition, Item& item);
+	std::shared_ptr<Item>  removeFromSlotIndex(size_t index, Item& item);
 	void dragItem(const sf::Vector2f mousePosition, Item& item);
 	void clearSlots();
 	nlohmann::json saveData();
@@ -53,7 +54,7 @@ private:
 	std::vector<std::shared_ptr<Item>> mItems{ MAX_SLOTS, nullptr };
 	Texture mTexture;
 	std::vector<sf::Text> mAmountText;
-
+	sf::Vector2f mSlotSize;
 	nlohmann::json mState;
 	std::shared_ptr<SaveComponent> mSaveComponent = std::make_shared<SaveComponent>();
 	std::unique_ptr<SaveManager> mSaveManager = std::make_unique<SaveManager>(mSaveComponent);

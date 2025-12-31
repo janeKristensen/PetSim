@@ -17,19 +17,9 @@ Scene::Scene(sf::Vector2f screenSize)
 	));
 	auto& background = mSceneObjects.at(SceneObject::BACKGROUND);
 	background.setPosition({ SCREEN_MARGIN, SCREEN_MARGIN });
-	background.setFillColor(sf::Color::Green);
-}
-
-
-void Scene::update(float dt) {
-
-
-}
-
-void Scene::render(sf::RenderWindow& window) {
-
 	
 }
+
 
 void Scene::addSceneObject(SceneObject object, sf::RectangleShape&& shape)
 {
@@ -41,16 +31,6 @@ void Scene::addTextObject(SceneText object, sf::Text&& text)
 	mSceneText.emplace(object, std::move(text));
 }
 
-
-void Scene::handleClick(sf::Vector2f mouseposition) {
-
-
-}
-
-void Scene::handleTextEntry(const sf::Event& event) {
-
-	
-}
 
 Scene::~Scene() {
 

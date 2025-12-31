@@ -3,7 +3,9 @@
 #include <iostream>
 
 enum class Texture {
-	SPRITESHEET
+	SPRITESHEET,
+	TITLE_MENU,
+	LOADING_SCREEN
 };
 
 class TextureManager
