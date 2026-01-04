@@ -4,11 +4,11 @@
 Game::Game(std::shared_ptr<sf::RenderWindow> window) : mWindow(std::move(window)) {
 
     auto tm = TextureManager::getInstance();
-    tm->loadTexture(Texture::SPRITESHEET, "../ressources/spritesheet.png");
-    tm->loadTexture(Texture::TITLE_MENU, "../ressources/title_menu.png");
-    tm->loadTexture(Texture::LOADING_SCREEN, "../ressources/loading.png");
+    tm->loadTexture(Texture::SPRITESHEET, "../PetSim/ressources/assets/spritesheet.png");
+    tm->loadTexture(Texture::TITLE_MENU, "../PetSim/ressources/assets/title_menu.png");
+    tm->loadTexture(Texture::LOADING_SCREEN, "../PetSim/ressources/assets/loading.png");
    
-    FontManager::getInstance()->loadFont(FontName::TITLE, "../ressources/Gabriola.ttf");
+    FontManager::getInstance()->loadFont(FontName::TITLE, "../PetSim/ressources/assets/Gabriola.ttf");
 
     SceneManager::getInstance()->changeScene(std::make_shared<TitleScene>(screenSize));
 }

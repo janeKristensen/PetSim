@@ -35,3 +35,4 @@ else()
     ${SFML_DIR}/lib/sfml-graphics.lib
 )
 endif()
+

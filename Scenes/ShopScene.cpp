@@ -105,7 +105,8 @@ void ShopScene::handleClick(sf::Vector2f mouseposition)
 	else if(mSceneObjects.at(SceneObject::BUY_BUTTON).getGlobalBounds().contains(mouseposition))
 	{
 		// Add item to inventory
-		auto item = std::make_shared<Item>(Item(mSelectedTile->getItem()));
+		auto item_template = mSelectedTile->getItem();
+		auto item = mGame.createItemFromType(item_template.getTypeId(), item_template.getTextureName(), item_template.getTextureRect(), item_template.getValue());
 		item->setScale({1,1});
 		mGame.addItemToInventory(item, 1);
 	}

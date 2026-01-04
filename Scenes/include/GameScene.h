@@ -2,9 +2,9 @@
 #include <future>
 #include "Model.h"
 #include "scene.h"
-#include "Pet.h"
-#include "Model.h"
 #include "UserInterface.h"
+#include "Pet.h"
+
 
 static void pushRequestToModel(std::string query, std::shared_ptr<Model> model) { model->userQuery(query); }
 
@@ -24,6 +24,8 @@ public:
 	nlohmann::json setState() override;
 	void loadGame(const std::string& filename) override;
 	void addItemToInventory(std::shared_ptr<Item> item, std::uint32_t amount);
+	// Move to item manager
+	std::shared_ptr<Item> createItemFromType(const ItemType type, Texture texName, sf::IntRect texRect, uint32_t value);
 
 private:
 	std::string getPrompt();
@@ -32,8 +34,7 @@ private:
 	void eraseFromStringBuffer();
 	bool isInTextField() { return mInTextField; }
 
-	// Move to item manager
-	std::shared_ptr<Item> createItemFromType(const ItemType type, Texture texName, sf::IntRect texRect, uint32_t value);
+	
 
 	std::vector<std::shared_ptr<Item>> mItems;
 	std::vector<std::shared_ptr<Item>> mItemsToAdd;

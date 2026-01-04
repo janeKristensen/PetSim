@@ -11,7 +11,7 @@ LoadingScene::LoadingScene(sf::Vector2f screenSize) : Scene(screenSize)
 	/* *******************************************************************************
 	*   Loading the llm model
 	* ****************************************************************************/
-	std::string model_path = "../llm_model/models/SmolLM2-1.7B-Instruct-IQ4_XS.gguf";
+	std::string model_path = "../PetSim/ressources/models/SmolLM2-1.7B-Instruct-IQ4_XS.gguf";
 	mModelFuture = std::async(std::launch::async, makeModel, model_path, 0.2, 1.5);
 
 	auto tm = TextureManager::getInstance();

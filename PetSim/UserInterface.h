@@ -1,9 +1,25 @@
 #pragma once
-#include "SFML//Graphics.hpp"
+#include "SFML/Graphics.hpp"
+#include "Command.h"
 #include "FontManager.h"
+#include <memory>
 #include "item.h"
 
+class Command;
 
+class Button {
+public:
+	Button() { mShape = sf::RectangleShape({ 50,50 }); }
+	Button(std::unique_ptr<Command> command) : mCommand(std::move(command)) {}
+
+
+	void setCommand(std::unique_ptr<Command> command) { mCommand = std::move(command); }
+	void setSize(sf::Vector2f size) { mShape.setSize(size); }
+
+private:
+	std::unique_ptr<Command> mCommand;
+	sf::RectangleShape mShape;
+};
 
 class ProgressBar {
 public:
@@ -16,7 +32,6 @@ public:
 		mBar.setFillColor(color);
 	}
 	
-
 	void resizeBar(float value) 
 	{
 		auto x_new = (mFullSize.x / 100) * value;

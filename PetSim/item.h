@@ -13,8 +13,8 @@ enum class ItemType {
 
 class Item {
 public:
-	Item(ItemType typeId, uint32_t value, Texture texName, sf::IntRect tex_rect) 
-		: mTypeId(typeId), mValue(value), mTexture(texName), mSprite(TextureManager::getInstance()->getTexture(texName), tex_rect){}
+	Item(ItemType typeId, uint32_t value, Texture texName, sf::IntRect texRect) 
+		: mTypeId(typeId), mValue(value), mTexture(texName), mSprite(TextureManager::getInstance()->getTexture(texName), texRect){}
 	Item(const Item& other) : mTypeId(other.mTypeId), mValue(other.mValue), mTexture(other.mTexture), mSprite(other.mSprite) {}
 
 	bool operator==(const Item& other) const { return mTypeId == other.getTypeId(); }
@@ -28,6 +28,9 @@ public:
 	void setAlive(bool value) { mIsAlive = value; }
 	const bool isAlive() const { return mIsAlive; }
 	const ItemType getTypeId() const { return mTypeId; }
+	const Texture getTextureName() const { return mTexture; }
+	const sf::IntRect getTextureRect() const { return mSprite.getTextureRect(); }
+	const sf::Vector2f getScale() const { return mSprite.getScale(); }
 	
 	sf::Sprite& getSprite() { return mSprite; }
 	const uint32_t getValue() const { return mValue; };
@@ -52,7 +55,7 @@ private:
 
 class Food : public Item {
 public:
-	Food(ItemType typeId, Texture tex_name, sf::IntRect texRect, uint32_t value) : Item(typeId, value, tex_name, texRect) {}
+	Food(ItemType typeId, Texture texName, sf::IntRect texRect, uint32_t value) : Item(typeId, value, texName, texRect) {}
 	
 	std::string getDescription() override{ return std::format("+{} food", mValue); }
 	void printStats() const override;
@@ -63,7 +66,7 @@ private:
 
 class GroomItem : public Item {
 public:
-	GroomItem(ItemType typeId, Texture tex_name, sf::IntRect texRect, uint32_t value) : Item(typeId, value, tex_name, texRect) {}
+	GroomItem(ItemType typeId, Texture texName, sf::IntRect texRect, uint32_t value) : Item(typeId, value, texName, texRect) {}
 
 	std::string getDescription() override { return std::format("+{} grooming", mValue); }
 	void printStats() const override;

@@ -9,12 +9,20 @@ if (CMAKE_VERSION VERSION_GREATER 3.12)
   set_property(TARGET PetSim PROPERTY CXX_STANDARD 20)
 endif()
 
+add_subdirectory ("ressources")
+
+add_custom_command(TARGET PetSim POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_directory
+        "${PROJECT_SOURCE_DIR}/bin"
+        $<TARGET_FILE_DIR:PetSim>)
+
 # Set the SFML path
 set(SFML_DIR ${CMAKE_SOURCE_DIR}/external/SFML-3.0.0)
 
 include_directories(PetSim
     ${SFML_DIR}/include
     llm_model/include
+    commands/include
     save_system/include
     ressource_managers/include
     scenes/include)
@@ -23,6 +31,7 @@ include_directories(PetSim
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
     target_link_libraries(PetSim PUBLIC
     llm_model
+    commands
     save_system
     scenes
     ressource_managers
@@ -34,6 +43,7 @@ if(CMAKE_BUILD_TYPE STREQUAL "Debug")
 else()
     target_link_libraries(PetSim PUBLIC
     llm_model
+    commands
     save_system
     scenes
     ressource_managers
@@ -43,3 +53,4 @@ else()
     ${SFML_DIR}/lib/sfml-graphics.lib
 )
 endif()
+

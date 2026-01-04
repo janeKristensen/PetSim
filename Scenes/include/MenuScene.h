@@ -2,6 +2,7 @@
 #include "scene.h"
 #include "GameScene.h"
 
+
 class MenuScene : public Scene {
 public:
 	MenuScene(sf::Vector2f screenSize);

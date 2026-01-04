@@ -218,8 +218,8 @@ void GameScene::update(float dt)
 	mSceneText.at(SceneText::GROOM_VALUE).setString(std::format("Grooming: {}", mPet->getGroomValue()));
 	mSceneText.at(SceneText::STATE_VALUE).setString(std::format("State: {}", mPet->getStatus()));
 #endif
-	mFoodBar.resizeBar(mPet->getHungerValue());
-	mGroomBar.resizeBar(mPet->getGroomValue());
+	mFoodBar.resizeBar((float)mPet->getHungerValue());
+	mGroomBar.resizeBar((float)mPet->getGroomValue());
 
 
 	// Update the input text field if field is active
@@ -310,7 +310,7 @@ void GameScene::handleClick(sf::Vector2f mouseposition) {
 		if (mModel != nullptr) 
 		{
 			//////////////////////////
-			// TODO: is it more optimal to create a new blip every time the text field is clicked? Or create a new UI element to add a draw flag?
+			// TODO: is it more optimal to create a new blip every time the text field is clicked? Or create a new UI element and add a draw flag?
 			/////////////////////
 			mSceneObjects.at(SceneObject::TEXT_BLIP).setPosition({ -10, -10 });
 			mFutures.push_back(std::async(std::launch::async, pushRequestToModel, mSceneText.at(SceneText::PROMPT_TEXT).getString(), mModel));
@@ -353,6 +353,15 @@ void GameScene::handleDrag(std::shared_ptr<sf::RenderWindow> window) {
 
 				mouse_position = static_cast<sf::Vector2f>(sf::Mouse::getPosition(*window));
 				mInventorySystem->dragItem(mouse_position, *item);
+				
+				if (mouse_position.x <= mInventorySystem->getSlotPositionAtIndex(0).x - 5*SCREEN_MARGIN)
+				{
+					item->setScale({5,5});
+				}
+				if (item->getScale().x > 1 && mouse_position.x > mInventorySystem->getSlotPositionAtIndex(0).x - 5*SCREEN_MARGIN)
+				{
+					item->setScale({ 1,1 });
+				}
 			}
 
 			// This needs fixing - item should not collide with mouse but should spawn immediately when dragging item from slot

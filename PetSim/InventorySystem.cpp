@@ -151,6 +151,12 @@ size_t InventorySystem::addItemToSlot(sf::Vector2f mousePosition, std::shared_pt
 	// if not dragged inside an inventory slot
 	if (index == -1) {
 
+		// items dragged outside the inventory are scaled up and must be scaled down before adding to inventory
+		if (item->getScale().x > 1)
+		{
+			item->setScale({ 1,1 });
+		}
+		
 		// check if there is an item of same type in inventory
 		for (int i = 0; i < mItems.size(); i++) {
 			
@@ -169,6 +175,7 @@ size_t InventorySystem::addItemToSlot(sf::Vector2f mousePosition, std::shared_pt
 			position = getSlotPositionAtIndex(index);
 		}
 	} 
+	// if dragged inside inventory
 	else if (*mItems[index] != nullptr && *mItems[index] != *item) {
 
 		// if item in slot not same type, find next empty slot.

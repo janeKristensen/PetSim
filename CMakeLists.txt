@@ -15,9 +15,12 @@ project ("PetSim")
 add_subdirectory ("external")
 add_subdirectory ("llama.cpp")
 add_subdirectory ("llm_model")
-add_subdirectory ("ressources")
 add_subdirectory ("SaveSystem")
+add_subdirectory ("Commands")
 add_subdirectory ("RessourceManagers")
 add_subdirectory ("Scenes")
 add_subdirectory ("PetSim")
+
+
+
 

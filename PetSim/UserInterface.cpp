@@ -1,5 +1,6 @@
 #include "UserInterface.h"
 
+
 ShopTile::ShopTile(sf::Vector2f size, sf::Vector2f position, std::tuple<std::unique_ptr<Item>, uint32_t>& item, const sf::Font& font)
 	: mItem(item), mPriceText(sf::Text(font, std::format("{}", std::get<1>(mItem)))),
 	mDescription(sf::Text(font, std::get<0>(mItem)->getDescription()))
