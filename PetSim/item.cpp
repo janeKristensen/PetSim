@@ -1,16 +1,6 @@
 #include "item.h"
 
 
-void Food::printStats() const {
-
-	std::string stats = std::format("+{} food", mValue);
-}
-
-void GroomItem::printStats() const {
-
-	std::string stats = std::format("+{} grooming", mValue);
-}
-
 void Item::toJson(nlohmann::json& j) {
 
 	std::array<float, 6> position;

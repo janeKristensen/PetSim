@@ -36,7 +36,8 @@ enum class SceneObject
 	TEXT_OUTPUT,
 	TEXT_BLIP,
 	FOOD_BAR,
-	GROOM_BAR
+	GROOM_BAR,
+	HEART_ICON
 };
 
 enum class SceneText

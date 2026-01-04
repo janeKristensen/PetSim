@@ -47,7 +47,7 @@ GameScene::GameScene(sf::Vector2f screenSize, std::shared_ptr<Model> model)
 	float inv_height = bg_Y - (3 * SCREEN_MARGIN) - button_height;
 	addSceneObject(SceneObject::INVENTORY, sf::RectangleShape({ INV_WIDTH, inv_height }));
 	auto& inventory = mSceneObjects.at(SceneObject::INVENTORY);
-	inventory.setFillColor(sf::Color::Red);
+	inventory.setFillColor(sf::Color::Magenta);
 	inventory.setPosition(
 		{
 			bg_start_X + bg_X - INV_WIDTH - SCREEN_MARGIN,
@@ -182,11 +182,13 @@ GameScene::GameScene(sf::Vector2f screenSize, std::shared_ptr<Model> model)
 	mInventorySystem->addItemToSlot({ 0, 0 }, food1);
 	mItems.push_back(food1);
 
-	auto food2 = std::make_shared<GroomItem>(ItemType::GROOM, Texture::SPRITESHEET, sf::IntRect({ 32,0 }, { 32,32 }), 10);
-	mInventorySystem->addItemToSlot({ 0, 0 }, food2);
-	mItems.push_back(food2);
+	auto groom = std::make_shared<GroomItem>(ItemType::GROOM, Texture::SPRITESHEET, sf::IntRect({ 32,0 }, { 32,32 }), 10);
+	mInventorySystem->addItemToSlot({ 0, 0 }, groom);
+	mItems.push_back(groom);
 
-	
+	auto toy = std::make_shared<Toy>(ItemType::TOY, Texture::SPRITESHEET, sf::IntRect({ 96,0 }, { 32,32 }), 10);
+	mInventorySystem->addItemToSlot({ 0, 0 }, toy);
+	mItems.push_back(toy);
 }
 
 
@@ -221,6 +223,25 @@ void GameScene::update(float dt)
 	mFoodBar.resizeBar((float)mPet->getHungerValue());
 	mGroomBar.resizeBar((float)mPet->getGroomValue());
 
+	bool happiness_update = mPet->isHappier();
+	if (happiness_update)
+	{
+		// All this needs to be implemented correctly when UI components class is added
+		addSceneObject(SceneObject::HEART_ICON, sf::RectangleShape({ 32,32 }));
+		auto& heart_icon = mSceneObjects.at(SceneObject::HEART_ICON);
+		auto& sprite = mPet->getSprite();
+		heart_icon.setPosition({ sprite.getPosition().x + sprite.getScale().x * sprite.getTextureRect().size.x + 4 * SCREEN_MARGIN, sprite.getPosition().y + 2 * SCREEN_MARGIN});
+		heart_icon.setFillColor(sf::Color::Red);
+		mPet->increasedHappiness(false);
+	}
+	else
+	{
+		// to be removed
+		if (mSceneObjects.count(SceneObject::HEART_ICON))
+		{
+			mSceneObjects.erase(SceneObject::HEART_ICON);
+		}
+	}
 
 	// Update the input text field if field is active
 	if (mInTextField) {
@@ -281,8 +302,6 @@ void GameScene::render(sf::RenderWindow& window)
 	{
 		window.draw(txt.second);
 	}	
-
-	
 }
 
 void GameScene::setModel(std::shared_ptr<Model> model) 

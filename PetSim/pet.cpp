@@ -1,9 +1,9 @@
 #include "Pet.h"
 #include <iostream>
 
-constexpr int32_t MAX_VALUE = 100;
-constexpr int32_t MIN_VALUE = 0;
-constexpr int32_t LIMIT_VALUE = 50;
+constexpr uint32_t MAX_VALUE = 100;
+constexpr uint32_t MIN_VALUE = 0;
+constexpr uint32_t LIMIT_VALUE = 50;
 constexpr int32_t DECAY_VALUE = -1;
 
 Pet::Pet(Texture texName, sf::IntRect texRect, std::string name, std::string species, std::string temper) 
@@ -21,7 +21,8 @@ Pet::Pet(Texture texName,
 	std::string currentStatus,
 	uint32_t hunger,
 	uint32_t groom,
-	uint32_t health
+	uint32_t health,
+	uint32_t happiness
 ) : mSprite(TextureManager::getInstance()->getTexture(texName), texRect),
 	mTexture(texName),
 	mName(name), mSpecies(species), 
@@ -30,46 +31,62 @@ Pet::Pet(Texture texName,
 	mCurrentStatus(currentStatus), 
 	mHunger(hunger),
 	mGroom(groom),
-	mHealth(health){}
+	mHealth(health),
+	mHappiness(happiness){}
 
-void Pet::setHungerValue(int32_t value) {
-
+void Pet::setHungerValue(int32_t value) 
+{
 	mHunger += value;
 	if (mHunger > MAX_VALUE) mHunger = MAX_VALUE;
 	else if (mHunger < MIN_VALUE) mHunger = MIN_VALUE;
 }
-void Pet::setGroomValue(int32_t value) {
-
+void Pet::setGroomValue(int32_t value) 
+{
 	mGroom += value;
 	if (mGroom > MAX_VALUE) mGroom = MAX_VALUE;
 	else if (mGroom < MIN_VALUE) mGroom = MIN_VALUE;
 }
-void Pet::setHealthValue(int32_t value) {
-
+void Pet::setHealthValue(int32_t value) 
+{
 	mHealth += value;
 	if (mHealth > MAX_VALUE) mHealth = MAX_VALUE;
 	else if (mHealth < MIN_VALUE) mHealth = MIN_VALUE;
 }
 
-void Pet::decayValues() {
+void Pet::setHappinessValue(int32_t value) 
+{
+	mHappiness += value;
+	if (mHappiness > MAX_VALUE) mHappiness = MAX_VALUE;
+	else if (mHealth < MIN_VALUE) mHappiness = MIN_VALUE;
+}
+
+void Pet::increasedHappiness(bool value)
+{
+	mIsHappier = value;
+}
+
+void Pet::decayValues() 
+{
 
 	setHungerValue(DECAY_VALUE);
 	setGroomValue(DECAY_VALUE);
+	setHappinessValue(DECAY_VALUE);
 	if (mGroom < LIMIT_VALUE || mHunger < LIMIT_VALUE) setHealthValue(DECAY_VALUE);
+	if (mHealth < LIMIT_VALUE) setHappinessValue(DECAY_VALUE);
 }
 
-void Pet::setSpritePosition(sf::Vector2f position){
-
+void Pet::setSpritePosition(sf::Vector2f position)
+{
 	mSprite.setPosition(position);
 }
 
-void Pet::scaleSprite(sf::Vector2f factors) {
-
+void Pet::scaleSprite(sf::Vector2f factors) 
+{
 	mSprite.setScale(factors);
 }
 
-void Pet::toJson(nlohmann::json& j, const Pet& pet) {
-
+void Pet::toJson(nlohmann::json& j, const Pet& pet) 
+{
 	auto tex_rect = mSprite.getTextureRect();
 
 	j = nlohmann::json{ 
@@ -81,7 +98,8 @@ void Pet::toJson(nlohmann::json& j, const Pet& pet) {
 		{ "hunger", mHunger },
 		{ "groom", mGroom },
 		{ "health", mHealth },
-		{"texName", mTexture},
+		{ "happiness", mHappiness},
+		{ "texName", mTexture},
 		{ "sprite", {
 			{ "position", 
 				{
@@ -103,7 +121,8 @@ void Pet::toJson(nlohmann::json& j, const Pet& pet) {
 	};
 }
 
-void Pet::from_json(const nlohmann::json& j, std::shared_ptr<Pet> p) {
+void Pet::from_json(const nlohmann::json& j, std::shared_ptr<Pet> p) 
+{
 	j.at("name").get_to(p->mName);
 	j.at("species").get_to(p->mSpecies);
 	j.at("temper").get_to(p->mTemper);
@@ -112,6 +131,7 @@ void Pet::from_json(const nlohmann::json& j, std::shared_ptr<Pet> p) {
 	j.at("hunger").get_to(p->mHunger);
 	j.at("groom").get_to(p->mGroom);
 	j.at("health").get_to(p->mHealth);
+	j.at("happiness").get_to(p->mHappiness);
 	j.at("texName").get_to(p->mTexture);
 	
 	sf::Vector2i position = { 
@@ -129,14 +149,14 @@ void Pet::from_json(const nlohmann::json& j, std::shared_ptr<Pet> p) {
 	p->mSprite.setTextureRect(tex_rect);
 }
 
-void Pet::setState(nlohmann::json) {
-
+void Pet::setState(nlohmann::json) 
+{
 	toJson(mState, *this);
 	mSaveComponent->setState(mState);
 }
 
-nlohmann::json Pet::saveData() {
-
+nlohmann::json Pet::saveData() 
+{
 	setState(mState);
 	return mState;
 }

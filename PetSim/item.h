@@ -8,7 +8,8 @@
 
 enum class ItemType {
 	FOOD,
-	GROOM
+	GROOM,
+	TOY
 };
 
 class Item {
@@ -58,7 +59,7 @@ public:
 	Food(ItemType typeId, Texture texName, sf::IntRect texRect, uint32_t value) : Item(typeId, value, texName, texRect) {}
 	
 	std::string getDescription() override{ return std::format("+{} food", mValue); }
-	void printStats() const override;
+	
 
 private:
 	
@@ -69,8 +70,19 @@ public:
 	GroomItem(ItemType typeId, Texture texName, sf::IntRect texRect, uint32_t value) : Item(typeId, value, texName, texRect) {}
 
 	std::string getDescription() override { return std::format("+{} grooming", mValue); }
-	void printStats() const override;
+	
 
 private:
 	
+};
+
+class Toy : public Item {
+public:
+	Toy(ItemType typeId, Texture texName, sf::IntRect texRect, uint32_t value) : Item(typeId, value, texName, texRect) {}
+
+	std::string getDescription() override { return std::format("+{} happiness", mValue); }
+	
+
+private:
+
 };

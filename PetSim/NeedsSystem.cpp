@@ -14,15 +14,20 @@ void NeedsSystem::update(float dt) {
 
 void NeedsSystem::processItem(Item& item) {
 
-    Food* food = dynamic_cast<Food*>(&item);
-    if (food){
-
-        mPet->setHungerValue(food->getValue());
-    }
-    else {
-
-        GroomItem* groom = dynamic_cast<GroomItem*>(&item);
-        if (groom) mPet->setGroomValue(groom->getValue());
+    auto type = item.getTypeId();
+    switch (type)
+    {
+        case ItemType::FOOD:
+            mPet->setHungerValue(item.getValue());
+            break;
+        case ItemType::GROOM:
+            mPet->setGroomValue(item.getValue());
+            break;
+        case ItemType::TOY:
+            auto prev_happiness = mPet->getHappinessValue();
+            mPet->setHappinessValue(item.getValue());
+            if(prev_happiness < mPet->getHappinessValue()) mPet->increasedHappiness(true);
+            break;
     }   
 }
 
