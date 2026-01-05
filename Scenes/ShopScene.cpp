@@ -6,25 +6,29 @@ ShopScene::ShopScene(sf::Vector2f screenSize, std::shared_ptr<Game> game, GameSc
 {
 	auto tm = TextureManager::getInstance();
 
-	addSceneObject(SceneObject::START_MENU, sf::RectangleShape({
-			screenSize.x - 2*SCREEN_MARGIN,
-			screenSize.y - 2*SCREEN_MARGIN
-		}));
-	auto& menu = mSceneObjects.at(SceneObject::START_MENU);
-	menu.setTexture(&tm->getTexture(Texture::TITLE_MENU));
-	menu.setPosition({ SCREEN_MARGIN, SCREEN_MARGIN });
+	std::shared_ptr<sf::RectangleShape> menu = std::make_shared<sf::RectangleShape>(sf::Vector2f{
+			screenSize.x - 2 * SCREEN_MARGIN,
+			screenSize.y - 2 * SCREEN_MARGIN
+		});
+	menu->setTexture(&tm->getTexture(Texture::TITLE_MENU));
+	menu->setPosition({ SCREEN_MARGIN, SCREEN_MARGIN });
+	addSceneObject(SceneObject::START_MENU, menu);
 
-	auto pos = menu.getPosition();
-	addSceneObject(SceneObject::RETURN_BUTTON, sf::RectangleShape({ 32,32 }));
-	auto& return_button = mSceneObjects.at(SceneObject::RETURN_BUTTON);
-	return_button.setTexture(&tm->getTexture(Texture::SPRITESHEET));
-	return_button.setTextureRect({ {64,0}, {32,32} });
-	return_button.setPosition({ screenSize.x - SCREEN_MARGIN - return_button.getSize().x, pos.y + SCREEN_MARGIN});
 
-	addSceneObject(SceneObject::BUY_BUTTON, sf::RectangleShape({100,50}));
-	auto& buy_button = mSceneObjects.at(SceneObject::BUY_BUTTON);
-	buy_button.setFillColor(sf::Color::Magenta);
-	buy_button.setPosition({ screenSize.x - 2*SCREEN_MARGIN - buy_button.getSize().x, screenSize.y - 2 * SCREEN_MARGIN - buy_button.getSize().y });
+	auto pos = menu->getPosition();
+	std::shared_ptr<Command> return_cmd = std::make_shared<ContinueCommand>(mGame);
+	std::shared_ptr<sf::RectangleShape> return_btn = std::make_shared<Button>(sf::Vector2f{ 32,32 }, return_cmd);
+	return_btn->setTexture(&tm->getTexture(Texture::SPRITESHEET));
+	return_btn->setTextureRect({ {64,0}, {32,32} });
+	return_btn->setPosition({ screenSize.x - SCREEN_MARGIN - return_btn->getSize().x, pos.y + SCREEN_MARGIN});
+	addSceneObject(SceneObject::RETURN_BUTTON, return_btn);
+
+
+	std::shared_ptr<sf::RectangleShape> buy_btn = std::make_shared<Button>(sf::Vector2f{ 100,50 });
+	buy_btn->setFillColor(sf::Color::Magenta);
+	buy_btn->setPosition({ screenSize.x - 2*SCREEN_MARGIN - buy_btn->getSize().x, screenSize.y - 2 * SCREEN_MARGIN - buy_btn->getSize().y });
+	addSceneObject(SceneObject::BUY_BUTTON, buy_btn);
+
 
 	// Add items to shop scene
 	mShopItems.push_back(std::make_tuple(std::make_unique<GroomItem>(ItemType::BRUSH, Texture::SPRITESHEET, sf::IntRect({ 32,0 }, { 32,32 }), 10), 100));
@@ -58,9 +62,9 @@ void ShopScene::update(float dt)
 
 void ShopScene::render(sf::RenderWindow& window)
 {
-	window.draw(mSceneObjects.at(SceneObject::BORDER));
-	window.draw(mSceneObjects.at(SceneObject::BACKGROUND));
-	window.draw(mSceneObjects.at(SceneObject::START_MENU));
+	window.draw(*mSceneObjects.at(SceneObject::BORDER));
+	window.draw(*mSceneObjects.at(SceneObject::BACKGROUND));
+	window.draw(*mSceneObjects.at(SceneObject::START_MENU));
 
 	for (auto& obj : mSceneObjects)
 	{
@@ -68,7 +72,7 @@ void ShopScene::render(sf::RenderWindow& window)
 			obj.first == SceneObject::BORDER || 
 			obj.first == SceneObject::START_MENU) continue;
 		
-		window.draw(obj.second);
+		window.draw(*obj.second);
 	}
 
 	for (auto& tile : mShopTiles)
@@ -99,17 +103,22 @@ void ShopScene::handleHover(sf::Vector2f mouseposition)
 
 void ShopScene::handleClick(sf::Vector2f mouseposition)
 {
-	if (mSceneObjects.at(SceneObject::RETURN_BUTTON).getGlobalBounds().contains(mouseposition))
+	if (mSceneObjects.at(SceneObject::RETURN_BUTTON)->getGlobalBounds().contains(mouseposition))
 	{
-		SceneManager::getInstance()->removeScene();
+		auto btn = std::static_pointer_cast<Button>(mSceneObjects.at(SceneObject::RETURN_BUTTON));
+		btn->onClick();
 	}
-	else if(mSceneObjects.at(SceneObject::BUY_BUTTON).getGlobalBounds().contains(mouseposition))
+	else if(mSceneObjects.at(SceneObject::BUY_BUTTON)->getGlobalBounds().contains(mouseposition))
 	{
-		// Add item to inventory
-		auto item_template = mSelectedTile->getItem();
-		auto item = mGameScene.createItemFromType(item_template.getTypeId(), item_template.getTextureName(), item_template.getTextureRect(), item_template.getValue());
-		item->setScale({1,1});
-		mGameScene.addItemToInventory(item, 1);
+		auto btn = std::static_pointer_cast<Button>(mSceneObjects.at(SceneObject::BUY_BUTTON));
+		auto cmd = btn->getCommand();
+		if (!cmd)
+		{
+			std::shared_ptr<Command> buy_cmd = std::make_shared<BuyCommand>(shared_from_this());
+			btn->setCommand(buy_cmd);
+		}
+
+		btn->onClick();
 	}
 	else 
 	{

@@ -75,6 +75,27 @@ void Game::saveGame()
     mSaveManager->showHistory();
 }
 
+void Game::loadGame(const std::string& filename)
+{
+    auto scene_mng = SceneManager::getInstance();
+    auto scene = scene_mng->getScene();
+    auto menu = dynamic_pointer_cast<MenuScene>(scene);
+    if (menu)
+    {
+        auto game_scene = static_pointer_cast<GameScene>(scene_mng->getPreviousScene());
+        game_scene->loadGame(filename);
+    }
+    else
+    {
+        mState = scene_mng->getScene()->setState();
+    }
+}
+
+void Game::quitGame()
+{
+    mWindow->close();
+}
+
 
 void Game::setState() 
 {

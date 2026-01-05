@@ -23,6 +23,8 @@ public:
 	void render();
 	//std::shared_ptr<Scene> getScene() { return SceneManager::getInstance()->getScene(); }
 	void saveGame();
+	void loadGame(const std::string& filename);
+	void quitGame();
 
 private:
 	void setState();

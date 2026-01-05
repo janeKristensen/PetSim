@@ -10,13 +10,14 @@ class Command;
 class Button : public sf::RectangleShape{
 public:
 	Button(sf::Vector2f size) : sf::RectangleShape(size) {}
-	Button(sf::Vector2f size, std::unique_ptr<Command> command) : sf::RectangleShape(size), mCommand(std::move(command)) {}
+	Button(sf::Vector2f size, std::shared_ptr<Command> command) : sf::RectangleShape(size), mCommand(command) {}
 
-	void setCommand(std::unique_ptr<Command> command) { mCommand = std::move(command); }
+	void setCommand(std::shared_ptr<Command> command) { mCommand = command; }
+	std::shared_ptr<Command> getCommand() { return mCommand; }
 	void onClick() { mCommand->execute(); }
 
 private:
-	std::unique_ptr<Command> mCommand;
+	std::shared_ptr<Command> mCommand = nullptr;
 };
 
 class ProgressBar {

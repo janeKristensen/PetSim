@@ -68,16 +68,15 @@ public:
 	virtual nlohmann::json setState() { mState["empty"] = ""; return mState; };
 
 	void setEvent(std::optional<sf::Event> event) { mCurrentEvent = event; }
-	void addSceneObject(SceneObject object, sf::RectangleShape&& shape);
+	void addSceneObject(SceneObject object, std::shared_ptr<sf::RectangleShape> shape);
 	void addTextObject(SceneText object, sf::Text&& text);
-	sf::Vector2f getObjectSize(SceneObject object) { return mSceneObjects[object].getSize(); }
-	sf::Vector2f getObjectPosition(SceneObject object) { return mSceneObjects[object].getPosition(); }
+	sf::Vector2f getObjectSize(SceneObject object) { return mSceneObjects[object]->getSize(); }
+	sf::Vector2f getObjectPosition(SceneObject object) { return mSceneObjects[object]->getPosition(); }
 
 protected:
 	sf::Vector2f mScreenSize;
 	std::optional<sf::Event> mCurrentEvent;
-	std::unordered_map<SceneObject, sf::RectangleShape> mSceneObjects;
-	std::unordered_map<SceneObject, std::shared_ptr<sf::RectangleShape>> mSceneUI;
+	std::unordered_map<SceneObject, std::shared_ptr<sf::RectangleShape>> mSceneObjects;
 	std::unordered_map<SceneText, sf::Text> mSceneText;
 	std::shared_ptr<Game> mGame;
 	nlohmann::json mState;

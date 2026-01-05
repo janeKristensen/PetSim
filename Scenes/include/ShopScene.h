@@ -5,7 +5,7 @@
 class GameScene;
 
 
-class ShopScene : public Scene {
+class ShopScene : public Scene, public std::enable_shared_from_this<ShopScene> {
 public:
 	ShopScene(sf::Vector2f screenSize, std::shared_ptr<Game> game, GameScene& scene);
 	~ShopScene() { delete mSelectedTile; }
@@ -14,10 +14,12 @@ public:
 	void handleHover(sf::Vector2f mouseposition) override;
 	void handleClick(sf::Vector2f mouseposition) override;
 	void handleTextEntry(const sf::Event& event) override;
+	ShopTile& getSelectedTile() const { return *mSelectedTile; }
+	GameScene& getGameScene() { return mGameScene; }
 
 private:
 	std::vector<std::tuple<std::unique_ptr<Item>, uint32_t>> mShopItems;
 	std::vector<ShopTile> mShopTiles;
-	ShopTile* mSelectedTile;
+	ShopTile* mSelectedTile = nullptr;
 	GameScene& mGameScene;
 };
