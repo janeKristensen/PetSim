@@ -7,16 +7,20 @@
 #include "Memento.h"
 
 enum class ItemType {
-	FOOD,
-	GROOM,
-	TOY
+	BONE,
+	BRUSH,
+	BALL
 };
 
 class Item {
 public:
 	Item(ItemType typeId, uint32_t value, Texture texName, sf::IntRect texRect) 
 		: mTypeId(typeId), mValue(value), mTexture(texName), mSprite(TextureManager::getInstance()->getTexture(texName), texRect){}
-	Item(const Item& other) : mTypeId(other.mTypeId), mValue(other.mValue), mTexture(other.mTexture), mSprite(other.mSprite) {}
+
+	Item(const ItemType typeId, const uint32_t value, const sf::Sprite& sprite, const Texture texName, const bool isAlive, const nlohmann::json& state)
+		: mTypeId(typeId), mValue(value), mSprite(sprite), mTexture(texName), mIsAlive(isAlive), mState(state) {}
+
+	Item(const Item& other);
 
 	bool operator==(const Item& other) const { return mTypeId == other.getTypeId(); }
 	bool operator==(const std::nullptr_t) const { return this == nullptr; }
@@ -39,17 +43,16 @@ public:
 
 protected:
 	uint32_t mValue;
-
-private:
-	
-	void setState(nlohmann::json);
-	void toJson(nlohmann::json& j);
-
 	const ItemType mTypeId;
 	bool mIsAlive = true;
 	sf::Sprite mSprite;
 	Texture mTexture;
 	nlohmann::json mState;
+
+private:
+	void setState(nlohmann::json);
+	void toJson(nlohmann::json& j);
+
 	std::shared_ptr<SaveComponent> mSaveComponent = std::make_shared<SaveComponent>();
 	std::unique_ptr<SaveManager> mSaveManager = std::make_unique<SaveManager>(mSaveComponent);
 };
@@ -57,6 +60,7 @@ private:
 class Food : public Item {
 public:
 	Food(ItemType typeId, Texture texName, sf::IntRect texRect, uint32_t value) : Item(typeId, value, texName, texRect) {}
+	Food(const Food& other) : Item(other.mTypeId, other.mValue, other.mSprite, other.mTexture, other.mIsAlive, other.mState) {}
 	
 	std::string getDescription() override{ return std::format("+{} food", mValue); }
 	
@@ -68,6 +72,7 @@ private:
 class GroomItem : public Item {
 public:
 	GroomItem(ItemType typeId, Texture texName, sf::IntRect texRect, uint32_t value) : Item(typeId, value, texName, texRect) {}
+	GroomItem(const GroomItem& other) : Item(other.mTypeId, other.mValue, other.mSprite, other.mTexture, other.mIsAlive, other.mState) {}
 
 	std::string getDescription() override { return std::format("+{} grooming", mValue); }
 	
@@ -79,6 +84,7 @@ private:
 class Toy : public Item {
 public:
 	Toy(ItemType typeId, Texture texName, sf::IntRect texRect, uint32_t value) : Item(typeId, value, texName, texRect) {}
+	Toy(const Toy& other) : Item(other.mTypeId, other.mValue, other.mSprite, other.mTexture, other.mIsAlive, other.mState) {}
 
 	std::string getDescription() override { return std::format("+{} happiness", mValue); }
 	

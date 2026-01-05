@@ -1,6 +1,13 @@
 #include "item.h"
 
 
+
+Item::Item(const Item& other) 
+	: mTypeId(other.mTypeId), mValue(other.mValue), mTexture(other.mTexture), mSprite(other.mSprite), mIsAlive(other.mIsAlive), mState(other.mState)
+{
+
+}
+
 void Item::toJson(nlohmann::json& j) {
 
 	std::array<float, 6> position;

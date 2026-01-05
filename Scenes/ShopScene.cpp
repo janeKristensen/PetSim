@@ -26,8 +26,8 @@ ShopScene::ShopScene(sf::Vector2f screenSize, GameScene& game) : Scene(screenSiz
 	buy_button.setPosition({ screenSize.x - 2*SCREEN_MARGIN - buy_button.getSize().x, screenSize.y - 2 * SCREEN_MARGIN - buy_button.getSize().y });
 
 	// Add items to shop scene
-	mShopItems.push_back(std::make_tuple(std::make_unique<GroomItem>(ItemType::GROOM, Texture::SPRITESHEET, sf::IntRect({ 32,0 }, { 32,32 }), 10), 100));
-	mShopItems.push_back(std::make_tuple(std::make_unique<Food>(ItemType::FOOD, Texture::SPRITESHEET, sf::IntRect({ 0,0 }, { 32,32 }), 10), 100));
+	mShopItems.push_back(std::make_tuple(std::make_unique<GroomItem>(ItemType::BRUSH, Texture::SPRITESHEET, sf::IntRect({ 32,0 }, { 32,32 }), 10), 100));
+	mShopItems.push_back(std::make_tuple(std::make_unique<Food>(ItemType::BONE, Texture::SPRITESHEET, sf::IntRect({ 0,0 }, { 32,32 }), 10), 100));
 
 	sf::Vector2f start_pos = { screenSize.x / 5, screenSize.y / 3 };
 	sf::Vector2f tile_size = { 200,200 };

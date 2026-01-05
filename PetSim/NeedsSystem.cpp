@@ -14,21 +14,28 @@ void NeedsSystem::update(float dt) {
 
 void NeedsSystem::processItem(Item& item) {
 
-    auto type = item.getTypeId();
-    switch (type)
+    Food* food = dynamic_cast<Food*>(&item);
+    if (food)
     {
-        case ItemType::FOOD:
-            mPet->setHungerValue(item.getValue());
-            break;
-        case ItemType::GROOM:
-            mPet->setGroomValue(item.getValue());
-            break;
-        case ItemType::TOY:
-            auto prev_happiness = mPet->getHappinessValue();
-            mPet->setHappinessValue(item.getValue());
-            if(prev_happiness < mPet->getHappinessValue()) mPet->increasedHappiness(true);
-            break;
-    }   
+        mPet->setHungerValue(item.getValue());
+        return;
+    }
+      
+    GroomItem* groom = dynamic_cast<GroomItem*>(&item);
+    if (groom)
+    {
+        mPet->setGroomValue(item.getValue());
+        return;
+    }
+       
+    Toy* toy = dynamic_cast<Toy*>(&item);
+    if (toy)
+    {
+        auto prev_happiness = mPet->getHappinessValue();
+        mPet->setHappinessValue(item.getValue());
+        if (prev_happiness < mPet->getHappinessValue()) mPet->increasedHappiness(true);
+        return;
+    }
 }
 
 void NeedsSystem::decayValues(float dt) {

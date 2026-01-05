@@ -178,15 +178,15 @@ GameScene::GameScene(sf::Vector2f screenSize, std::shared_ptr<Model> model)
 	mNeedsSystem->setModel(mModel);
 	mInventorySystem = std::make_unique<InventorySystem>(getObjectSize(SceneObject::INVENTORY), getObjectPosition(SceneObject::INVENTORY), Texture::SPRITESHEET);
 
-	auto food1 = std::make_shared<Food>(ItemType::FOOD, Texture::SPRITESHEET, sf::IntRect({ 0,0 }, { 32,32 }), 10);
+	auto food1 = std::make_shared<Food>(ItemType::BONE, Texture::SPRITESHEET, sf::IntRect({ 0,0 }, { 32,32 }), 10);
 	mInventorySystem->addItemToSlot({ 0, 0 }, food1);
 	mItems.push_back(food1);
 
-	auto groom = std::make_shared<GroomItem>(ItemType::GROOM, Texture::SPRITESHEET, sf::IntRect({ 32,0 }, { 32,32 }), 10);
+	auto groom = std::make_shared<GroomItem>(ItemType::BRUSH, Texture::SPRITESHEET, sf::IntRect({ 32,0 }, { 32,32 }), 10);
 	mInventorySystem->addItemToSlot({ 0, 0 }, groom);
 	mItems.push_back(groom);
 
-	auto toy = std::make_shared<Toy>(ItemType::TOY, Texture::SPRITESHEET, sf::IntRect({ 96,0 }, { 32,32 }), 10);
+	auto toy = std::make_shared<Toy>(ItemType::BALL, Texture::SPRITESHEET, sf::IntRect({ 96,0 }, { 32,32 }), 10);
 	mInventorySystem->addItemToSlot({ 0, 0 }, toy);
 	mItems.push_back(toy);
 }
@@ -446,14 +446,19 @@ std::shared_ptr<Item> GameScene::createItemFromType(const ItemType type, Texture
 {
 	std::shared_ptr<Item> item = nullptr;
 
-	switch (type) {
-	case ItemType::FOOD:
+	if (type == ItemType::BONE)
+	{
 		item = std::make_shared<Food>(type, texName, texRect, value);
-		break;
-	case ItemType::GROOM:
-		item = std::make_shared<GroomItem>(type, texName, texRect, value);
-		break;
 	}
+	else if (type == ItemType::BRUSH)
+	{
+		item = std::make_shared<GroomItem>(type, texName, texRect, value);
+	}
+	else if (type == ItemType::BALL)
+	{
+		item = std::make_shared<Toy>(type, texName, texRect, value);
+	}
+		
 	return item;
 }
 

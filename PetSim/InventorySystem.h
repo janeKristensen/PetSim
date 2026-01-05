@@ -48,7 +48,7 @@ private:
 	
 	size_t getFirstEmptySlot();
 	void adjustItemCount(int32_t value, size_t index);
-	std::shared_ptr<Item> spawnItem(const Item& item);
+	std::shared_ptr<Item> spawnItem(Item& item);
 	void despawnItem(std::shared_ptr<Item> item);
 
 	std::array<std::array<Slot, COLUMNS>, ROWS> mInventory;

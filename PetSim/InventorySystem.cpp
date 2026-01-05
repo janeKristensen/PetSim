@@ -245,14 +245,36 @@ void InventorySystem::despawnItem(std::shared_ptr<Item> item) {
 	item.reset();	
 }
 
-std::shared_ptr<Item> InventorySystem::spawnItem(const Item& item) {
+std::shared_ptr<Item> InventorySystem::spawnItem(Item& item) {
 
 #ifndef NDEBUG
 	std::cout << "Spawned item" << std::endl;
 #endif
 
-	Item new_item(item);
-	return std::make_shared<Item>(new_item);
+	std::shared_ptr<Item> new_item = nullptr;
+
+	Food* food = dynamic_cast<Food*>(&item);
+	if (food)
+	{
+		new_item = std::make_shared<Food>(*food);
+		return new_item;
+	}
+
+	GroomItem* groom = dynamic_cast<GroomItem*>(&item);
+	if (groom)
+	{
+		new_item = std::make_shared<GroomItem>(*groom);
+		return new_item;
+	}
+
+	Toy* toy = dynamic_cast<Toy*>(&item);
+	if (toy)
+	{
+		new_item = std::make_shared<Toy>(*toy);
+		return new_item;
+	}
+
+	return new_item;
 }
 
 void InventorySystem::clearSlots() {
