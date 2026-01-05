@@ -1,4 +1,5 @@
 ﻿#include "PetSim.h"
+#include "MenuScene.h"
 
 
 Game::Game(std::shared_ptr<sf::RenderWindow> window) : mWindow(std::move(window)) {
@@ -9,10 +10,12 @@ Game::Game(std::shared_ptr<sf::RenderWindow> window) : mWindow(std::move(window)
     tm->loadTexture(Texture::LOADING_SCREEN, "../PetSim/ressources/assets/loading.png");
    
     FontManager::getInstance()->loadFont(FontName::TITLE, "../PetSim/ressources/assets/Gabriola.ttf");
-
-    SceneManager::getInstance()->changeScene(std::make_shared<TitleScene>(screenSize));
 }
 
+void Game::init()
+{
+    SceneManager::getInstance()->changeScene(std::make_shared<TitleScene>(screenSize, shared_from_this()));
+}
 
 void Game::pollEvents() 
 {
@@ -75,6 +78,18 @@ void Game::saveGame()
 
 void Game::setState() 
 {
-    mState = SceneManager::getInstance()->getScene()->setState();
+    auto scene_mng = SceneManager::getInstance();
+    auto scene = scene_mng->getScene();
+    auto menu = dynamic_pointer_cast<MenuScene>(scene);
+    if (menu)
+    {
+        auto game_scene = static_pointer_cast<GameScene>(scene_mng->getPreviousScene());
+        mState = game_scene->setState();
+    }
+    else
+    {
+        mState = scene_mng->getScene()->setState();
+    }
+    
     mSaveComponent->setState(mState);
 }

@@ -1,7 +1,8 @@
 #include "ShopScene.h"
 #include "GameScene.h"
+#include "PetSim.h"
 
-ShopScene::ShopScene(sf::Vector2f screenSize, GameScene& game) : Scene(screenSize), mGame(game)
+ShopScene::ShopScene(sf::Vector2f screenSize, std::shared_ptr<Game> game, GameScene& scene) : Scene(screenSize, game), mGameScene(scene)
 {
 	auto tm = TextureManager::getInstance();
 
@@ -106,9 +107,9 @@ void ShopScene::handleClick(sf::Vector2f mouseposition)
 	{
 		// Add item to inventory
 		auto item_template = mSelectedTile->getItem();
-		auto item = mGame.createItemFromType(item_template.getTypeId(), item_template.getTextureName(), item_template.getTextureRect(), item_template.getValue());
+		auto item = mGameScene.createItemFromType(item_template.getTypeId(), item_template.getTextureName(), item_template.getTextureRect(), item_template.getValue());
 		item->setScale({1,1});
-		mGame.addItemToInventory(item, 1);
+		mGameScene.addItemToInventory(item, 1);
 	}
 	else 
 	{

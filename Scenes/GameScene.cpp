@@ -3,8 +3,8 @@
 #include "MenuScene.h"
 #include "LoadingScene.h"
 
-GameScene::GameScene(sf::Vector2f screenSize, std::shared_ptr<Model> model)
-	: Scene(screenSize), mModel(model), mScreenSize(screenSize) {
+GameScene::GameScene(sf::Vector2f screenSize, std::shared_ptr<Game> game, std::shared_ptr<Model> model)
+	: Scene(screenSize, game), mModel(model), mScreenSize(screenSize) {
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -343,7 +343,7 @@ void GameScene::handleClick(sf::Vector2f mouseposition) {
 	}
 	else if (mSceneObjects.at(SceneObject::SHOP_BUTTON).getGlobalBounds().contains(mouseposition)) 
 	{
-		SceneManager::getInstance()->changeScene(std::make_shared<ShopScene>(mScreenSize, *this));
+		SceneManager::getInstance()->changeScene(std::make_shared<ShopScene>(mScreenSize, mGame, *this));
 	}
 }
 
@@ -351,7 +351,7 @@ void GameScene::handleKeyPress(sf::Keyboard::Key key)
 {
 	if (key == sf::Keyboard::Key::M) {
 
-		SceneManager::getInstance()->changeScene(std::make_shared<MenuScene>(mScreenSize));
+		SceneManager::getInstance()->changeScene(std::make_shared<MenuScene>(mScreenSize, mGame));
 	}
 }
 

@@ -7,18 +7,16 @@
 
 class Command;
 
-class Button {
+class Button : public sf::RectangleShape{
 public:
-	Button() { mShape = sf::RectangleShape({ 50,50 }); }
-	Button(std::unique_ptr<Command> command) : mCommand(std::move(command)) {}
-
+	Button(sf::Vector2f size) : sf::RectangleShape(size) {}
+	Button(sf::Vector2f size, std::unique_ptr<Command> command) : sf::RectangleShape(size), mCommand(std::move(command)) {}
 
 	void setCommand(std::unique_ptr<Command> command) { mCommand = std::move(command); }
-	void setSize(sf::Vector2f size) { mShape.setSize(size); }
+	void onClick() { mCommand->execute(); }
 
 private:
 	std::unique_ptr<Command> mCommand;
-	sf::RectangleShape mShape;
 };
 
 class ProgressBar {

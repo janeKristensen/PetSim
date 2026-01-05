@@ -1,8 +1,9 @@
 #include "MenuScene.h"
+#include "UserInterface.h"
 
 constexpr float BUTTON_MARGIN = 30.0;
 
-MenuScene::MenuScene(sf::Vector2f screenSize) : Scene(screenSize)
+MenuScene::MenuScene(sf::Vector2f screenSize, std::shared_ptr<Game> game) : Scene(screenSize, game)
 {
 	auto tm = TextureManager::getInstance();
 
@@ -29,8 +30,8 @@ MenuScene::MenuScene(sf::Vector2f screenSize) : Scene(screenSize)
 
 	addSceneObject(SceneObject::SAVE_BUTTON, sf::RectangleShape({ 200,50 }));
 	auto& save_button = mSceneObjects.at(SceneObject::SAVE_BUTTON);
-	save_button.setTexture(&tm->getTexture(Texture::SPRITESHEET));
-	save_button.setTextureRect({{ 64,32 }, { 64,32 }});
+	/*save_button.setTexture(&tm->getTexture(Texture::SPRITESHEET));
+	save_button.setTextureRect({{ 64,32 }, { 64,32 }});*/
 	save_button.setPosition({load_button.getPosition().x, load_button.getPosition().y + load_button.getSize().y + BUTTON_MARGIN});
 
 	addSceneObject(SceneObject::QUIT_BUTTON, sf::RectangleShape({ 200,50 }));
@@ -38,6 +39,14 @@ MenuScene::MenuScene(sf::Vector2f screenSize) : Scene(screenSize)
 	quit_button.setTexture(&tm->getTexture(Texture::SPRITESHEET));
 	quit_button.setTextureRect({ { 128,32 }, { 64,32 } });
 	quit_button.setPosition({ save_button.getPosition().x, save_button.getPosition().y + save_button.getSize().y + BUTTON_MARGIN });
+
+	// Command experiment
+	std::unique_ptr<Command> command = std::make_unique<SaveCommand>(mGame);
+	std::shared_ptr<sf::RectangleShape> save_btn = std::make_shared<Button>(sf::Vector2f{200,50}, std::move(command));
+	save_btn->setPosition({ load_button.getPosition().x, load_button.getPosition().y + load_button.getSize().y + BUTTON_MARGIN });
+	save_btn->setTexture(&tm->getTexture(Texture::SPRITESHEET));
+	save_btn->setTextureRect({ { 64,32 }, { 64,32 } });
+	mSceneUI.emplace(SceneObject::SAVE_BUTTON, save_btn);
 }
 
 void MenuScene::update(float dt)
@@ -60,6 +69,12 @@ void MenuScene::render(sf::RenderWindow& window)
 	{
 		window.draw(txt.second);
 	}
+
+	for (auto& obj : mSceneUI)
+	{
+		if (obj.first == SceneObject::BACKGROUND || obj.first == SceneObject::BORDER) continue;
+		window.draw(*obj.second);
+	}
 }
 
 
@@ -76,9 +91,10 @@ void MenuScene::handleClick(sf::Vector2f mouseposition)
 		scene_manager->getPreviousScene()->loadGame("pretty.json");
 		scene_manager->removeScene();
 	}
-	else if (mSceneObjects.at(SceneObject::SAVE_BUTTON).getGlobalBounds().contains(mouseposition))
+	else if (mSceneUI.at(SceneObject::SAVE_BUTTON)->getGlobalBounds().contains(mouseposition))
 	{
-		// How to call saveGame from here?
+		auto btn = std::static_pointer_cast<Button>(mSceneUI.at(SceneObject::SAVE_BUTTON));
+		btn->onClick();
 	}
 	else if (mSceneObjects.at(SceneObject::QUIT_BUTTON).getGlobalBounds().contains(mouseposition))
 	{

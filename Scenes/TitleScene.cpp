@@ -3,7 +3,7 @@
 
 constexpr float BUTTON_MARGIN = 30.0;
 
-TitleScene::TitleScene(sf::Vector2f screenSize) : Scene(screenSize), mScreenSize(screenSize)
+TitleScene::TitleScene(sf::Vector2f screenSize, std::shared_ptr<Game> game) : Scene(screenSize, game)
 {
 	auto tm = TextureManager::getInstance();
 
@@ -57,7 +57,7 @@ void TitleScene::handleClick(sf::Vector2f mouseposition)
 {
 	if (mSceneObjects.at(SceneObject::START_BUTTON).getGlobalBounds().contains(mouseposition))
 	{
-		SceneManager::getInstance()->changeScene(std::make_shared<LoadingScene>(mScreenSize));
+		SceneManager::getInstance()->changeScene(std::make_shared<LoadingScene>(mScreenSize, mGame));
 	}
 	else if (mSceneObjects.at(SceneObject::QUIT_BUTTON).getGlobalBounds().contains(mouseposition))
 	{

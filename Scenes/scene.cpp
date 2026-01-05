@@ -2,8 +2,8 @@
 
 
 
-Scene::Scene(sf::Vector2f screenSize)
-	: mScreenSize(screenSize) {
+Scene::Scene(sf::Vector2f screenSize, std::shared_ptr<Game> game)
+	: mScreenSize(screenSize), mGame(game) {
 
 	addSceneObject(SceneObject::BORDER, sf::RectangleShape(screenSize));
 	auto& border = mSceneObjects.at(SceneObject::BORDER);

@@ -11,7 +11,7 @@ static void pushRequestToModel(std::string query, std::shared_ptr<Model> model) 
 class GameScene : public Scene {
 
 public:
-	GameScene(sf::Vector2f screenSize, std::shared_ptr<Model> model);
+	GameScene(sf::Vector2f screenSize, std::shared_ptr<Game> game, std::shared_ptr<Model> model);
 	~GameScene();
 
 	void update(float dt) override;
@@ -43,7 +43,6 @@ private:
 	std::shared_ptr<Pet> mPet = nullptr;
 	std::shared_ptr<Model> mModel = nullptr;
 	std::vector<std::future<void>> mFutures;
-	nlohmann::json mState;
 	std::string mStringBuffer;
 	std::string mStringLine;
 	sf::Vector2f mPetPosition;

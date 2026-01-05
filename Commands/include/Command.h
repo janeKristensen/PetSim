@@ -1,5 +1,7 @@
 #pragma once
+#include <memory>
 
+class Game;
 
 class Command{
 public:
@@ -10,12 +12,9 @@ public:
 
 class SaveCommand : public Command{
 public:
-	SaveCommand(){}
-	void execute() const override 
-	{
-		
-	}
-
-private:
+	SaveCommand(std::shared_ptr<Game> game) : mGame(game){}
+	void execute() const override;
 	
+private:
+	std::shared_ptr<Game> mGame;
 };

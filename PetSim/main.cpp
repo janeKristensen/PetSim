@@ -8,7 +8,9 @@ int main()
         auto window = std::make_shared<sf::RenderWindow>(sf::VideoMode({ 800, 600 }), "PetSim");
         window->setFramerateLimit(60);
 
-        Game game(window);
+        std::shared_ptr<Game> game = std::make_shared<Game>(window);
+        game->init();
+
         sf::Clock clock;
         float dt;
         
@@ -18,9 +20,9 @@ int main()
             dt = clock.getElapsedTime().asSeconds();
             clock.restart();
 
-            game.pollEvents();
-            game.update(dt);
-            game.render();
+            game->pollEvents();
+            game->update(dt);
+            game->render();
 
         }
     }
