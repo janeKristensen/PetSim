@@ -10,6 +10,8 @@
 #include <queue>
 #include <future>
 #include <iostream>
+#include <optional>
+
 
 class Game;
 
@@ -36,7 +38,9 @@ enum class SceneObject
 	TEXT_BLIP,
 	FOOD_BAR,
 	GROOM_BAR,
-	HEART_ICON
+	HEART_ICON,
+	LITTER_BOX,
+	LITTER_BUTTON
 };
 
 enum class SceneText

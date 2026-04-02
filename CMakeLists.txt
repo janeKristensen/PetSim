@@ -20,6 +20,7 @@ add_subdirectory ("Commands")
 add_subdirectory ("RessourceManagers")
 add_subdirectory ("Scenes")
 add_subdirectory ("PetSim")
+add_subdirectory("ParticleSystem")
 
 
 

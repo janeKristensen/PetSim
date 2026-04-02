@@ -2,6 +2,7 @@
 #include "ShopScene.h"
 #include "MenuScene.h"
 #include "LoadingScene.h"
+#include "LitterScene.h"
 
 GameScene::GameScene(sf::Vector2f screenSize, std::shared_ptr<Game> game, std::shared_ptr<Model> model)
 	: Scene(screenSize, game), mModel(model), mScreenSize(screenSize) {
@@ -37,10 +38,18 @@ GameScene::GameScene(sf::Vector2f screenSize, std::shared_ptr<Game> game, std::s
 	addSceneObject(SceneObject::ADD_BUTTON, submit_btn);
 	
 	// Shop button
-	std::shared_ptr<sf::RectangleShape> shop_btn = std::make_shared<sf::RectangleShape>(sf::Vector2f{ 32,32 });
-	shop_btn->setPosition({foodbar_pos.x + mFoodBar.getFullSize().x + 4 * SCREEN_MARGIN, 2*SCREEN_MARGIN});
+	float shop_btn_size = 32.f;
+	std::shared_ptr<sf::RectangleShape> shop_btn = std::make_shared<sf::RectangleShape>(sf::Vector2f{ shop_btn_size, shop_btn_size });
+	auto shop_btn_position = sf::Vector2f{ foodbar_pos.x + mFoodBar.getFullSize().x + 4 * SCREEN_MARGIN, 2 * SCREEN_MARGIN };
+	shop_btn->setPosition(shop_btn_position);
 	shop_btn->setFillColor(sf::Color::Blue);
 	addSceneObject(SceneObject::SHOP_BUTTON, shop_btn);
+
+	// Shop button
+	std::shared_ptr<sf::RectangleShape> litter_btn = std::make_shared<sf::RectangleShape>(sf::Vector2f{ 32,32 });
+	litter_btn->setPosition({ shop_btn_position.x + shop_btn_size + 4 * SCREEN_MARGIN, 2 * SCREEN_MARGIN });
+	litter_btn->setFillColor(sf::Color::Blue);
+	addSceneObject(SceneObject::LITTER_BUTTON, litter_btn);
 
 
 	// Inventory container object
@@ -347,6 +356,10 @@ void GameScene::handleClick(sf::Vector2f mouseposition) {
 	else if (mSceneObjects.at(SceneObject::SHOP_BUTTON)->getGlobalBounds().contains(mouseposition))
 	{
 		SceneManager::getInstance()->changeScene(std::make_shared<ShopScene>(mScreenSize, mGame, *this));
+	}
+	else if (mSceneObjects.at(SceneObject::LITTER_BUTTON)->getGlobalBounds().contains(mouseposition))
+	{
+		SceneManager::getInstance()->changeScene(std::make_shared<LitterScene>(mScreenSize, mGame, *this));
 	}
 }
 
