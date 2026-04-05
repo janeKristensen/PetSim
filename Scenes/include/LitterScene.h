@@ -35,9 +35,10 @@ private:
 	sf::VertexArray mVa = sf::VertexArray(sf::PrimitiveType::Points);
 	std::array<std::array<sf::RectangleShape,4>, 4> mGrid;
 	sf::Vector2f mBoxSize{512,512};
+	sf::Vector2f mOldMousePos{0,0};
 	float mParticleSize = 1.f;
 	size_t mParticlePoints = 4;
-	float mParticleSpeed = 10.f;
+	float mParticleSpeed = 50.f;
 	float mRadius = 5.5f;
-	float mForce = 20.f;
+	float mForce = 50.f;
 };

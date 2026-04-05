@@ -6,8 +6,7 @@ LitterScene::LitterScene(sf::Vector2f screenSize, std::shared_ptr<Game> game, Ga
 {
 	auto tm = TextureManager::getInstance();
 	tm->loadTexture(Texture::LITTER_BOX, "Shaders/litterbox.png");
-	tm->loadTexture(Texture::PARTICLE, "particle.png");
-	mParticleTexture = tm->getTexture(Texture::PARTICLE);
+	
 	mCurrentTexture = tm->getTexture(Texture::LITTER_BOX);
 	mLitterBox.setTexture(mCurrentTexture, true);
 	auto box_position = sf::Vector2f{ screenSize.x / 5, screenSize.y / 10 };
@@ -86,9 +85,9 @@ LitterScene::LitterScene(sf::Vector2f screenSize, std::shared_ptr<Game> game, Ga
 
 void LitterScene::createParticles()
 {
-	for (int i = 0; i < mBoxSize.x-1; i += mParticleSize )
+	for (int i = 0; i < mBoxSize.x-1; i += mParticleSize)
 	{
-		for (int j = 0; j < mBoxSize.y-1; j += mParticleSize )
+		for (int j = 0; j < mBoxSize.y-1; j += mParticleSize)
 		{
 			float x = mBounds.top_left.x + i;
 			float y = mBounds.top_left.y + j;
@@ -147,47 +146,9 @@ void LitterScene::render(sf::RenderWindow& window)
 		mVa[p].position = particle.getPosition();
 
 		// Color (optional)
-		mVa[p].color = sf::Color::Yellow;
+		mVa[p].color = sf::Color(210, 180, 73);
 	}
-	//float tex_size = mParticleTexture.getSize().x;
-
-	//for (size_t p = 0; p < particles.size(); ++p)
-	//{
-	//	float r = particles[p].getRadius();
-	//	float x = particles[p].getPosition().x;
-	//	float y = particles[p].getPosition().y;
-
-	//	int i = p * 6;
-
-	//	// corners of the quad
-	//	sf::Vector2f tl = { x, y };
-	//	sf::Vector2f tr = { x + 2*r, y };
-	//	sf::Vector2f br = { x + 2*r, y + 2*r };
-	//	sf::Vector2f bl = { x, y + 2*r };
-
-	//	// --- Triangle 1 ---
-	//	va[i + 0].position = tl;
-	//	va[i + 1].position = tr;
-	//	va[i + 2].position = br;
-
-	//	// --- Triangle 2 ---
-	//	va[i + 3].position = tl;
-	//	va[i + 4].position = br;
-	//	va[i + 5].position = bl;
-
-	//	// Triangle 1
-	//	va[i + 0].texCoords = { 0, 0 };
-	//	va[i + 1].texCoords = { tex_size, 0 };
-	//	va[i + 2].texCoords = { tex_size, tex_size };
-
-	//	// Triangle 2
-	//	va[i + 3].texCoords = { 0, 0 };
-	//	va[i + 4].texCoords = { tex_size, tex_size };
-	//	va[i + 5].texCoords = { 0, tex_size };
-	//}
-
-	/*sf::RenderStates states;
-	states.texture = &mParticleTexture;*/
+	
 	window.draw(mVa);
 
 	for (auto& row : mGrid)
@@ -222,19 +183,11 @@ void LitterScene::handleDrag(std::shared_ptr<sf::RenderWindow> window)
 	{
 		sf::Vector2i pixelPos = sf::Mouse::getPosition(*window);
 		sf::Vector2f position = window->mapPixelToCoords(pixelPos);
-	
-		for (auto& row : mGrid)
-		{
-			for (auto& cell : row)
-			{
-				if (cell.getGlobalBounds().contains(position))
-				{
-					mParticleManager.setDirection(cell, position, mRadius);
-					mParticleManager.setDirection(cell, position + sf::Vector2f{ 0, 30 }, mRadius);
-					mParticleManager.setDirection(cell, position + sf::Vector2f{ 0, -30 }, mRadius);
-				}
-			}
-		}
+		
+		mParticleManager.setDirection(position, mRadius);
+		mParticleManager.setDirection(position + sf::Vector2f{ 0, 30 }, mRadius);
+		mParticleManager.setDirection(position + sf::Vector2f{ 0, -30 }, mRadius);
+		
 	
 #ifdef shader
 		sf::Vector2f uv =

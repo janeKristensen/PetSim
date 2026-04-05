@@ -14,14 +14,15 @@ Game::Game(std::shared_ptr<sf::RenderWindow> window) : mWindow(std::move(window)
 
 void Game::init()
 {
-    SceneManager::getInstance()->changeScene(std::make_shared<TitleScene>(screenSize, shared_from_this()));
+    SceneManager::getInstance()->changeScene(std::make_shared<TitleScene>((sf::Vector2f)mWindow->getSize(), shared_from_this()));
 }
 
 void Game::pollEvents() 
 {
     while (std::optional event = mWindow->pollEvent()) 
     {
-        auto mouse_position = static_cast<sf::Vector2f>(sf::Mouse::getPosition(*mWindow));
+        sf::Vector2i pixel_pos = sf::Mouse::getPosition(*mWindow);
+        sf::Vector2f mouse_position = mWindow->mapPixelToCoords(pixel_pos);
         auto scene_manager = SceneManager::getInstance();
         auto scene = scene_manager->getScene();
         scene->setEvent(event);
@@ -30,6 +31,12 @@ void Game::pollEvents()
             event->getIf<sf::Event::KeyPressed>()->code == sf::Keyboard::Key::Escape)) 
         {
             mWindow->close();
+        }
+        else if (event->is<sf::Event::Resized>())
+        {
+            auto newSize = event->getIf<sf::Event::Resized>()->size;
+            sf::FloatRect visibleArea({ 0.f, 0.f }, { (float)newSize.x, (float)newSize.y});
+            mWindow->setView(sf::View(visibleArea));
         }
         else if (event->is<sf::Event::KeyPressed>())
         {

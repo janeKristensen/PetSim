@@ -11,7 +11,7 @@
 #include "InventorySystem.h"
 #include <fstream>
 
-constexpr sf::Vector2f screenSize{ 800.f, 600.f };
+//constexpr sf::Vector2f SCREEN_SIZE{ 800.f, 600.f };
 
 
 class Game : public std::enable_shared_from_this<Game>{

@@ -19,26 +19,23 @@ void ParticleManager::addParticle(float size, size_t points, sf::Color color, sf
 	m_particles.push_back(particle);
 }
 
-void ParticleManager::setDirection(const sf::RectangleShape& gridPosition, sf::Vector2f position, float radius)
+void ParticleManager::setDirection(sf::Vector2f newPos, float radius)
 {
 	for (auto& particle : m_particles)
 	{
 		auto particle_position = particle.getPosition();
-		if (gridPosition.getGlobalBounds().contains(particle_position))
+		auto direction = particle_position - newPos;
+
+		// Compute length (magnitude)
+		float length = direction.x * direction.x + direction.y * direction.y;
+
+		if (length < radius * radius && length > 0)
 		{
-			auto direction = particle_position - position;
+			direction.x /= length;
+			direction.y /= length;
 
-			// Compute length (magnitude)
-			float length = std::sqrt(direction.x * direction.x + direction.y * direction.y);
-			float force = 10.f / (length + 1.f);
-			if (length < radius)
-			{
-				direction.x /= length;
-				direction.y /= length;
-
-				particle.setVelocity(particle.getSpeed());
-				particle.setDirection(direction * force);
-			}
+			particle.setVelocity(particle.getSpeed());
+			particle.setDirection(direction);
 		}
 	}
 }
