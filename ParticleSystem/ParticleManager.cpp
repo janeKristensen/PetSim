@@ -14,28 +14,31 @@ void ParticleManager::setBounds(Bounds bounds)
 
 void ParticleManager::addParticle(float size, size_t points, sf::Color color, sf::Vector2f position, float speed)
 {
-	auto particle = Particle(size, points);
-	particle.setFillColor(color);
-	particle.setPosition(position);
+	auto particle = Particle(size, position);
 	particle.setSpeed(speed);
 	m_particles.push_back(particle);
 }
 
-void ParticleManager::setDirection(sf::Vector2f position, float radius)
+void ParticleManager::setDirection(const sf::RectangleShape& gridPosition, sf::Vector2f position, float radius)
 {
 	for (auto& particle : m_particles)
 	{
-		auto direction = particle.getPosition() - position;
-		
-		// Compute length (magnitude)
-		float length = std::sqrt(direction.x * direction.x + direction.y * direction.y);
-		if (length < radius)
+		auto particle_position = particle.getPosition();
+		if (gridPosition.getGlobalBounds().contains(particle_position))
 		{
-			direction.x /= length;
-			direction.y /= length;
+			auto direction = particle_position - position;
 
-			particle.setVelocity(particle.getSpeed());
-			particle.setDirection(direction);
+			// Compute length (magnitude)
+			float length = std::sqrt(direction.x * direction.x + direction.y * direction.y);
+			float force = 10.f / (length + 1.f);
+			if (length < radius)
+			{
+				direction.x /= length;
+				direction.y /= length;
+
+				particle.setVelocity(particle.getSpeed());
+				particle.setDirection(direction * force);
+			}
 		}
 	}
 }

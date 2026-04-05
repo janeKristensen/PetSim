@@ -19,7 +19,7 @@ public:
 	ParticleManager(Bounds bounds);
 	void setBounds(Bounds bounds);
 	void addParticle(float size, size_t points, sf::Color color, sf::Vector2f position, float speed);
-	void setDirection(sf::Vector2f position, float radius = 10);
+	void setDirection(const sf::RectangleShape& gridPosition, sf::Vector2f position, float radius = 10);
 	void moveParticles(float dt, float force);
 	const std::vector<Particle>& getParticles() { return m_particles; }
 	void resetDirection();
