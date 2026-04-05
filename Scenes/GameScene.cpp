@@ -2,9 +2,10 @@
 #include "ShopScene.h"
 #include "MenuScene.h"
 #include "LoadingScene.h"
+#include "LitterScene.h"
 
-GameScene::GameScene(sf::Vector2f screenSize, std::shared_ptr<Model> model)
-	: Scene(screenSize), mModel(model), mScreenSize(screenSize) {
+GameScene::GameScene(sf::Vector2f screenSize, std::shared_ptr<Game> game, std::shared_ptr<Model> model)
+	: Scene(screenSize, game), mModel(model), mScreenSize(screenSize) {
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -17,69 +18,79 @@ GameScene::GameScene(sf::Vector2f screenSize, std::shared_ptr<Model> model)
 	mGroomBar = ProgressBar{ sf::Vector2f{ 200, 13.5 }, sf::Vector2f{ SCREEN_MARGIN, foodbar_pos.y + mFoodBar.getSize().y + SCREEN_MARGIN/2 }, sf::Color::Blue };
 
 	auto& bg = mSceneObjects.at(SceneObject::BACKGROUND);
-	bg.setFillColor(sf::Color::Black);
-	float bg_start_X = bg.getPosition().x;
-	float bg_start_Y = bg.getPosition().y;
-	float bg_X = bg.getSize().x;
-	float bg_Y = bg.getSize().y;
+	bg->setFillColor(sf::Color::Black);
+	float bg_start_X = bg->getPosition().x;
+	float bg_start_Y = bg->getPosition().y;
+	float bg_X = bg->getSize().x;
+	float bg_Y = bg->getSize().y;
 
 
 	// Button for submitting text
 	float button_width = INV_WIDTH;
 	float button_height = 50.f;
-	addSceneObject(SceneObject::ADD_BUTTON, sf::RectangleShape({ button_width, button_height }));
-	auto& button = mSceneObjects.at(SceneObject::ADD_BUTTON);
-	button.setPosition(
+	std::shared_ptr<sf::RectangleShape> submit_btn = std::make_shared<sf::RectangleShape>(sf::Vector2f{ button_width, button_height });
+	submit_btn->setPosition(
 		{
 			bg_start_X + bg_X - button_width - SCREEN_MARGIN,
 			bg_start_Y + bg_Y - button_height - SCREEN_MARGIN
 		}
 	);
+	addSceneObject(SceneObject::ADD_BUTTON, submit_btn);
 	
 	// Shop button
-	addSceneObject(SceneObject::SHOP_BUTTON, sf::RectangleShape({ 32,32 }));
-	auto& shop_button = mSceneObjects.at(SceneObject::SHOP_BUTTON);
-	shop_button.setPosition({foodbar_pos.x + mFoodBar.getFullSize().x + 4 * SCREEN_MARGIN, 2*SCREEN_MARGIN});
-	shop_button.setFillColor(sf::Color::Blue);
+	float shop_btn_size = 32.f;
+	std::shared_ptr<sf::RectangleShape> shop_btn = std::make_shared<sf::RectangleShape>(sf::Vector2f{ shop_btn_size, shop_btn_size });
+	auto shop_btn_position = sf::Vector2f{ foodbar_pos.x + mFoodBar.getFullSize().x + 4 * SCREEN_MARGIN, 2 * SCREEN_MARGIN };
+	shop_btn->setPosition(shop_btn_position);
+	shop_btn->setFillColor(sf::Color::Blue);
+	addSceneObject(SceneObject::SHOP_BUTTON, shop_btn);
+
+	// Shop button
+	std::shared_ptr<sf::RectangleShape> litter_btn = std::make_shared<sf::RectangleShape>(sf::Vector2f{ 32,32 });
+	litter_btn->setPosition({ shop_btn_position.x + shop_btn_size + 4 * SCREEN_MARGIN, 2 * SCREEN_MARGIN });
+	litter_btn->setFillColor(sf::Color::Blue);
+	addSceneObject(SceneObject::LITTER_BUTTON, litter_btn);
 
 
 	// Inventory container object
 	float inv_height = bg_Y - (3 * SCREEN_MARGIN) - button_height;
-	addSceneObject(SceneObject::INVENTORY, sf::RectangleShape({ INV_WIDTH, inv_height }));
-	auto& inventory = mSceneObjects.at(SceneObject::INVENTORY);
-	inventory.setFillColor(sf::Color::Magenta);
-	inventory.setPosition(
+	std::shared_ptr<sf::RectangleShape> inventory = std::make_shared<sf::RectangleShape>(sf::Vector2f{ INV_WIDTH, inv_height });
+	inventory->setFillColor(sf::Color::Magenta);
+	inventory->setPosition(
 		{
 			bg_start_X + bg_X - INV_WIDTH - SCREEN_MARGIN,
 			bg_start_Y + SCREEN_MARGIN
 		}
 	);
+	addSceneObject(SceneObject::INVENTORY, inventory);
 	
 
 	// Text input field
 	float txt_width = bg_X - button_width - (3 * SCREEN_MARGIN);
 	float txt_height = 150.f;
-	addSceneObject(SceneObject::TEXT_INPUT, sf::RectangleShape({ txt_width, txt_height / 3 }));
-	auto& text_field = mSceneObjects.at(SceneObject::TEXT_INPUT);
-	text_field.setFillColor(sf::Color::White);
-	text_field.setPosition(
+	std::shared_ptr<sf::RectangleShape> text_field = std::make_shared<sf::RectangleShape>(sf::Vector2f{ txt_width, txt_height / 3 });
+	text_field->setFillColor(sf::Color::White);
+	text_field->setPosition(
 		{
 			bg_start_X + SCREEN_MARGIN,
 			bg_start_Y + bg_Y - txt_height / 3 - SCREEN_MARGIN
 		}
 	);
+	addSceneObject(SceneObject::TEXT_INPUT, text_field);
 
 
 	// Text input field blip
-	addSceneObject(SceneObject::TEXT_BLIP, sf::RectangleShape({ 5,20 }));
-	auto& text_blip = mSceneObjects.at(SceneObject::TEXT_BLIP);
-	text_blip.setFillColor(sf::Color::Black);
-	text_blip.setPosition(
+	
+	std::shared_ptr<sf::RectangleShape> text_blip = std::make_shared<sf::RectangleShape>(sf::Vector2f{ 5,20 });
+	text_blip->setFillColor(sf::Color::Black);
+	text_blip->setPosition(
 		{
-			text_field.getPosition().x + SCREEN_MARGIN,
-			text_field.getPosition().y + SCREEN_MARGIN
+			text_field->getPosition().x + SCREEN_MARGIN,
+			text_field->getPosition().y + SCREEN_MARGIN
 		}
 	);
+	addSceneObject(SceneObject::TEXT_BLIP, text_blip);
+
 
 	// Place pet sprite on screen
 	mPetPosition = sf::Vector2f(
@@ -91,15 +102,15 @@ GameScene::GameScene(sf::Vector2f screenSize, std::shared_ptr<Model> model)
 	
 	
 	// Text output field
-	addSceneObject(SceneObject::TEXT_OUTPUT, sf::RectangleShape({ txt_width, txt_height }));
-	auto& output_field = mSceneObjects.at(SceneObject::TEXT_OUTPUT);
-	output_field.setFillColor(sf::Color::White);
-	output_field.setPosition(
+	std::shared_ptr<sf::RectangleShape> output_field = std::make_shared<sf::RectangleShape>(sf::Vector2f{ txt_width, txt_height });
+	output_field->setFillColor(sf::Color::White);
+	output_field->setPosition(
 		{
 			bg_start_X + SCREEN_MARGIN,
-			text_field.getPosition().y - txt_height - SCREEN_MARGIN
+			text_field->getPosition().y - txt_height - SCREEN_MARGIN
 		}
 	);
+	addSceneObject(SceneObject::TEXT_OUTPUT, output_field);
 	
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -115,8 +126,8 @@ GameScene::GameScene(sf::Vector2f screenSize, std::shared_ptr<Model> model)
 	pet_text.setFillColor(sf::Color::Black);
 	pet_text.setPosition(
 		{
-			output_field.getPosition().x + SCREEN_MARGIN,
-			output_field.getPosition().y + SCREEN_MARGIN
+			output_field->getPosition().x + SCREEN_MARGIN,
+			output_field->getPosition().y + SCREEN_MARGIN
 		}
 	);
 	
@@ -127,8 +138,8 @@ GameScene::GameScene(sf::Vector2f screenSize, std::shared_ptr<Model> model)
 	prompt_text.setFillColor(sf::Color::Black);
 	prompt_text.setPosition(
 		{
-			text_field.getPosition().x + SCREEN_MARGIN,
-			text_field.getPosition().y + SCREEN_MARGIN
+			text_field->getPosition().x + SCREEN_MARGIN,
+			text_field->getPosition().y + SCREEN_MARGIN
 		}
 	);
 	
@@ -139,7 +150,7 @@ GameScene::GameScene(sf::Vector2f screenSize, std::shared_ptr<Model> model)
 	// Pet health value
 	addTextObject(SceneText::HEALTH_VALUE, sf::Text(font, "", 24));
 	auto& health_text = mSceneText.at(SceneText::HEALTH_VALUE);
-	auto position_y = mSceneObjects.at(SceneObject::TEXT_OUTPUT).getPosition().y - SCREEN_MARGIN - health_text.getCharacterSize();
+	auto position_y = mSceneObjects.at(SceneObject::TEXT_OUTPUT)->getPosition().y - SCREEN_MARGIN - health_text.getCharacterSize();
 	health_text.setFillColor(sf::Color::Magenta);
 	health_text.setPosition({mPetPosition.x + SCREEN_MARGIN, position_y});
 	
@@ -147,13 +158,13 @@ GameScene::GameScene(sf::Vector2f screenSize, std::shared_ptr<Model> model)
 	addTextObject(SceneText::HUNGER_VALUE, sf::Text(font, "", 24));
 	auto& hunger_text =  mSceneText.at(SceneText::HUNGER_VALUE);
 	hunger_text.setFillColor(sf::Color::Magenta);
-	hunger_text.setPosition({ health_text.getPosition().x + text_field.getSize().x/4 , position_y});
+	hunger_text.setPosition({ health_text.getPosition().x + text_field->getSize().x/4 , position_y});
 	
 	// Pet groom value
 	addTextObject(SceneText::GROOM_VALUE, sf::Text(font, "", 24));
 	auto& groom_text = mSceneText.at(SceneText::GROOM_VALUE);
 	groom_text.setFillColor(sf::Color::Magenta);
-	groom_text.setPosition({ hunger_text.getPosition().x + text_field.getSize().x / 2, position_y});
+	groom_text.setPosition({ hunger_text.getPosition().x + text_field->getSize().x / 2, position_y});
 	
 	// Pet state value
 	addTextObject(SceneText::STATE_VALUE, sf::Text(font, "", 24));
@@ -227,11 +238,12 @@ void GameScene::update(float dt)
 	if (happiness_update)
 	{
 		// All this needs to be implemented correctly when UI components class is added
-		addSceneObject(SceneObject::HEART_ICON, sf::RectangleShape({ 32,32 }));
-		auto& heart_icon = mSceneObjects.at(SceneObject::HEART_ICON);
+		
+		std::shared_ptr<sf::RectangleShape> heart_icon = std::make_shared<sf::RectangleShape>(sf::Vector2f{ 32,32 });
 		auto& sprite = mPet->getSprite();
-		heart_icon.setPosition({ sprite.getPosition().x + sprite.getScale().x * sprite.getTextureRect().size.x + 4 * SCREEN_MARGIN, sprite.getPosition().y + 2 * SCREEN_MARGIN});
-		heart_icon.setFillColor(sf::Color::Red);
+		heart_icon->setPosition({ sprite.getPosition().x + sprite.getScale().x * sprite.getTextureRect().size.x + 4 * SCREEN_MARGIN, sprite.getPosition().y + 2 * SCREEN_MARGIN});
+		heart_icon->setFillColor(sf::Color::Red);
+		addSceneObject(SceneObject::HEART_ICON, heart_icon);
 		mPet->increasedHappiness(false);
 	}
 	else
@@ -248,13 +260,13 @@ void GameScene::update(float dt)
 		mSceneText.at(SceneText::PROMPT_TEXT).setString(mStringBuffer);
 		auto& prompt_text = mSceneText.at(SceneText::PROMPT_TEXT);
 		auto& text_blip = mSceneObjects.at(SceneObject::TEXT_BLIP);
-		text_blip.setPosition({prompt_text.getPosition().x + prompt_text.getGlobalBounds().size.x + 2, prompt_text.getPosition().y + 6});
+		text_blip->setPosition({prompt_text.getPosition().x + prompt_text.getGlobalBounds().size.x + 2, prompt_text.getPosition().y + 6});
 
 		mBlipTracker += dt;
 
 		// Blip animation
 		if (mBlipTracker > 0.5) {
-			text_blip.getFillColor() == sf::Color::Black ? text_blip.setFillColor(sf::Color::White) : text_blip.setFillColor(sf::Color::Black);
+			text_blip->getFillColor() == sf::Color::Black ? text_blip->setFillColor(sf::Color::White) : text_blip->setFillColor(sf::Color::Black);
 			mBlipTracker = 0;
 		}
 	}
@@ -278,14 +290,14 @@ void GameScene::update(float dt)
 
 void GameScene::render(sf::RenderWindow& window)
 {
-	window.draw(mSceneObjects.at(SceneObject::BORDER));
-	window.draw(mSceneObjects.at(SceneObject::BACKGROUND));
+	window.draw(*mSceneObjects.at(SceneObject::BORDER));
+	window.draw(*mSceneObjects.at(SceneObject::BACKGROUND));
 	window.draw(mPet->getSprite());
 
 	for (auto& obj : mSceneObjects)
 	{
 		if (obj.first == SceneObject::BACKGROUND || obj.first == SceneObject::BORDER) continue;
-		window.draw(obj.second);
+		window.draw(*obj.second);
 	}
 	mInventorySystem->render(window);
 	for (auto obj : mItems) {
@@ -324,26 +336,30 @@ void GameScene::handleClick(sf::Vector2f mouseposition) {
 
 	mInTextField = false;
 
-	if (mSceneObjects.at(SceneObject::ADD_BUTTON).getGlobalBounds().contains(mouseposition)) 
+	if (mSceneObjects.at(SceneObject::ADD_BUTTON)->getGlobalBounds().contains(mouseposition))
 	{
 		if (mModel != nullptr) 
 		{
 			//////////////////////////
 			// TODO: is it more optimal to create a new blip every time the text field is clicked? Or create a new UI element and add a draw flag?
 			/////////////////////
-			mSceneObjects.at(SceneObject::TEXT_BLIP).setPosition({ -10, -10 });
+			mSceneObjects.at(SceneObject::TEXT_BLIP)->setPosition({ -10, -10 });
 			mFutures.push_back(std::async(std::launch::async, pushRequestToModel, mSceneText.at(SceneText::PROMPT_TEXT).getString(), mModel));
 			mSceneText.at(SceneText::PROMPT_TEXT).setString("");
 		}
 	}
-	else if (mSceneObjects.at(SceneObject::TEXT_INPUT).getGlobalBounds().contains(mouseposition)) 
+	else if (mSceneObjects.at(SceneObject::TEXT_INPUT)->getGlobalBounds().contains(mouseposition))
 	{
 		mStringBuffer = "";
 		mInTextField = true;
 	}
-	else if (mSceneObjects.at(SceneObject::SHOP_BUTTON).getGlobalBounds().contains(mouseposition)) 
+	else if (mSceneObjects.at(SceneObject::SHOP_BUTTON)->getGlobalBounds().contains(mouseposition))
 	{
-		SceneManager::getInstance()->changeScene(std::make_shared<ShopScene>(mScreenSize, *this));
+		SceneManager::getInstance()->changeScene(std::make_shared<ShopScene>(mScreenSize, mGame, *this));
+	}
+	else if (mSceneObjects.at(SceneObject::LITTER_BUTTON)->getGlobalBounds().contains(mouseposition))
+	{
+		SceneManager::getInstance()->changeScene(std::make_shared<LitterScene>(mScreenSize, mGame, *this));
 	}
 }
 
@@ -351,7 +367,7 @@ void GameScene::handleKeyPress(sf::Keyboard::Key key)
 {
 	if (key == sf::Keyboard::Key::M) {
 
-		SceneManager::getInstance()->changeScene(std::make_shared<MenuScene>(mScreenSize));
+		SceneManager::getInstance()->changeScene(std::make_shared<MenuScene>(mScreenSize, mGame));
 	}
 }
 

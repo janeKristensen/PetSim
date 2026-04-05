@@ -1,4 +1,5 @@
 ﻿#include "PetSim.h"
+#include "MenuScene.h"
 
 
 Game::Game(std::shared_ptr<sf::RenderWindow> window) : mWindow(std::move(window)) {
@@ -9,16 +10,19 @@ Game::Game(std::shared_ptr<sf::RenderWindow> window) : mWindow(std::move(window)
     tm->loadTexture(Texture::LOADING_SCREEN, "../PetSim/ressources/assets/loading.png");
    
     FontManager::getInstance()->loadFont(FontName::TITLE, "../PetSim/ressources/assets/Gabriola.ttf");
-
-    SceneManager::getInstance()->changeScene(std::make_shared<TitleScene>(screenSize));
 }
 
+void Game::init()
+{
+    SceneManager::getInstance()->changeScene(std::make_shared<TitleScene>((sf::Vector2f)mWindow->getSize(), shared_from_this()));
+}
 
 void Game::pollEvents() 
 {
     while (std::optional event = mWindow->pollEvent()) 
     {
-        auto mouse_position = static_cast<sf::Vector2f>(sf::Mouse::getPosition(*mWindow));
+        sf::Vector2i pixel_pos = sf::Mouse::getPosition(*mWindow);
+        sf::Vector2f mouse_position = mWindow->mapPixelToCoords(pixel_pos);
         auto scene_manager = SceneManager::getInstance();
         auto scene = scene_manager->getScene();
         scene->setEvent(event);
@@ -27,6 +31,12 @@ void Game::pollEvents()
             event->getIf<sf::Event::KeyPressed>()->code == sf::Keyboard::Key::Escape)) 
         {
             mWindow->close();
+        }
+        else if (event->is<sf::Event::Resized>())
+        {
+            auto newSize = event->getIf<sf::Event::Resized>()->size;
+            sf::FloatRect visibleArea({ 0.f, 0.f }, { (float)newSize.x, (float)newSize.y});
+            mWindow->setView(sf::View(visibleArea));
         }
         else if (event->is<sf::Event::KeyPressed>())
         {
@@ -72,9 +82,42 @@ void Game::saveGame()
     mSaveManager->showHistory();
 }
 
+void Game::loadGame(const std::string& filename)
+{
+    auto scene_mng = SceneManager::getInstance();
+    auto scene = scene_mng->getScene();
+    auto menu = dynamic_pointer_cast<MenuScene>(scene);
+    if (menu)
+    {
+        auto game_scene = static_pointer_cast<GameScene>(scene_mng->getPreviousScene());
+        game_scene->loadGame(filename);
+    }
+    else
+    {
+        mState = scene_mng->getScene()->setState();
+    }
+}
+
+void Game::quitGame()
+{
+    mWindow->close();
+}
+
 
 void Game::setState() 
 {
-    mState = SceneManager::getInstance()->getScene()->setState();
+    auto scene_mng = SceneManager::getInstance();
+    auto scene = scene_mng->getScene();
+    auto menu = dynamic_pointer_cast<MenuScene>(scene);
+    if (menu)
+    {
+        auto game_scene = static_pointer_cast<GameScene>(scene_mng->getPreviousScene());
+        mState = game_scene->setState();
+    }
+    else
+    {
+        mState = scene_mng->getScene()->setState();
+    }
+    
     mSaveComponent->setState(mState);
 }

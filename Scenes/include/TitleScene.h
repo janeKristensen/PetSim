@@ -4,12 +4,12 @@
 
 class TitleScene : public Scene {
 public:
-	TitleScene(sf::Vector2f screenSize);
+	TitleScene(sf::Vector2f screenSize, std::shared_ptr<Game> game);
 	void update(float dt) override;
 	void render(sf::RenderWindow& window) override;
 	void handleClick(sf::Vector2f mouseposition) override;
 	void handleTextEntry(const sf::Event& event) override;
 
 private:
-	sf::Vector2f mScreenSize;
+
 };

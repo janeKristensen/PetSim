@@ -2,7 +2,7 @@
 # project specific logic here.
 #
 
-add_library(scenes STATIC "scene.cpp" "include/scene.h" "GameScene.cpp" "include/GameScene.h"  "SceneManager.cpp" "include/SceneManager.h" "include/MenuScene.h" "MenuScene.cpp" "include/TitleScene.h" "TitleScene.cpp" "LoadingScene.cpp" "include/LoadingScene.h" "include/ShopScene.h" "ShopScene.cpp")
+add_library(scenes STATIC "scene.cpp" "include/scene.h" "GameScene.cpp" "include/GameScene.h"  "SceneManager.cpp" "include/SceneManager.h" "include/MenuScene.h" "MenuScene.cpp" "include/TitleScene.h" "TitleScene.cpp" "LoadingScene.cpp" "include/LoadingScene.h" "include/ShopScene.h" "ShopScene.cpp" "include/LitterScene.h" "LitterScene.cpp")
 
 if (CMAKE_VERSION VERSION_GREATER 3.12)
   set_property(TARGET scenes PROPERTY CXX_STANDARD 20)
@@ -18,6 +18,7 @@ target_include_directories(scenes PUBLIC
     ${SFML_DIR}/include
     llm_model/include
     commands/include
+    particles/include
     save_system/include
     ressource_managers/include
     ${CMAKE_CURRENT_SOURCE_DIR}/include
@@ -30,6 +31,7 @@ if(CMAKE_BUILD_TYPE STREQUAL "Debug")
     PetSim
     llm_model
     commands
+    particles
     save_system
     ressource_managers
     ${SFML_DIR}/lib/sfml-system-d.lib
@@ -42,6 +44,7 @@ else()
     PetSim
     llm_model
     commands
+    particles
     save_system
     ressource_managers
     ${SFML_DIR}/lib/sfml-system.lib

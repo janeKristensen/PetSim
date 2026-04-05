@@ -1,1 +1,46 @@
 #include "Command.h"
+#include "PetSim.h"
+#include "LoadingScene.h"
+#include "ShopScene.h"
+
+
+void StartCommand::execute() const
+{
+	SceneManager::getInstance()->changeScene(std::make_shared<LoadingScene>(mScreenSize, mGame));
+}
+
+
+void SaveCommand::execute() const
+{
+	mGame->saveGame();
+}
+
+
+void QuitCommand::execute() const
+{
+	mGame->quitGame();
+}
+
+
+void LoadCommand::execute() const
+{
+	mGame->loadGame(mFilename);
+}
+
+
+void ContinueCommand::execute() const
+{
+	SceneManager::getInstance()->removeScene();
+}
+
+
+void BuyCommand::execute() const
+{
+
+	// Add item to inventory
+	const auto& item_template = mScene->getSelectedTile().getItem();
+	auto& game_scene = mScene->getGameScene();
+	auto item = game_scene.createItemFromType(item_template.getTypeId(), item_template.getTextureName(), item_template.getTextureRect(), item_template.getValue());
+	item->setScale({ 1,1 });
+	game_scene.addItemToInventory(item, 1);
+}

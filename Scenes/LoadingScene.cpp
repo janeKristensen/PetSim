@@ -6,7 +6,7 @@ static std::shared_ptr<Model> makeModel(std::string path, float p, float temp) {
 	return std::make_shared<Model>(path, p, temp);
 }
 
-LoadingScene::LoadingScene(sf::Vector2f screenSize) : Scene(screenSize)
+LoadingScene::LoadingScene(sf::Vector2f screenSize, std::shared_ptr<Game> game) : Scene(screenSize, game)
 {
 	/* *******************************************************************************
 	*   Loading the llm model
@@ -17,9 +17,9 @@ LoadingScene::LoadingScene(sf::Vector2f screenSize) : Scene(screenSize)
 	auto tm = TextureManager::getInstance();
 
 	auto& background = mSceneObjects.at(SceneObject::BACKGROUND);
-	background.setTexture(&tm->getTexture(Texture::LOADING_SCREEN));
+	background->setTexture(&tm->getTexture(Texture::LOADING_SCREEN));
 
-	mSpinner = sf::CircleShape(25.f, 100);
+	mSpinner = sf::RectangleShape({32,32});
 	mSpinner.setPosition({ screenSize.x / 2, screenSize.y / 1.5f });
 	mSpinner.setRotation(sf::degrees(10));
 	mSpinner.setTexture(&tm->getTexture(Texture::SPRITESHEET));
@@ -38,7 +38,7 @@ void LoadingScene::update(float dt)
 
 		if (mModel)
 		{
-			SceneManager::getInstance()->replaceScene(std::make_shared<GameScene>(mScreenSize, mModel));
+			SceneManager::getInstance()->replaceScene(std::make_shared<GameScene>(mScreenSize, mGame, mModel));
 		}
 	}
 
@@ -50,7 +50,7 @@ void LoadingScene::render(sf::RenderWindow& window)
 {
 	for (auto& obj : mSceneObjects)
 	{
-		window.draw(obj.second);
+		window.draw(*obj.second);
 	}
 
 	window.draw(mSpinner);
