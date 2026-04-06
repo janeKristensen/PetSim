@@ -231,9 +231,13 @@ std::shared_ptr<Item>  InventorySystem::removeFromSlot(sf::Vector2f mousePositio
 	return remove_item;
 }
 
-void InventorySystem::dragItem(const sf::Vector2f mousePosition, Item& item) {
-
-	item.setPosition(mousePosition);
+void InventorySystem::dragItem(const sf::Vector2f mousePosition, Item& item) 
+{
+	auto size = item.getSprite().getTexture().getSize();
+	sf::Vector2f scale = item.getScale();
+	auto scale_adjusted = sf::Vector2f{ size.x / scale.x, size.y / scale.y };
+	auto adjusted = mousePosition - scale_adjusted;
+	item.setPosition(adjusted);
 }
 
 void InventorySystem::despawnItem(std::shared_ptr<Item> item) {

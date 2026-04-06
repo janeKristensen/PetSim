@@ -38,6 +38,7 @@ public:
 	const uint32_t getHappinessValue() const { return mHappiness; }
 	const bool isHappier() const { return mIsHappier; }
 	const sf::Sprite getSprite() const { return mSprite; }
+	void setScale(sf::Vector2f scale) { mSprite.setScale(scale); }
 	//void setStatus(std::string prompt) { mCurrentStatus = prompt; }
 	void setHungerValue(int32_t value);
 	void setGroomValue(int32_t value);

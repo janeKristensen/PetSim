@@ -7,15 +7,13 @@
 GameScene::GameScene(sf::Vector2f screenSize, std::shared_ptr<Game> game, std::shared_ptr<Model> model)
 	: Scene(screenSize, game), mModel(model), mScreenSize(screenSize) {
 
+	auto tm = TextureManager::getInstance();
+	
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 	// Adding scene UI objects
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-	mFoodBar = ProgressBar{ sf::Vector2f{ 200, 13.5 }, sf::Vector2f{ SCREEN_MARGIN, 2*SCREEN_MARGIN }, sf::Color::Red };
-	auto foodbar_pos = mFoodBar.getShape().getPosition();
-	mGroomBar = ProgressBar{ sf::Vector2f{ 200, 13.5 }, sf::Vector2f{ SCREEN_MARGIN, foodbar_pos.y + mFoodBar.getSize().y + SCREEN_MARGIN/2 }, sf::Color::Blue };
 
 	auto& bg = mSceneObjects.at(SceneObject::BACKGROUND);
 	bg->setFillColor(sf::Color::Black);
@@ -24,153 +22,188 @@ GameScene::GameScene(sf::Vector2f screenSize, std::shared_ptr<Game> game, std::s
 	float bg_X = bg->getSize().x;
 	float bg_Y = bg->getSize().y;
 
+	
+	// Inventory container object
+	float shop_button_height = 50.f;
+	float inv_height = bg_Y - SCREEN_MARGIN - shop_button_height;
+	std::shared_ptr<sf::RectangleShape> inventory = std::make_shared<sf::RectangleShape>(sf::Vector2f{ INV_WIDTH, inv_height });
+	inventory->setFillColor(sf::Color::Magenta);
+	auto inv_pos = sf::Vector2f{
+			bg_start_X,
+			bg_start_Y 
+	};
+	inventory->setPosition(inv_pos);
+	addSceneObject(SceneObject::INVENTORY, inventory);
+	
+
+	// Shop button
+	float shop_button_width = INV_WIDTH;
+	std::shared_ptr<sf::RectangleShape> shop_btn = std::make_shared<sf::RectangleShape>(sf::Vector2f{ shop_button_width, shop_button_height });
+	auto shop_btn_position = sf::Vector2f
+	{
+		inv_pos.x,
+		inv_pos.y + inv_height + SCREEN_MARGIN
+	};
+	shop_btn->setTexture(&tm->getTexture(Texture::SPRITESHEET));
+	shop_btn->setTextureRect({ {64,64}, {64,32} });
+	shop_btn->setPosition(shop_btn_position);
+	addSceneObject(SceneObject::SHOP_BUTTON, shop_btn);
+	
+	
+	// Scene for pet
+	std::shared_ptr<sf::RectangleShape> scene_background = std::make_shared<sf::RectangleShape>(sf::Vector2f{ 360, 640 });
+	scene_background->setTexture(&tm->getTexture(Texture::GAME_BG));
+	scene_background->setPosition(
+		{
+			inv_pos.x + INV_WIDTH + SCREEN_MARGIN,
+			0 + SCREEN_MARGIN
+		}
+	);
+	addSceneObject(SceneObject::GAME_BG, scene_background);
+	auto scene_bg_pos = scene_background->getPosition();
+	auto scene_bg_size = scene_background->getSize();
+	auto scene_end_pos = scene_bg_pos.x + scene_bg_size.x + SCREEN_MARGIN;
+
+	// Progress bars
+	auto bar_size = sf::Vector2f{ 200, 13.5 };
+	auto bar_pos_x = mScreenSize.x - bar_size.x - SCREEN_MARGIN;
+	mFoodBar = ProgressBar{ bar_size, sf::Vector2f{ bar_pos_x, SCREEN_MARGIN }, sf::Color::Red };
+	auto foodbar_pos = mFoodBar.getShape().getPosition();
+	mGroomBar = ProgressBar{ bar_size, sf::Vector2f{ bar_pos_x, foodbar_pos.y + bar_size.y + SCREEN_MARGIN / 2 }, sf::Color::Blue };
+
 
 	// Button for submitting text
 	float button_width = INV_WIDTH;
 	float button_height = 50.f;
+	auto submit_btn_pos = sf::Vector2f{
+			bg_start_X + bg_X - button_width,
+			bg_start_Y + bg_Y - button_height
+	};
 	std::shared_ptr<sf::RectangleShape> submit_btn = std::make_shared<sf::RectangleShape>(sf::Vector2f{ button_width, button_height });
-	submit_btn->setPosition(
-		{
-			bg_start_X + bg_X - button_width - SCREEN_MARGIN,
-			bg_start_Y + bg_Y - button_height - SCREEN_MARGIN
-		}
-	);
+	submit_btn->setTexture(&tm->getTexture(Texture::SPRITESHEET));
+	submit_btn->setTextureRect({ {128,128}, {64,32} });
+	submit_btn->setPosition(submit_btn_pos);
 	addSceneObject(SceneObject::ADD_BUTTON, submit_btn);
-	
-	// Shop button
-	float shop_btn_size = 32.f;
-	std::shared_ptr<sf::RectangleShape> shop_btn = std::make_shared<sf::RectangleShape>(sf::Vector2f{ shop_btn_size, shop_btn_size });
-	auto shop_btn_position = sf::Vector2f{ foodbar_pos.x + mFoodBar.getFullSize().x + 4 * SCREEN_MARGIN, 2 * SCREEN_MARGIN };
-	shop_btn->setPosition(shop_btn_position);
-	shop_btn->setFillColor(sf::Color::Blue);
-	addSceneObject(SceneObject::SHOP_BUTTON, shop_btn);
 
-	// Shop button
-	std::shared_ptr<sf::RectangleShape> litter_btn = std::make_shared<sf::RectangleShape>(sf::Vector2f{ 32,32 });
-	litter_btn->setPosition({ shop_btn_position.x + shop_btn_size + 4 * SCREEN_MARGIN, 2 * SCREEN_MARGIN });
-	litter_btn->setFillColor(sf::Color::Blue);
-	addSceneObject(SceneObject::LITTER_BUTTON, litter_btn);
-
-
-	// Inventory container object
-	float inv_height = bg_Y - (3 * SCREEN_MARGIN) - button_height;
-	std::shared_ptr<sf::RectangleShape> inventory = std::make_shared<sf::RectangleShape>(sf::Vector2f{ INV_WIDTH, inv_height });
-	inventory->setFillColor(sf::Color::Magenta);
-	inventory->setPosition(
-		{
-			bg_start_X + bg_X - INV_WIDTH - SCREEN_MARGIN,
-			bg_start_Y + SCREEN_MARGIN
-		}
-	);
-	addSceneObject(SceneObject::INVENTORY, inventory);
-	
 
 	// Text input field
-	float txt_width = bg_X - button_width - (3 * SCREEN_MARGIN);
-	float txt_height = 150.f;
-	std::shared_ptr<sf::RectangleShape> text_field = std::make_shared<sf::RectangleShape>(sf::Vector2f{ txt_width, txt_height / 3 });
+	float txt_width = bg_X - scene_end_pos + SCREEN_MARGIN;
+	float input_txt_height = 100.f;
+	std::shared_ptr<sf::RectangleShape> text_field = std::make_shared<sf::RectangleShape>(sf::Vector2f{ txt_width, input_txt_height });
 	text_field->setFillColor(sf::Color::White);
-	text_field->setPosition(
-		{
-			bg_start_X + SCREEN_MARGIN,
-			bg_start_Y + bg_Y - txt_height / 3 - SCREEN_MARGIN
-		}
-	);
+	auto text_field_pos = sf::Vector2f{
+			scene_end_pos,
+			submit_btn_pos.y - input_txt_height - SCREEN_MARGIN
+	};
+	text_field->setPosition(text_field_pos);
 	addSceneObject(SceneObject::TEXT_INPUT, text_field);
+	
+
+	// Text output field
+	float output_txt_height = 200.f;
+	std::shared_ptr<sf::RectangleShape> output_field = std::make_shared<sf::RectangleShape>(sf::Vector2f{ txt_width, output_txt_height });
+	output_field->setFillColor(sf::Color::White);
+	auto output_field_pos = sf::Vector2f{
+			scene_end_pos,
+			text_field_pos.y - output_txt_height - SCREEN_MARGIN
+	};
+	output_field->setPosition(output_field_pos);
+	addSceneObject(SceneObject::TEXT_OUTPUT, output_field);
 
 
 	// Text input field blip
-	
 	std::shared_ptr<sf::RectangleShape> text_blip = std::make_shared<sf::RectangleShape>(sf::Vector2f{ 5,20 });
 	text_blip->setFillColor(sf::Color::Black);
 	text_blip->setPosition(
 		{
-			text_field->getPosition().x + SCREEN_MARGIN,
-			text_field->getPosition().y + SCREEN_MARGIN
+			text_field_pos.x + SCREEN_MARGIN,
+			text_field_pos.y + SCREEN_MARGIN
 		}
 	);
 	addSceneObject(SceneObject::TEXT_BLIP, text_blip);
 
 
-	// Place pet sprite on screen
-	mPetPosition = sf::Vector2f(
-		{
-			bg_start_X + 2*SCREEN_MARGIN,
-			bg_start_Y + 2*SCREEN_MARGIN
-		}
-	);
+	// Litterbox button
+	std::shared_ptr<sf::RectangleShape> litter_btn = std::make_shared<sf::RectangleShape>(sf::Vector2f{ INV_WIDTH,50 });
+	litter_btn->setTexture(&tm->getTexture(Texture::SPRITESHEET));
+	litter_btn->setTextureRect({ {128,96}, {64,32} });
+	litter_btn->setPosition({ scene_end_pos, SCREEN_MARGIN });
+	addSceneObject(SceneObject::LITTER_BUTTON, litter_btn);
+
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+	// Place pet sprite in scene
+
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	
+	mPetPosition = {
+		scene_bg_pos.x + scene_bg_size.x / 3.f,
+		scene_bg_pos.y + scene_bg_size.y / 2.5f
+	};
 	
-	// Text output field
-	std::shared_ptr<sf::RectangleShape> output_field = std::make_shared<sf::RectangleShape>(sf::Vector2f{ txt_width, txt_height });
-	output_field->setFillColor(sf::Color::White);
-	output_field->setPosition(
-		{
-			bg_start_X + SCREEN_MARGIN,
-			text_field->getPosition().y - txt_height - SCREEN_MARGIN
-		}
-	);
-	addSceneObject(SceneObject::TEXT_OUTPUT, output_field);
-	
+
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 	// Adding scene text objects.
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
+	auto char_size = 24;
 
 	// Output text by AI
 	auto& font = FontManager::getInstance()->getFont(FontName::TITLE);
-	addTextObject(SceneText::PET_TEXT, sf::Text(font, "", 24));
+	addTextObject(SceneText::PET_TEXT, sf::Text(font, "", char_size));
 	auto& pet_text = mSceneText.at(SceneText::PET_TEXT);
 	pet_text.setFillColor(sf::Color::Black);
 	pet_text.setPosition(
 		{
-			output_field->getPosition().x + SCREEN_MARGIN,
-			output_field->getPosition().y + SCREEN_MARGIN
+			output_field_pos.x + SCREEN_MARGIN,
+			output_field_pos.y + SCREEN_MARGIN
 		}
 	);
 	
 
 	// User prompting text
-	addTextObject(SceneText::PROMPT_TEXT, sf::Text(font, "", 24));
+	addTextObject(SceneText::PROMPT_TEXT, sf::Text(font, "", char_size));
 	auto& prompt_text = mSceneText.at(SceneText::PROMPT_TEXT);
 	prompt_text.setFillColor(sf::Color::Black);
 	prompt_text.setPosition(
 		{
-			text_field->getPosition().x + SCREEN_MARGIN,
-			text_field->getPosition().y + SCREEN_MARGIN
+			text_field_pos.x + SCREEN_MARGIN,
+			text_field_pos.y + SCREEN_MARGIN
 		}
 	);
 	
-
+	
 
 #ifndef NDEBUG
-
+	auto text_field_size = text_field->getSize();
+	
 	// Pet health value
-	addTextObject(SceneText::HEALTH_VALUE, sf::Text(font, "", 24));
+	addTextObject(SceneText::HEALTH_VALUE, sf::Text(font, "", char_size));
 	auto& health_text = mSceneText.at(SceneText::HEALTH_VALUE);
-	auto position_y = mSceneObjects.at(SceneObject::TEXT_OUTPUT)->getPosition().y - SCREEN_MARGIN - health_text.getCharacterSize();
+	auto position_y = output_field_pos.y - SCREEN_MARGIN - char_size;
 	health_text.setFillColor(sf::Color::Magenta);
-	health_text.setPosition({mPetPosition.x + SCREEN_MARGIN, position_y});
+	auto health_text_pos = sf::Vector2f{ scene_end_pos, position_y };
+	health_text.setPosition(health_text_pos);
 	
 	// Pet hunger value
-	addTextObject(SceneText::HUNGER_VALUE, sf::Text(font, "", 24));
+	addTextObject(SceneText::HUNGER_VALUE, sf::Text(font, "", char_size));
 	auto& hunger_text =  mSceneText.at(SceneText::HUNGER_VALUE);
 	hunger_text.setFillColor(sf::Color::Magenta);
-	hunger_text.setPosition({ health_text.getPosition().x + text_field->getSize().x/4 , position_y});
+	auto hunger_text_pos = sf::Vector2f{ health_text_pos.x + text_field_size.x / 4 , position_y };
+	hunger_text.setPosition(hunger_text_pos);
 	
 	// Pet groom value
-	addTextObject(SceneText::GROOM_VALUE, sf::Text(font, "", 24));
+	addTextObject(SceneText::GROOM_VALUE, sf::Text(font, "", char_size));
 	auto& groom_text = mSceneText.at(SceneText::GROOM_VALUE);
 	groom_text.setFillColor(sf::Color::Magenta);
-	groom_text.setPosition({ hunger_text.getPosition().x + text_field->getSize().x / 2, position_y});
+	groom_text.setPosition({ hunger_text_pos.x + text_field_size.x / 2, position_y});
 	
 	// Pet state value
-	addTextObject(SceneText::STATE_VALUE, sf::Text(font, "", 24));
+	addTextObject(SceneText::STATE_VALUE, sf::Text(font, "", char_size));
 	auto& state_text = mSceneText.at(SceneText::STATE_VALUE);
 	state_text.setFillColor(sf::Color::Magenta);
-	state_text.setPosition({ mPetPosition.x + SCREEN_MARGIN, position_y - 4*SCREEN_MARGIN});
+	state_text.setPosition({ scene_end_pos, position_y - 4*SCREEN_MARGIN});
 	
 
 #endif
@@ -182,8 +215,9 @@ GameScene::GameScene(sf::Vector2f screenSize, std::shared_ptr<Game> game, std::s
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-	mPet = std::make_shared<Pet>(Texture::SPRITESHEET, sf::IntRect({ 0,128 }, { 64,64 }), "Kitty", "Cat", "Happy");
+	mPet = std::make_shared<Pet>(Texture::SPRITESHEET, sf::IntRect({ 64,96 }, { 64,96 }), "Kitty", "Cat", "Happy");
 	mPet->setSpritePosition(mPetPosition);
+	mPet->setScale(sf::Vector2f(2.5,2.5));
 
 	mNeedsSystem = std::make_unique<NeedsSystem>(mPet);
 	mNeedsSystem->setModel(mModel);
@@ -231,8 +265,13 @@ void GameScene::update(float dt)
 	mSceneText.at(SceneText::GROOM_VALUE).setString(std::format("Grooming: {}", mPet->getGroomValue()));
 	mSceneText.at(SceneText::STATE_VALUE).setString(std::format("State: {}", mPet->getStatus()));
 #endif
+	
 	mFoodBar.resizeBar((float)mPet->getHungerValue());
+	auto bar_pos_x = mScreenSize.x - mFoodBar.getSize().x - SCREEN_MARGIN;
+	mFoodBar.setPosition(bar_pos_x);
 	mGroomBar.resizeBar((float)mPet->getGroomValue());
+	bar_pos_x = mScreenSize.x - mGroomBar.getSize().x - SCREEN_MARGIN;
+	mGroomBar.setPosition(bar_pos_x);
 
 	bool happiness_update = mPet->isHappier();
 	if (happiness_update)
@@ -292,14 +331,17 @@ void GameScene::render(sf::RenderWindow& window)
 {
 	window.draw(*mSceneObjects.at(SceneObject::BORDER));
 	window.draw(*mSceneObjects.at(SceneObject::BACKGROUND));
-	window.draw(mPet->getSprite());
+	
 
 	for (auto& obj : mSceneObjects)
 	{
 		if (obj.first == SceneObject::BACKGROUND || obj.first == SceneObject::BORDER) continue;
 		window.draw(*obj.second);
 	}
+
+	window.draw(mPet->getSprite());
 	mInventorySystem->render(window);
+
 	for (auto obj : mItems) {
 		if (!obj) continue;
 #ifndef NDEBUG
@@ -346,6 +388,7 @@ void GameScene::handleClick(sf::Vector2f mouseposition) {
 			mSceneObjects.at(SceneObject::TEXT_BLIP)->setPosition({ -10, -10 });
 			mFutures.push_back(std::async(std::launch::async, pushRequestToModel, mSceneText.at(SceneText::PROMPT_TEXT).getString(), mModel));
 			mSceneText.at(SceneText::PROMPT_TEXT).setString("");
+			mSceneText.at(SceneText::PET_TEXT).setString("*Thinking*");
 		}
 	}
 	else if (mSceneObjects.at(SceneObject::TEXT_INPUT)->getGlobalBounds().contains(mouseposition))
@@ -375,7 +418,8 @@ void GameScene::handleDrag(std::shared_ptr<sf::RenderWindow> window) {
 
 	if (mItems.empty()) return;
 
-	auto mouse_position = static_cast<sf::Vector2f>(sf::Mouse::getPosition(*window));
+	sf::Vector2i pixelPos = sf::Mouse::getPosition(*window);
+	sf::Vector2f mouse_position = window->mapPixelToCoords(pixelPos);
 
 	for (auto& item : mItems) {
 
@@ -386,14 +430,15 @@ void GameScene::handleDrag(std::shared_ptr<sf::RenderWindow> window) {
 			
 			while (!mCurrentEvent.value().is<sf::Event::MouseButtonReleased>()) {
 
-				mouse_position = static_cast<sf::Vector2f>(sf::Mouse::getPosition(*window));
+				sf::Vector2i pixelPos = sf::Mouse::getPosition(*window);
+				mouse_position = window->mapPixelToCoords(pixelPos);
 				mInventorySystem->dragItem(mouse_position, *item);
 				
-				if (mouse_position.x <= mInventorySystem->getSlotPositionAtIndex(0).x - 5*SCREEN_MARGIN)
+				if (mouse_position.x >= mInventorySystem->getSlotPositionAtIndex(6).x + 5 * SCREEN_MARGIN)
 				{
 					item->setScale({5,5});
 				}
-				if (item->getScale().x > 1 && mouse_position.x > mInventorySystem->getSlotPositionAtIndex(0).x - 5*SCREEN_MARGIN)
+				if (item->getScale().x > 1 && mouse_position.x < mInventorySystem->getSlotPositionAtIndex(6).x + 5*SCREEN_MARGIN)
 				{
 					item->setScale({ 1,1 });
 				}

@@ -40,7 +40,8 @@ enum class SceneObject
 	GROOM_BAR,
 	HEART_ICON,
 	LITTER_BOX,
-	LITTER_BUTTON
+	LITTER_BUTTON,
+	GAME_BG
 };
 
 enum class SceneText

@@ -6,8 +6,9 @@ enum class Texture {
 	SPRITESHEET,
 	TITLE_MENU,
 	LOADING_SCREEN,
-	LITTER_BOX,
-	PARTICLE
+	PARTICLE,
+	GAME_BG,
+	LITTER_BOX
 };
 
 class TextureManager

@@ -40,6 +40,8 @@ public:
 	sf::RectangleShape& getShape() { return mBar; }
 	sf::Vector2f getSize() { return mBar.getSize(); }
 	sf::Vector2f getFullSize() { return mFullSize; }
+	void setPosition(float position) { mBar.setPosition({position, mBar.getPosition().y });
+}
 
 private:
 	sf::RectangleShape mBar;

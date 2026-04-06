@@ -5,7 +5,7 @@ int main()
 {
     try {
 
-        auto window = std::make_shared<sf::RenderWindow>(sf::VideoMode({ 800, 600 }), "PetSim");
+        auto window = std::make_shared<sf::RenderWindow>(sf::VideoMode({ 1020, 660 }), "PetSim");
 
         std::shared_ptr<Game> game = std::make_shared<Game>(window);
         game->init();

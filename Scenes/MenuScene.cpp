@@ -7,31 +7,36 @@ MenuScene::MenuScene(sf::Vector2f screenSize, std::shared_ptr<Game> game) : Scen
 {
 	auto tm = TextureManager::getInstance();
 
-	std::shared_ptr<sf::RectangleShape> menu = std::make_shared<sf::RectangleShape>(sf::Vector2f{ screenSize.x / 2, 400 });
+	auto menu_size = sf::Vector2f{ screenSize.x / 2, 400 };
+	auto menu_pos = sf::Vector2f{ screenSize.x / 2 + menu_size.x / 2, screenSize.y / 2 - menu_size.y / 2 };
+	std::shared_ptr<sf::RectangleShape> menu = std::make_shared<sf::RectangleShape>(menu_size);
 	menu->setTexture(&tm->getTexture(Texture::TITLE_MENU));
-	menu->setPosition({ screenSize.x / 2 - menu->getSize().x / 2, screenSize.y / 2 - menu->getSize().y / 2 });
+	menu->setPosition(menu_pos);
 	mSceneObjects.emplace(SceneObject::START_MENU, menu);
 
-	auto pos = menu->getPosition();
+	auto btn_size = sf::Vector2f{ 200,50 };
+	auto start_btn_pos = sf::Vector2f{ menu_pos.x + btn_size.x / 2, menu_pos.y + menu_pos.y / btn_size.y + BUTTON_MARGIN };
 	std::shared_ptr<Command> start_cmd = std::make_shared<ContinueCommand>(mGame);
-	std::shared_ptr<sf::RectangleShape> start_btn = std::make_shared<Button>(sf::Vector2f{ 200,50 }, start_cmd);
+	std::shared_ptr<sf::RectangleShape> start_btn = std::make_shared<Button>(btn_size, start_cmd);
 	start_btn->setTexture(&tm->getTexture(Texture::SPRITESHEET));
 	start_btn->setTextureRect({ {0,64}, {64,32} });
-	start_btn->setPosition({ pos.x + start_btn->getSize().x / 2, pos.y + pos.y / start_btn->getSize().y + BUTTON_MARGIN});
+	start_btn->setPosition(start_btn_pos);
 	mSceneObjects.emplace(SceneObject::START_BUTTON, start_btn);
 
 	// Load game button
+	auto load_btn_pos = sf::Vector2f{ start_btn_pos.x, start_btn_pos.y + btn_size.y + BUTTON_MARGIN };
 	std::shared_ptr<Command> load_cmd = std::make_shared<LoadCommand>(mGame);
 	std::shared_ptr<sf::RectangleShape> load_btn = std::make_shared<Button>(sf::Vector2f{ 200,50 }, load_cmd);
 	load_btn->setTexture(&tm->getTexture(Texture::SPRITESHEET));
 	load_btn->setTextureRect({ { 128,64 }, { 64,32 } });
-	load_btn->setPosition({ start_btn->getPosition().x, start_btn->getPosition().y + start_btn->getSize().y + BUTTON_MARGIN });
+	load_btn->setPosition(load_btn_pos);
 	mSceneObjects.emplace(SceneObject::LOAD_BUTTON, load_btn);
 	
 	// Save game button
+	auto save_btn_pos = sf::Vector2f{ load_btn_pos.x, load_btn_pos.y + btn_size.y + BUTTON_MARGIN };
 	std::shared_ptr<Command> save_cmd = std::make_shared<SaveCommand>(mGame);
 	std::shared_ptr<sf::RectangleShape> save_btn = std::make_shared<Button>(sf::Vector2f{ 200,50 }, save_cmd);
-	save_btn->setPosition({ load_btn->getPosition().x, load_btn->getPosition().y + load_btn->getSize().y + BUTTON_MARGIN });
+	save_btn->setPosition(save_btn_pos);
 	save_btn->setTexture(&tm->getTexture(Texture::SPRITESHEET));
 	save_btn->setTextureRect({ { 64,32 }, { 64,32 } });
 	mSceneObjects.emplace(SceneObject::SAVE_BUTTON, save_btn);
@@ -41,7 +46,7 @@ MenuScene::MenuScene(sf::Vector2f screenSize, std::shared_ptr<Game> game) : Scen
 	std::shared_ptr<sf::RectangleShape> quit_btn = std::make_shared<Button>(sf::Vector2f{ 200,50 }, std::move(quit_cmd));
 	quit_btn->setTexture(&tm->getTexture(Texture::SPRITESHEET));
 	quit_btn->setTextureRect({ { 128,32 }, { 64,32 } });
-	quit_btn->setPosition({ save_btn->getPosition().x, save_btn->getPosition().y + save_btn->getSize().y + BUTTON_MARGIN });
+	quit_btn->setPosition({ save_btn_pos.x, save_btn_pos.y + btn_size.y + BUTTON_MARGIN });
 	mSceneObjects.emplace(SceneObject::QUIT_BUTTON, quit_btn);
 	
 }
