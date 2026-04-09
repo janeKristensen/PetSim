@@ -9,6 +9,7 @@ Game::Game(std::shared_ptr<sf::RenderWindow> window) : mWindow(std::move(window)
     tm->loadTexture(Texture::TITLE_MENU, "../PetSim/ressources/assets/title_menu.png");
     tm->loadTexture(Texture::LOADING_SCREEN, "../PetSim/ressources/assets/loading.png");
     tm->loadTexture(Texture::GAME_BG, "fixed_background_scaled.png");
+    tm->loadTexture(Texture::INVENTORY, "shelf.png");
    
     FontManager::getInstance()->loadFont(FontName::TITLE, "../PetSim/ressources/assets/Gabriola.ttf");
 }

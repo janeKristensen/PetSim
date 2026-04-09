@@ -17,7 +17,7 @@ class Game;
 
 constexpr float SCREEN_MARGIN = 10.f;
 constexpr float TEXT_MARGIN = 20.f;
-constexpr float INV_WIDTH = 200.0f;
+constexpr float INV_WIDTH = 300.0f;
 
 enum class SceneObject
 {

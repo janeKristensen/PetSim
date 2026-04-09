@@ -8,7 +8,8 @@ enum class Texture {
 	LOADING_SCREEN,
 	PARTICLE,
 	GAME_BG,
-	LITTER_BOX
+	LITTER_BOX,
+	INVENTORY
 };
 
 class TextureManager

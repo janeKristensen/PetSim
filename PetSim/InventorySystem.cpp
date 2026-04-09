@@ -1,14 +1,14 @@
 #include "InventorySystem.h"
 
 
-constexpr float INV_MARGIN = 0.0;
+constexpr float INV_MARGIN = 10.0;
 
 
 InventorySystem::InventorySystem(sf::Vector2f invDimensions, sf::Vector2f invPosition, Texture texName) 
 	: mTexture(texName){
 	
-	mSlotSize.x = ((invDimensions.x - (COLUMNS + 1) * INV_MARGIN) / COLUMNS);
-	mSlotSize.y = ((invDimensions.y - (ROWS + 1) * INV_MARGIN)/ ROWS);
+	mSlotSize.x = ((invDimensions.x - (COLUMNS + 3) * INV_MARGIN) / COLUMNS);
+	mSlotSize.y = ((invDimensions.y - (ROWS + 3) * INV_MARGIN)/ ROWS);
 
 	mAmountText.reserve(MAX_SLOTS * sizeof(sf::Text));
 	sf::Vector2f slot_position;
@@ -29,7 +29,7 @@ InventorySystem::InventorySystem(sf::Vector2f invDimensions, sf::Vector2f invPos
 
 			auto& slot_rect = slot.getShape();
 			slot_rect.setSize(mSlotSize);
-			slot_rect.setPosition(slot_position);
+			slot_rect.setPosition(slot_position + sf::Vector2f{2*INV_MARGIN,4 * INV_MARGIN });
 			slot_rect.setTexture(&TextureManager::getInstance()->getTexture(mTexture));
 			slot_rect.setTextureRect(sf::IntRect({160,0}, {32,32}));
 			slot.setAmount(0);
@@ -37,7 +37,7 @@ InventorySystem::InventorySystem(sf::Vector2f invDimensions, sf::Vector2f invPos
 			auto& font = FontManager::getInstance()->getFont(FontName::TITLE);
 			mAmountText.push_back(sf::Text(font, "", 36));
 			auto char_size = mAmountText[i].getCharacterSize();
-			auto text_position_x = slot_position.x + 15;
+			auto text_position_x = slot_position.x + mSlotSize.x/4 + 15;
 			auto text_position_y = slot_position.y + mSlotSize.y - char_size - 5;
 			mAmountText[i].setPosition({text_position_x, text_position_y});
 			mAmountText[i].setFillColor(sf::Color::White);
@@ -233,11 +233,17 @@ std::shared_ptr<Item>  InventorySystem::removeFromSlot(sf::Vector2f mousePositio
 
 void InventorySystem::dragItem(const sf::Vector2f mousePosition, Item& item) 
 {
-	auto size = item.getSprite().getTexture().getSize();
+	auto position = mousePosition;
 	sf::Vector2f scale = item.getScale();
-	auto scale_adjusted = sf::Vector2f{ size.x / scale.x, size.y / scale.y };
-	auto adjusted = mousePosition - scale_adjusted;
-	item.setPosition(adjusted);
+
+	if (scale.x > 1)
+	{
+		auto size = item.getSprite().getTexture().getSize();
+		auto scale_adjusted = sf::Vector2f{ size.x / scale.x, size.y / scale.y };
+		position -= scale_adjusted;
+	}
+	
+	item.setPosition(position);
 }
 
 void InventorySystem::despawnItem(std::shared_ptr<Item> item) {

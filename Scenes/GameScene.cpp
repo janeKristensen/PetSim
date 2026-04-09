@@ -15,6 +15,11 @@ GameScene::GameScene(sf::Vector2f screenSize, std::shared_ptr<Game> game, std::s
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+	//Button size
+	float button_width = 100;
+	float button_height = 50.f;
+
+
 	auto& bg = mSceneObjects.at(SceneObject::BACKGROUND);
 	bg->setFillColor(sf::Color::Black);
 	float bg_start_X = bg->getPosition().x;
@@ -24,10 +29,9 @@ GameScene::GameScene(sf::Vector2f screenSize, std::shared_ptr<Game> game, std::s
 
 	
 	// Inventory container object
-	float shop_button_height = 50.f;
-	float inv_height = bg_Y - SCREEN_MARGIN - shop_button_height;
+	float inv_height = bg_Y - SCREEN_MARGIN - button_height;
 	std::shared_ptr<sf::RectangleShape> inventory = std::make_shared<sf::RectangleShape>(sf::Vector2f{ INV_WIDTH, inv_height });
-	inventory->setFillColor(sf::Color::Magenta);
+	inventory->setTexture(&tm->getTexture(Texture::INVENTORY));
 	auto inv_pos = sf::Vector2f{
 			bg_start_X,
 			bg_start_Y 
@@ -37,8 +41,7 @@ GameScene::GameScene(sf::Vector2f screenSize, std::shared_ptr<Game> game, std::s
 	
 
 	// Shop button
-	float shop_button_width = INV_WIDTH;
-	std::shared_ptr<sf::RectangleShape> shop_btn = std::make_shared<sf::RectangleShape>(sf::Vector2f{ shop_button_width, shop_button_height });
+	std::shared_ptr<sf::RectangleShape> shop_btn = std::make_shared<sf::RectangleShape>(sf::Vector2f{ button_width, button_height });
 	auto shop_btn_position = sf::Vector2f
 	{
 		inv_pos.x,
@@ -73,8 +76,6 @@ GameScene::GameScene(sf::Vector2f screenSize, std::shared_ptr<Game> game, std::s
 
 
 	// Button for submitting text
-	float button_width = INV_WIDTH;
-	float button_height = 50.f;
 	auto submit_btn_pos = sf::Vector2f{
 			bg_start_X + bg_X - button_width,
 			bg_start_Y + bg_Y - button_height
@@ -124,7 +125,7 @@ GameScene::GameScene(sf::Vector2f screenSize, std::shared_ptr<Game> game, std::s
 
 
 	// Litterbox button
-	std::shared_ptr<sf::RectangleShape> litter_btn = std::make_shared<sf::RectangleShape>(sf::Vector2f{ INV_WIDTH,50 });
+	std::shared_ptr<sf::RectangleShape> litter_btn = std::make_shared<sf::RectangleShape>(sf::Vector2f{ button_width,button_height });
 	litter_btn->setTexture(&tm->getTexture(Texture::SPRITESHEET));
 	litter_btn->setTextureRect({ {128,96}, {64,32} });
 	litter_btn->setPosition({ scene_end_pos, SCREEN_MARGIN });
@@ -137,8 +138,8 @@ GameScene::GameScene(sf::Vector2f screenSize, std::shared_ptr<Game> game, std::s
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	
 	mPetPosition = {
-		scene_bg_pos.x + scene_bg_size.x / 3.f,
-		scene_bg_pos.y + scene_bg_size.y / 2.5f
+		scene_bg_pos.x + scene_bg_size.x / 3.2f,
+		scene_bg_pos.y + scene_bg_size.y / 2.8f
 	};
 	
 
@@ -434,11 +435,12 @@ void GameScene::handleDrag(std::shared_ptr<sf::RenderWindow> window) {
 				mouse_position = window->mapPixelToCoords(pixelPos);
 				mInventorySystem->dragItem(mouse_position, *item);
 				
-				if (mouse_position.x >= mInventorySystem->getSlotPositionAtIndex(6).x + 5 * SCREEN_MARGIN)
+				auto cutover = INV_WIDTH + 5 * SCREEN_MARGIN;
+				if (mouse_position.x >= cutover)
 				{
 					item->setScale({5,5});
 				}
-				if (item->getScale().x > 1 && mouse_position.x < mInventorySystem->getSlotPositionAtIndex(6).x + 5*SCREEN_MARGIN)
+				if (item->getScale().x > 1 && mouse_position.x < cutover)
 				{
 					item->setScale({ 1,1 });
 				}
