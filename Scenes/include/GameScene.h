@@ -43,13 +43,14 @@ private:
 	std::shared_ptr<Pet> mPet = nullptr;
 	std::shared_ptr<Model> mModel = nullptr;
 	std::vector<std::future<void>> mFutures;
+	ProgressBar mFoodBar;
+	ProgressBar mGroomBar;
 	std::string mStringBuffer;
 	std::string mStringLine;
 	sf::Vector2f mPetPosition;
 	sf::Vector2f mScreenSize;
-	ProgressBar mFoodBar;
-	ProgressBar mGroomBar;
-
+	float mItemScale;
+	uint32_t mMoney = 0;
 	bool mInTextField = false;
 	float mBlipTracker = 0.f;
 	float mResponseTracker = 0.f;

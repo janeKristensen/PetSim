@@ -5,7 +5,7 @@
 #include "FontManager.h"
 #include <iostream>
 
-constexpr size_t ROWS = 6;
+constexpr size_t ROWS = 3;
 constexpr size_t COLUMNS = 2;
 constexpr size_t MAX_SLOTS = ROWS * COLUMNS;
 

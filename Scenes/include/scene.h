@@ -41,7 +41,8 @@ enum class SceneObject
 	HEART_ICON,
 	LITTER_BOX,
 	LITTER_BUTTON,
-	GAME_BG
+	GAME_BG,
+	MONEY
 };
 
 enum class SceneText
@@ -53,6 +54,7 @@ enum class SceneText
 	HUNGER_VALUE,
 	GROOM_VALUE,
 	STATE_VALUE,
+	MONEY_VALUE
 };
 
 

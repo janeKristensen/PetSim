@@ -7,12 +7,12 @@ constexpr float INV_MARGIN = 10.0;
 InventorySystem::InventorySystem(sf::Vector2f invDimensions, sf::Vector2f invPosition, Texture texName) 
 	: mTexture(texName){
 	
-	mSlotSize.x = ((invDimensions.x - (COLUMNS + 3) * INV_MARGIN) / COLUMNS);
-	mSlotSize.y = ((invDimensions.y - (ROWS + 3) * INV_MARGIN)/ ROWS);
+	mSlotSize.x = ((invDimensions.x - (COLUMNS + 2) * INV_MARGIN) / COLUMNS);
+	mSlotSize.y = ((invDimensions.y - ROWS * INV_MARGIN) / ROWS);
 
 	mAmountText.reserve(MAX_SLOTS * sizeof(sf::Text));
 	sf::Vector2f slot_position;
-
+	
 	size_t i = 0;
 	for (auto& column : mInventory) {
 		
@@ -35,11 +35,14 @@ InventorySystem::InventorySystem(sf::Vector2f invDimensions, sf::Vector2f invPos
 			slot.setAmount(0);
 
 			auto& font = FontManager::getInstance()->getFont(FontName::TITLE);
-			mAmountText.push_back(sf::Text(font, "", 36));
-			auto char_size = mAmountText[i].getCharacterSize();
-			auto text_position_x = slot_position.x + mSlotSize.x/4 + 15;
-			auto text_position_y = slot_position.y + mSlotSize.y - char_size - 5;
-			mAmountText[i].setPosition({text_position_x, text_position_y});
+			size_t char_size = 36;
+			mAmountText.push_back(sf::Text(font, "", char_size));
+			auto slot_rect_pos = slot_rect.getPosition();
+			auto text_position = sf::Vector2f{
+				(slot_rect_pos.x + mSlotSize.x) - char_size,
+				(slot_rect_pos.y + mSlotSize.y) - char_size 
+			};
+			mAmountText[i].setPosition(text_position);
 			mAmountText[i].setFillColor(sf::Color::White);
 			mAmountText[i].setStyle(sf::Text::Bold);
 			mAmountText[i].setString("");
@@ -138,7 +141,8 @@ void InventorySystem::adjustItemCount(int32_t value, size_t index) {
 void InventorySystem::addItemToSlotIndex(size_t index, std::shared_ptr<Item> item, int amount) {
 
 	auto position = getSlotPositionAtIndex(index);
-	position = { position.x + mSlotSize.x / 4, position.y + mSlotSize.y / 4.f };
+	auto item_size = item->getSprite().getTexture().getSize();
+	position = { position.x + mSlotSize.x / 2 - item_size.x/2, position.y + mSlotSize.y / 2 - item_size.y / 2};
 	item->setPosition(position);
 	adjustItemCount(amount, index);
 	mItems[index] = item;
@@ -151,11 +155,11 @@ size_t InventorySystem::addItemToSlot(sf::Vector2f mousePosition, std::shared_pt
 	// if not dragged inside an inventory slot
 	if (index == -1) {
 
-		// items dragged outside the inventory are scaled up and must be scaled down before adding to inventory
-		if (item->getScale().x > 1)
-		{
-			item->setScale({ 1,1 });
-		}
+		//// items dragged outside the inventory are scaled up and must be scaled down before adding to inventory
+		//if (item->getScale().x > item->getScale().x)
+		//{
+		//	item->setScale({ 1,1 });
+		//}
 		
 		// check if there is an item of same type in inventory
 		for (int i = 0; i < mItems.size(); i++) {
@@ -234,15 +238,6 @@ std::shared_ptr<Item>  InventorySystem::removeFromSlot(sf::Vector2f mousePositio
 void InventorySystem::dragItem(const sf::Vector2f mousePosition, Item& item) 
 {
 	auto position = mousePosition;
-	sf::Vector2f scale = item.getScale();
-
-	if (scale.x > 1)
-	{
-		auto size = item.getSprite().getTexture().getSize();
-		auto scale_adjusted = sf::Vector2f{ size.x / scale.x, size.y / scale.y };
-		position -= scale_adjusted;
-	}
-	
 	item.setPosition(position);
 }
 
