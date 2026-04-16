@@ -103,13 +103,17 @@ void ShopScene::handleHover(sf::Vector2f mouseposition)
 
 void ShopScene::handleClick(sf::Vector2f mouseposition)
 {
+	auto sm = SoundManager::getInstance();
+
 	if (mSceneObjects.at(SceneObject::RETURN_BUTTON)->getGlobalBounds().contains(mouseposition))
 	{
+		sm->play(Sound::CLICK);
 		auto btn = std::static_pointer_cast<Button>(mSceneObjects.at(SceneObject::RETURN_BUTTON));
 		btn->onClick();
 	}
 	else if(mSceneObjects.at(SceneObject::BUY_BUTTON)->getGlobalBounds().contains(mouseposition))
 	{
+		sm->play(Sound::CLICK);
 		auto btn = std::static_pointer_cast<Button>(mSceneObjects.at(SceneObject::BUY_BUTTON));
 		auto cmd = btn->getCommand();
 		if (!cmd)
@@ -127,6 +131,7 @@ void ShopScene::handleClick(sf::Vector2f mouseposition)
 		{
 			if (tile.getBounds().contains(mouseposition))
 			{
+				sm->play(Sound::CLICK);
 				tile.selectTile(true);
 				mSelectedTile = &tile;
 			}

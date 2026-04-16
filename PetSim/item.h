@@ -31,7 +31,9 @@ public:
 	void setPosition(sf::Vector2f position) { mSprite.setPosition(position); }
 	void setScale(sf::Vector2f scale) { mSprite.setScale(scale); }
 	void setAlive(bool value) { mIsAlive = value; }
+	void setPicked(bool value) { mIsPicked = value; }
 	const bool isAlive() const { return mIsAlive; }
+	const bool isPicked() const { return mIsPicked; }
 	const ItemType getTypeId() const { return mTypeId; }
 	const Texture getTextureName() const { return mTexture; }
 	const sf::IntRect getTextureRect() const { return mSprite.getTextureRect(); }
@@ -45,6 +47,7 @@ protected:
 	uint32_t mValue;
 	const ItemType mTypeId;
 	bool mIsAlive = true;
+	bool mIsPicked = false;
 	sf::Sprite mSprite;
 	Texture mTexture;
 	nlohmann::json mState;

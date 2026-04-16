@@ -6,15 +6,16 @@ constexpr float BUTTON_MARGIN = 30.0;
 MenuScene::MenuScene(sf::Vector2f screenSize, std::shared_ptr<Game> game) : Scene(screenSize, game)
 {
 	auto tm = TextureManager::getInstance();
+	auto btn_size = sf::Vector2f{ 200,50 };
 
-	auto menu_size = sf::Vector2f{ screenSize.x / 2, 400 };
-	auto menu_pos = sf::Vector2f{ screenSize.x / 2 + menu_size.x / 2, screenSize.y / 2 - menu_size.y / 2 };
+	auto menu_size = sf::Vector2f{ screenSize.x / 2, btn_size.y * 10 };
+	auto menu_pos = sf::Vector2f{ screenSize.x / 2 - menu_size.x / 2, screenSize.y / 2 - menu_size.y / 2 };
 	std::shared_ptr<sf::RectangleShape> menu = std::make_shared<sf::RectangleShape>(menu_size);
 	menu->setTexture(&tm->getTexture(Texture::TITLE_MENU));
 	menu->setPosition(menu_pos);
 	mSceneObjects.emplace(SceneObject::START_MENU, menu);
 
-	auto btn_size = sf::Vector2f{ 200,50 };
+	
 	auto start_btn_pos = sf::Vector2f{ menu_pos.x + btn_size.x / 2, menu_pos.y + menu_pos.y / btn_size.y + BUTTON_MARGIN };
 	std::shared_ptr<Command> start_cmd = std::make_shared<ContinueCommand>(mGame);
 	std::shared_ptr<sf::RectangleShape> start_btn = std::make_shared<Button>(btn_size, start_cmd);
@@ -77,14 +78,17 @@ void MenuScene::render(sf::RenderWindow& window)
 void MenuScene::handleClick(sf::Vector2f mouseposition)
 {
 	auto scene_manager = SceneManager::getInstance();
+	auto sm = SoundManager::getInstance();
 
 	if (mSceneObjects.at(SceneObject::START_BUTTON)->getGlobalBounds().contains(mouseposition)) 
 	{
+		sm->play(Sound::CLICK);
 		auto btn = std::static_pointer_cast<Button>(mSceneObjects.at(SceneObject::START_BUTTON));
 		btn->onClick();
 	}
 	else if (mSceneObjects.at(SceneObject::LOAD_BUTTON)->getGlobalBounds().contains(mouseposition))
 	{
+		sm->play(Sound::CLICK);
 		auto btn = std::static_pointer_cast<Button>(mSceneObjects.at(SceneObject::LOAD_BUTTON));
 
 		// How to get the filename from selection?
@@ -95,16 +99,26 @@ void MenuScene::handleClick(sf::Vector2f mouseposition)
 	}
 	else if (mSceneObjects.at(SceneObject::SAVE_BUTTON)->getGlobalBounds().contains(mouseposition))
 	{
+		sm->play(Sound::CLICK);
 		auto btn = std::static_pointer_cast<Button>(mSceneObjects.at(SceneObject::SAVE_BUTTON));
 		btn->onClick();
 	}
 	else if (mSceneObjects.at(SceneObject::QUIT_BUTTON)->getGlobalBounds().contains(mouseposition))
 	{
+		sm->play(Sound::CLICK);
 		auto btn = std::static_pointer_cast<Button>(mSceneObjects.at(SceneObject::QUIT_BUTTON));
 		btn->onClick();
 	}
 }
 
+void MenuScene::handleKeyPress(sf::Keyboard::Key key)
+{
+	if (key == sf::Keyboard::Key::Escape) {
+
+		auto btn = std::static_pointer_cast<Button>(mSceneObjects.at(SceneObject::START_BUTTON));
+		btn->onClick();
+	}
+}
 
 void MenuScene::handleTextEntry(const sf::Event& event)
 {

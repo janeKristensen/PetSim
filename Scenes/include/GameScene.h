@@ -20,6 +20,7 @@ public:
 	void handleClick(sf::Vector2f mouseposition) override;
 	void handleKeyPress(sf::Keyboard::Key key) override;
 	void handleDrag(std::shared_ptr<sf::RenderWindow> window) override;
+	void asyncDrag(std::shared_ptr<sf::RenderWindow> window);
 	void handleTextEntry(const sf::Event& event) override;
 	nlohmann::json setState() override;
 	void loadGame(const std::string& filename) override;

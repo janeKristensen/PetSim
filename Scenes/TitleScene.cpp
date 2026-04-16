@@ -59,14 +59,18 @@ void TitleScene::render(sf::RenderWindow& window)
 
 void TitleScene::handleClick(sf::Vector2f mouseposition)
 {
+	auto sm = SoundManager::getInstance();
+
 	if (mSceneObjects.at(SceneObject::START_BUTTON)->getGlobalBounds().contains(mouseposition))
 	{
+		sm->play(Sound::CLICK);
 		auto btn = std::static_pointer_cast<Button>(mSceneObjects.at(SceneObject::START_BUTTON));
 		static_pointer_cast<StartCommand>(btn->getCommand())->setScreenSize(mScreenSize);
 		btn->onClick();
 	}
 	else if (mSceneObjects.at(SceneObject::QUIT_BUTTON)->getGlobalBounds().contains(mouseposition))
 	{
+		sm->play(Sound::CLICK);
 		auto btn = std::static_pointer_cast<Button>(mSceneObjects.at(SceneObject::QUIT_BUTTON));
 		btn->onClick();
 	}

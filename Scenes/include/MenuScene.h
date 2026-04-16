@@ -9,8 +9,8 @@ public:
 	void update(float dt) override;
 	void render(sf::RenderWindow& window) override;
 	void handleClick(sf::Vector2f mouseposition) override;
+	void handleKeyPress(sf::Keyboard::Key key) override;
 	void handleTextEntry(const sf::Event& event) override;
 
 private:
-	
 };

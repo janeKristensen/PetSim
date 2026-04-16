@@ -1,6 +1,8 @@
 #pragma once
 #include "SFML/Graphics.hpp"
+#include "SFML/Audio.hpp"
 #include "TextureManager.h"
+#include "SoundManager.h"
 #include "FontManager.h"
 #include "SceneManager.h"
 #include "NeedsSystem.h"

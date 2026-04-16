@@ -40,7 +40,7 @@ InventorySystem::InventorySystem(sf::Vector2f invDimensions, sf::Vector2f invPos
 			auto slot_rect_pos = slot_rect.getPosition();
 			auto text_position = sf::Vector2f{
 				(slot_rect_pos.x + mSlotSize.x) - char_size,
-				(slot_rect_pos.y + mSlotSize.y) - char_size 
+				(slot_rect_pos.y + mSlotSize.y) - 1.5f * char_size 
 			};
 			mAmountText[i].setPosition(text_position);
 			mAmountText[i].setFillColor(sf::Color::White);

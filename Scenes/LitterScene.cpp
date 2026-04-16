@@ -162,8 +162,11 @@ void LitterScene::render(sf::RenderWindow& window)
 
 void LitterScene::handleClick(sf::Vector2f mouseposition)
 {
+	auto sm = SoundManager::getInstance();
+
 	if (mSceneObjects.at(SceneObject::RETURN_BUTTON)->getGlobalBounds().contains(mouseposition))
 	{
+		sm->play(Sound::CLICK);
 		auto btn = std::static_pointer_cast<Button>(mSceneObjects.at(SceneObject::RETURN_BUTTON));
 		btn->onClick();
 	}
@@ -176,28 +179,28 @@ void LitterScene::handleKeyPress(sf::Keyboard::Key key)
 
 void LitterScene::handleDrag(std::shared_ptr<sf::RenderWindow> window)
 {
-	sf::Clock timer;
-	float elapsed;
-
-	while (!mCurrentEvent.value().is<sf::Event::MouseButtonReleased>())
+	auto sm = SoundManager::getInstance();
+	if (!sm->isPlaying())
 	{
-		sf::Vector2i pixelPos = sf::Mouse::getPosition(*window);
-		sf::Vector2f position = window->mapPixelToCoords(pixelPos);
+		sm->play(Sound::SAND);
+	}
+
+	sf::Vector2i pixelPos = sf::Mouse::getPosition(*window);
+	sf::Vector2f position = window->mapPixelToCoords(pixelPos);
 		
-		mParticleManager.setDirection(position, mRadius);
-		mParticleManager.setDirection(position + sf::Vector2f{ 0, 30 }, mRadius);
-		mParticleManager.setDirection(position + sf::Vector2f{ 0, -30 }, mRadius);
+	mParticleManager.setDirection(position, mRadius);
+	mParticleManager.setDirection(position + sf::Vector2f{ 0, 30 }, mRadius);
+	mParticleManager.setDirection(position + sf::Vector2f{ 0, -30 }, mRadius);
 		
 	
 #ifdef shader
-		sf::Vector2f uv =
-		{
-			(position.x - mLitterBox.getPosition().x) / mLitterBox.getTexture().getSize().x,
-			(position.y - mLitterBox.getPosition().y) / mLitterBox.getTexture().getSize().y
-		};
-		uv.y = 1 - uv.y;
-		mShader.setUniform("u_mouse", uv);
+	sf::Vector2f uv =
+	{
+		(position.x - mLitterBox.getPosition().x) / mLitterBox.getTexture().getSize().x,
+		(position.y - mLitterBox.getPosition().y) / mLitterBox.getTexture().getSize().y
+	};
+	uv.y = 1 - uv.y;
+	mShader.setUniform("u_mouse", uv);
 #endif
 		
-	}
 }

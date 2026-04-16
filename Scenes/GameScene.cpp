@@ -406,9 +406,12 @@ std::string GameScene::getPrompt()
 void GameScene::handleClick(sf::Vector2f mouseposition) {
 
 	mInTextField = false;
+	auto sm = SoundManager::getInstance();
 
 	if (mSceneObjects.at(SceneObject::ADD_BUTTON)->getGlobalBounds().contains(mouseposition))
 	{
+		sm->play(Sound::CLICK);
+
 		if (mModel != nullptr) 
 		{
 			//////////////////////////
@@ -427,17 +430,19 @@ void GameScene::handleClick(sf::Vector2f mouseposition) {
 	}
 	else if (mSceneObjects.at(SceneObject::SHOP_BUTTON)->getGlobalBounds().contains(mouseposition))
 	{
+		sm->play(Sound::CLICK);
 		SceneManager::getInstance()->changeScene(std::make_shared<ShopScene>(mScreenSize, mGame, *this));
 	}
 	else if (mSceneObjects.at(SceneObject::LITTER_BUTTON)->getGlobalBounds().contains(mouseposition))
 	{
+		sm->play(Sound::CLICK);
 		SceneManager::getInstance()->changeScene(std::make_shared<LitterScene>(mScreenSize, mGame, *this));
 	}
 }
 
 void GameScene::handleKeyPress(sf::Keyboard::Key key)
 {
-	if (key == sf::Keyboard::Key::M) {
+	if (key == sf::Keyboard::Key::Escape) {
 
 		SceneManager::getInstance()->changeScene(std::make_shared<MenuScene>(mScreenSize, mGame));
 	}
@@ -464,8 +469,8 @@ void GameScene::handleDrag(std::shared_ptr<sf::RenderWindow> window) {
 				auto scale_adjusted = size.x / scale.x;
 				adjustment = scale_adjusted;
 			}
-			
-			while (!mCurrentEvent.value().is<sf::Event::MouseButtonReleased>()) {
+
+			while (sf::Mouse::isButtonPressed(sf::Mouse::Button::Left)) {
 
 				sf::Vector2i pixelPos = sf::Mouse::getPosition(*window);
 				mouse_position = window->mapPixelToCoords(pixelPos);
@@ -473,11 +478,11 @@ void GameScene::handleDrag(std::shared_ptr<sf::RenderWindow> window) {
 				mouse_position.y -= adjustment;
 
 				mInventorySystem->dragItem(mouse_position, *item);
-				
+
 				auto cutover = INV_WIDTH + 5 * SCREEN_MARGIN;
 				if (mouse_position.x >= cutover)
 				{
-					item->setScale({5,5});
+					item->setScale({ 5,5 });
 				}
 				if (item->getScale().x > mItemScale && mouse_position.x < cutover)
 				{
@@ -508,6 +513,12 @@ void GameScene::handleDrag(std::shared_ptr<sf::RenderWindow> window) {
 			break;
 		}
 	}
+}
+
+void GameScene::asyncDrag(std::shared_ptr<sf::RenderWindow> window)
+{
+	
+	
 }
 
 void GameScene::handleTextEntry(const sf::Event& event) {

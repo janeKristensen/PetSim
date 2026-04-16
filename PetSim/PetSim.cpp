@@ -12,6 +12,10 @@ Game::Game(std::shared_ptr<sf::RenderWindow> window) : mWindow(std::move(window)
     tm->loadTexture(Texture::INVENTORY, "shelf.png");
    
     FontManager::getInstance()->loadFont(FontName::TITLE, "../PetSim/ressources/assets/Gabriola.ttf");
+
+    auto sm = SoundManager::getInstance();
+    sm->loadSound(Sound::CLICK, "Sounds/click.wav");
+    sm->loadSound(Sound::SAND, "Sounds/sand_sound.wav");
 }
 
 void Game::init()
@@ -29,8 +33,7 @@ void Game::pollEvents()
         auto scene = scene_manager->getScene();
         scene->setEvent(event);
 
-        if (event->is<sf::Event::Closed>() || (event->is<sf::Event::KeyPressed>() &&
-            event->getIf<sf::Event::KeyPressed>()->code == sf::Keyboard::Key::Escape)) 
+        if (event->is<sf::Event::Closed>()) 
         {
             mWindow->close();
         }
@@ -43,13 +46,21 @@ void Game::pollEvents()
         else if (event->is<sf::Event::KeyPressed>())
         {
             auto key = event->getIf<sf::Event::KeyPressed>()->code;
-            if (key == sf::Keyboard::Key::S) saveGame();
             scene->handleKeyPress(key);
         }
         else if (event->is<sf::Event::MouseButtonReleased>() &&
             event->getIf<sf::Event::MouseButtonReleased>()->button == sf::Mouse::Button::Left) 
         {
-            scene->handleClick(mouse_position);
+            mMouseDown = false;
+
+            if (!mIsDragging)
+            {
+                scene->handleClick(mouse_position);
+            }
+            else 
+            {
+                mIsDragging = false;
+            }
         }
         else if (event->is<sf::Event::TextEntered>()) 
         {
@@ -57,7 +68,13 @@ void Game::pollEvents()
         }
         else if (event->is<sf::Event::MouseButtonPressed>() && event->getIf<sf::Event::MouseButtonPressed>()->button == sf::Mouse::Button::Left) 
         {
-            mFutures.push_back(std::async(std::launch::async, &Scene::handleDrag, scene, mWindow));
+            mMouseDownPosition = mouse_position;
+            mMouseDown = true;
+            if (std::dynamic_pointer_cast<GameScene>(scene))
+            {
+                mFutures.push_back(std::async(std::launch::async, &Scene::handleDrag, scene, mWindow));
+                mMouseDown = false;
+            }
         }
 
         mFutures.push_back(std::async(std::launch::async, &Scene::handleHover, scene, mouse_position));
@@ -67,7 +84,35 @@ void Game::pollEvents()
 
 void Game::update(float dt) 
 {
-    SceneManager::getInstance()->getScene()->update(dt);
+    auto sm = SceneManager::getInstance();
+    auto scene = sm->getScene();
+
+    if (mMouseDown && !mIsDragging)
+    {
+        sf::Vector2i pixel_pos = sf::Mouse::getPosition(*mWindow);
+        sf::Vector2f mouse_position = mWindow->mapPixelToCoords(pixel_pos);
+        float distance = std::hypot(mouse_position.x - mMouseDownPosition.x,
+            mouse_position.y - mMouseDownPosition.y);
+
+        if (distance > 5.0f) // threshold in pixels
+        {
+            mIsDragging = true; 
+        }
+    }
+    if (mIsDragging)
+    {
+        if (std::dynamic_pointer_cast<GameScene>(scene))
+        {
+            
+        }
+        else 
+        {
+            scene->handleDrag(mWindow);
+        }   
+    }
+    scene->update(dt);
+    SoundManager::getInstance()->update();
+   
 }
 
 void Game::render() 

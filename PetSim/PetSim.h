@@ -6,6 +6,7 @@
 #include "TitleScene.h"
 #include "Memento.h"
 #include "TextureManager.h"
+#include "SoundManager.h"
 #include "FontManager.h"
 #include "NeedsSystem.h"
 #include "InventorySystem.h"
@@ -33,5 +34,8 @@ private:
 	std::vector<std::future<void>> mFutures;
 	std::shared_ptr<SaveComponent> mSaveComponent = std::make_shared<SaveComponent>(); 
 	std::unique_ptr<SaveManager> mSaveManager = std::make_unique<SaveManager>(mSaveComponent);
-	std::shared_ptr<sf::RenderWindow> mWindow = nullptr;	
+	std::shared_ptr<sf::RenderWindow> mWindow = nullptr;
+	bool mMouseDown = false;
+	bool mIsDragging = false;
+	sf::Vector2f mMouseDownPosition;
 };
