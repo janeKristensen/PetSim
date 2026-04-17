@@ -2,6 +2,20 @@
 #include "GameScene.h"
 
 
+const char* vertexShaderSource = "#version 460 core\n"
+"layout(location = 0) in vec3 aPos;\n"
+"void main()\n"
+"{\n"
+"gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
+"}";
+
+const char* fragShaderSource = "#version 460 core\n"
+"out vec4 FragColor;\n"
+"void main()\n"
+"{\n"
+"FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);\n"
+"} ";
+
 LitterScene::LitterScene(sf::Vector2f screenSize, std::shared_ptr<Game> game, GameScene& scene) : Scene(screenSize, game), mGameScene(scene)
 {
 	auto tm = TextureManager::getInstance();
@@ -83,6 +97,44 @@ LitterScene::LitterScene(sf::Vector2f screenSize, std::shared_ptr<Game> game, Ga
 	createParticles();
 }
 
+void LitterScene::createParticleShader()
+{
+	// Shaders
+	uint32_t vertex_shader;
+	vertex_shader = glCreateShader(GL_VERTEX_SHADER);
+	glShaderSource(vertex_shader, 1, &vertexShaderSource, NULL);
+	glCompileShader(vertex_shader);
+
+	int  success;
+	char infoLog[512];
+	glGetShaderiv(vertex_shader, GL_COMPILE_STATUS, &success);
+	if (!success)
+	{
+		glGetShaderInfoLog(vertex_shader, 512, NULL, infoLog);
+		std::cout << "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n" << infoLog << std::endl;
+	}
+
+	uint32_t frag_shader;
+	frag_shader = glCreateShader(GL_FRAGMENT_SHADER);
+	glShaderSource(frag_shader, 1, &fragShaderSource, NULL);
+	glCompileShader(frag_shader);
+	glGetShaderiv(frag_shader, GL_COMPILE_STATUS, &success);
+	if (!success)
+	{
+		glGetShaderInfoLog(frag_shader, 512, NULL, infoLog);
+		std::cout << "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n" << infoLog << std::endl;
+	}
+
+	
+	mShaderProgram = glCreateProgram();
+	glAttachShader(mShaderProgram, vertex_shader);
+	glAttachShader(mShaderProgram, frag_shader);
+	glLinkProgram(mShaderProgram);
+
+	glDeleteShader(vertex_shader);
+	glDeleteShader(frag_shader);
+}
+
 void LitterScene::createParticles()
 {
 	for (int i = 0; i < mBoxSize.x-1; i += mParticleSize)
@@ -97,6 +149,34 @@ void LitterScene::createParticles()
 	mVa.resize(mParticleManager.getParticles().size());
 }
 
+void LitterScene::drawParticles()
+{
+	//Draw triangle
+	float points[] = {
+	-0.5f, -0.5f, 0.0f,
+	 0.5f, -0.5f, 0.0f,
+	 0.0f,  0.5f, 0.0f
+	};
+
+	GLuint VAO;
+	glGenVertexArrays(1, &VAO);
+	glBindVertexArray(VAO);
+	GLuint VBO;
+	glGenBuffers(1, &VBO);
+	glBindBuffer(GL_ARRAY_BUFFER, VBO);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(points), points, GL_STATIC_DRAW);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+	glEnableVertexAttribArray(0);
+
+	glUseProgram(mShaderProgram);
+	glBindVertexArray(VAO);
+	glDrawArrays(GL_TRIANGLES, 0, 3);
+
+	glDisableVertexAttribArray(0);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+}
+
 void LitterScene::update(float dt) 
 {
 #ifdef shader
@@ -109,10 +189,11 @@ void LitterScene::update(float dt)
 
 void LitterScene::render(sf::RenderWindow& window) 
 {
+	window.pushGLStates();
+
 	window.draw(*mSceneObjects.at(SceneObject::BORDER));
 	window.draw(*mSceneObjects.at(SceneObject::BACKGROUND));
 	
-
 	for (auto& obj : mSceneObjects)
 	{
 		if (obj.first == SceneObject::BACKGROUND ||
@@ -120,8 +201,6 @@ void LitterScene::render(sf::RenderWindow& window)
 
 		window.draw(*obj.second);
 	}
-
-	
 
 #ifdef shader
 	mRTB.clear(sf::Color::Red);
@@ -148,7 +227,14 @@ void LitterScene::render(sf::RenderWindow& window)
 		// Color (optional)
 		mVa[p].color = sf::Color(210, 180, 73);
 	}
-	
+
+	GLint program = 0;
+	glGetIntegerv(GL_CURRENT_PROGRAM, &program);
+	std::cout << "Current program: " << program << std::endl;
+
+	GLint vao = 0;
+	glGetIntegerv(GL_VERTEX_ARRAY_BINDING, &vao);
+	std::cout << "Current VAO: " << vao << std::endl;
 	window.draw(mVa);
 
 	for (auto& row : mGrid)
@@ -158,6 +244,10 @@ void LitterScene::render(sf::RenderWindow& window)
 			window.draw(cell);
 		}
 	}
+	window.popGLStates();
+
+	drawParticles();
+	window.resetGLStates();
 }
 
 void LitterScene::handleClick(sf::Vector2f mouseposition)

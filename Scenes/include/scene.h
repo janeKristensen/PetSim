@@ -1,5 +1,7 @@
 #pragma once
+#include <GL/glew.h>
 #include "SFML/Graphics.hpp"
+#include "SFML/OpenGL.hpp"
 #include "SFML/Audio.hpp"
 #include "TextureManager.h"
 #include "SoundManager.h"

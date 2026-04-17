@@ -41,6 +41,7 @@ void Game::pollEvents()
         {
             auto newSize = event->getIf<sf::Event::Resized>()->size;
             sf::FloatRect visibleArea({ 0.f, 0.f }, { (float)newSize.x, (float)newSize.y});
+            glViewport(0, 0, newSize.x, newSize.y);
             mWindow->setView(sf::View(visibleArea));
         }
         else if (event->is<sf::Event::KeyPressed>())
@@ -117,6 +118,7 @@ void Game::update(float dt)
 
 void Game::render() 
 {
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     mWindow->clear();
     SceneManager::getInstance()->getScene()->render(*mWindow);
     mWindow->display();

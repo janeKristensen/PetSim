@@ -1,7 +1,9 @@
 ﻿#pragma once
 #include <future>
 #include "Model.h"
+#include <GL/glew.h>
 #include "SFML/Graphics.hpp"
+#include <SFML/OpenGL.hpp>
 #include "item.h"
 #include "TitleScene.h"
 #include "Memento.h"

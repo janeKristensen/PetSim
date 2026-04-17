@@ -12,17 +12,18 @@ add_subdirectory ("include")
 
 # Set the SFML path
 set(SFML_DIR ${CMAKE_SOURCE_DIR}/external/SFML-3.0.0)
+set(GL_DIR ${CMAKE_SOURCE_DIR}/external/OpenGL)
 
 target_include_directories(scenes PUBLIC
     ${CMAKE_SOURCE_DIR}/PetSim
+    ${GL_DIR}/include
     ${SFML_DIR}/include
     llm_model/include
     commands/include
     particles/include
     save_system/include
     ressource_managers/include
-    ${CMAKE_CURRENT_SOURCE_DIR}/include
-    
+    ${CMAKE_CURRENT_SOURCE_DIR}/include   
 )
 
    # Link SFML libraries
@@ -34,6 +35,9 @@ if(CMAKE_BUILD_TYPE STREQUAL "Debug")
     particles
     save_system
     ressource_managers
+    ${GL_DIR}/lib/glew32.lib
+    ${GL_DIR}/lib/glfw3.lib
+    ${GL_DIR}/lib/soil2-debug.lib
     ${SFML_DIR}/lib/sfml-system-d.lib
     ${SFML_DIR}/lib/sfml-window-d.lib
     ${SFML_DIR}/lib/sfml-audio-d.lib
@@ -47,6 +51,9 @@ else()
     particles
     save_system
     ressource_managers
+    ${GL_DIR}/lib/glew32.lib
+    ${GL_DIR}/lib/glfw3.lib
+    ${GL_DIR}/lib/soil2-debug.lib
     ${SFML_DIR}/lib/sfml-system.lib
     ${SFML_DIR}/lib/sfml-window.lib
     ${SFML_DIR}/lib/sfml-audio.lib

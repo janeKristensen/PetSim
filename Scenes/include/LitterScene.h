@@ -12,6 +12,8 @@ public:
 	LitterScene(sf::Vector2f screenSize, std::shared_ptr<Game> game, GameScene& scene);
 	~LitterScene() {}
 	void createParticles();
+	void createParticleShader();
+	void drawParticles();
 	void update(float dt) override;
 	void render(sf::RenderWindow& window) override;
 	void handleClick(sf::Vector2f mouseposition) override;
@@ -41,4 +43,5 @@ private:
 	float mParticleSpeed = 50.f;
 	float mRadius = 5.5f;
 	float mForce = 50.f;
+	uint32_t mShaderProgram;
 };
