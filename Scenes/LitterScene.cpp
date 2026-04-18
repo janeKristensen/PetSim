@@ -8,12 +8,12 @@ LitterScene::LitterScene(sf::Vector2f screenSize, std::shared_ptr<Game> game, Ga
 	tm->loadTexture(Texture::LITTER_BOX, "Shaders/litterbox.png");
 	
 	mCurrentTexture = tm->getTexture(Texture::LITTER_BOX);
-	mLitterBox.setTexture(mCurrentTexture, true);
+	mLitterBox.setTexture(*mCurrentTexture, true);
 	auto box_position = sf::Vector2f{ screenSize.x / 5, screenSize.y / 10 };
 	mLitterBox.setPosition(box_position);
 	
 	int rows = 4;
-	auto tex_size = mCurrentTexture.getSize();
+	auto tex_size = mCurrentTexture->getSize();
 	auto cell_size = sf::Vector2f{ (float)tex_size.x/rows, (float)tex_size.y /rows};
 
 	for (int i = 0; i < rows; i++)
@@ -62,7 +62,7 @@ LitterScene::LitterScene(sf::Vector2f screenSize, std::shared_ptr<Game> game, Ga
 			screenSize.x - 2 * SCREEN_MARGIN,
 			screenSize.y - 2 * SCREEN_MARGIN
 		});
-	menu->setTexture(&tm->getTexture(Texture::TITLE_MENU));
+	menu->setTexture(tm->getTexture(Texture::TITLE_MENU).get());
 	menu->setPosition({ SCREEN_MARGIN, SCREEN_MARGIN });
 	addSceneObject(SceneObject::START_MENU, menu);
 
@@ -75,7 +75,7 @@ LitterScene::LitterScene(sf::Vector2f screenSize, std::shared_ptr<Game> game, Ga
 	float rtn_btn_size = 32.f;
 	std::shared_ptr<Command> return_cmd = std::make_shared<ContinueCommand>(mGame);
 	std::shared_ptr<sf::RectangleShape> return_btn = std::make_shared<Button>(sf::Vector2f{ rtn_btn_size, rtn_btn_size }, return_cmd);
-	return_btn->setTexture(&tm->getTexture(Texture::SPRITESHEET));
+	return_btn->setTexture(tm->getTexture(Texture::SPRITESHEET).get());
 	return_btn->setTextureRect({ {64,0}, {(int)rtn_btn_size,(int)rtn_btn_size} });
 	return_btn->setPosition({ screenSize.x - SCREEN_MARGIN - rtn_btn_size, SCREEN_MARGIN * 2 });
 	addSceneObject(SceneObject::RETURN_BUTTON, return_btn);

@@ -10,7 +10,7 @@ ShopScene::ShopScene(sf::Vector2f screenSize, std::shared_ptr<Game> game, GameSc
 			screenSize.x - 2 * SCREEN_MARGIN,
 			screenSize.y - 2 * SCREEN_MARGIN
 		});
-	menu->setTexture(&tm->getTexture(Texture::TITLE_MENU));
+	menu->setTexture(tm->getTexture(Texture::TITLE_MENU).get());
 	menu->setPosition({ SCREEN_MARGIN, SCREEN_MARGIN });
 	addSceneObject(SceneObject::START_MENU, menu);
 
@@ -18,7 +18,7 @@ ShopScene::ShopScene(sf::Vector2f screenSize, std::shared_ptr<Game> game, GameSc
 	auto pos = menu->getPosition();
 	std::shared_ptr<Command> return_cmd = std::make_shared<ContinueCommand>(mGame);
 	std::shared_ptr<sf::RectangleShape> return_btn = std::make_shared<Button>(sf::Vector2f{ 32,32 }, return_cmd);
-	return_btn->setTexture(&tm->getTexture(Texture::SPRITESHEET));
+	return_btn->setTexture(tm->getTexture(Texture::SPRITESHEET).get());
 	return_btn->setTextureRect({ {64,0}, {32,32} });
 	return_btn->setPosition({ screenSize.x - SCREEN_MARGIN - return_btn->getSize().x, pos.y + SCREEN_MARGIN});
 	addSceneObject(SceneObject::RETURN_BUTTON, return_btn);

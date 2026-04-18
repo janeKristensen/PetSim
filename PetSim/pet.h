@@ -43,7 +43,7 @@ public:
 	const sf::Sprite getSprite() const { return mSprite; }
 	void setScale(sf::Vector2f scale) { mSprite.setScale(scale); }
 	//void setStatus(std::string prompt) { mCurrentStatus = prompt; }
-	void setTexture(const sf::Texture& texture) override;
+	void setTexture(std::shared_ptr<sf::Texture> texture) override;
 	void setTexRect(sf::IntRect rect) override;
 	void setHungerValue(int32_t value);
 	void setGroomValue(int32_t value);

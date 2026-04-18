@@ -30,7 +30,7 @@ InventorySystem::InventorySystem(sf::Vector2f invDimensions, sf::Vector2f invPos
 			auto& slot_rect = slot.getShape();
 			slot_rect.setSize(mSlotSize);
 			slot_rect.setPosition(slot_position + sf::Vector2f{2*INV_MARGIN,4 * INV_MARGIN });
-			slot_rect.setTexture(&TextureManager::getInstance()->getTexture(mTexture));
+			slot_rect.setTexture(TextureManager::getInstance()->getTexture(mTexture).get());
 			slot_rect.setTextureRect(sf::IntRect({160,0}, {32,32}));
 			slot.setAmount(0);
 

@@ -55,4 +55,5 @@ private:
 	bool mInTextField = false;
 	float mBlipTracker = 0.f;
 	float mResponseTracker = 0.f;
+	bool mIsHappy = false;
 };

@@ -15,7 +15,7 @@ enum class ItemType {
 class Item {
 public:
 	Item(ItemType typeId, uint32_t value, Texture texName, sf::IntRect texRect) 
-		: mTypeId(typeId), mValue(value), mTexture(texName), mSprite(TextureManager::getInstance()->getTexture(texName), texRect){}
+		: mTypeId(typeId), mValue(value), mTexture(texName), mSprite(*TextureManager::getInstance()->getTexture(texName), texRect) {}
 
 	Item(const ItemType typeId, const uint32_t value, const sf::Sprite& sprite, const Texture texName, const bool isAlive, const nlohmann::json& state)
 		: mTypeId(typeId), mValue(value), mSprite(sprite), mTexture(texName), mIsAlive(isAlive), mState(state) {}

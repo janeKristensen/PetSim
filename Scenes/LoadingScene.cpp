@@ -17,12 +17,12 @@ LoadingScene::LoadingScene(sf::Vector2f screenSize, std::shared_ptr<Game> game) 
 	auto tm = TextureManager::getInstance();
 
 	auto& background = mSceneObjects.at(SceneObject::BACKGROUND);
-	background->setTexture(&tm->getTexture(Texture::LOADING_SCREEN));
+	background->setTexture(tm->getTexture(Texture::LOADING_SCREEN).get());
 
 	mSpinner = sf::RectangleShape({32,32});
 	mSpinner.setPosition({ screenSize.x / 2, screenSize.y / 1.5f });
 	mSpinner.setRotation(sf::degrees(10));
-	mSpinner.setTexture(&tm->getTexture(Texture::SPRITESHEET));
+	mSpinner.setTexture(tm->getTexture(Texture::SPRITESHEET).get());
 	mSpinner.setTextureRect(sf::IntRect({ 126,0 }, { 32,32 }));
 	mSpinner.setOrigin((sf::Vector2f)mSpinner.getLocalBounds().size / 2.f);
 }
