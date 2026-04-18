@@ -6,6 +6,7 @@ Game::Game(std::shared_ptr<sf::RenderWindow> window) : mWindow(std::move(window)
 
     auto tm = TextureManager::getInstance();
     tm->loadTexture(Texture::SPRITESHEET, "../PetSim/ressources/assets/spritesheet.png");
+    tm->loadTexture(Texture::ANIMATION_SHEET, "../PetSim/ressources/assets/animationsheet.png");
     tm->loadTexture(Texture::TITLE_MENU, "../PetSim/ressources/assets/title_menu.png");
     tm->loadTexture(Texture::LOADING_SCREEN, "../PetSim/ressources/assets/loading.png");
     tm->loadTexture(Texture::GAME_BG, "fixed_background_scaled.png");

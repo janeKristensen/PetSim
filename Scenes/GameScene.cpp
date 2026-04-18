@@ -7,8 +7,12 @@
 GameScene::GameScene(sf::Vector2f screenSize, std::shared_ptr<Game> game, std::shared_ptr<Model> model)
 	: Scene(screenSize, game), mModel(model), mScreenSize(screenSize) {
 
-	auto tm = TextureManager::getInstance();
-	auto& sprite_sheet = tm->getTexture(Texture::SPRITESHEET);
+	auto textureManager = TextureManager::getInstance();
+	auto& sprite_sheet = textureManager->getTexture(Texture::SPRITESHEET);
+	auto& animation_sheet = textureManager->getTexture(Texture::ANIMATION_SHEET);
+
+	auto animationManager = AnimationManager::getInstance();
+	animationManager->addAnimation(AnimationName::CAT, Animation(animation_sheet, 6, sf::Vector2i{64, 92}));
 	
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -32,7 +36,7 @@ GameScene::GameScene(sf::Vector2f screenSize, std::shared_ptr<Game> game, std::s
 	// Inventory container object
 	float inv_height = bg_Y;
 	std::shared_ptr<sf::RectangleShape> inventory = std::make_shared<sf::RectangleShape>(sf::Vector2f{ INV_WIDTH, inv_height });
-	inventory->setTexture(&tm->getTexture(Texture::INVENTORY));
+	inventory->setTexture(&textureManager->getTexture(Texture::INVENTORY));
 	auto inv_pos = sf::Vector2f{
 			bg_start_X,
 			bg_start_Y 
@@ -43,7 +47,7 @@ GameScene::GameScene(sf::Vector2f screenSize, std::shared_ptr<Game> game, std::s
 	
 	// Scene for pet
 	std::shared_ptr<sf::RectangleShape> scene_background = std::make_shared<sf::RectangleShape>(sf::Vector2f{ 360, 640 });
-	scene_background->setTexture(&tm->getTexture(Texture::GAME_BG));
+	scene_background->setTexture(&textureManager->getTexture(Texture::GAME_BG));
 	scene_background->setPosition(
 		{
 			inv_pos.x + INV_WIDTH + SCREEN_MARGIN,
@@ -237,9 +241,10 @@ GameScene::GameScene(sf::Vector2f screenSize, std::shared_ptr<Game> game, std::s
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-	mPet = std::make_shared<Pet>(Texture::SPRITESHEET, sf::IntRect({ 64,96 }, { 64,96 }), "Kitty", "Cat", "Happy");
+	mPet = std::make_shared<Pet>(Texture::SPRITESHEET, sf::IntRect({ 64,96 }, { 64,96 }), "Kitty", "Cat", "Happy", AnimationName::CAT);
 	mPet->setSpritePosition(mPetPosition);
 	mPet->setScale(sf::Vector2f(2.5,2.5));
+	animationManager->attachAnimation(mPet, AnimationName::CAT);
 
 	mNeedsSystem = std::make_unique<NeedsSystem>(mPet);
 	mNeedsSystem->setModel(mModel);
@@ -267,6 +272,8 @@ GameScene::GameScene(sf::Vector2f screenSize, std::shared_ptr<Game> game, std::s
 
 void GameScene::update(float dt)
 {
+	AnimationManager::getInstance()->update(dt);
+
 	for (auto& item : mItems)
 	{
 		if (!item) continue;

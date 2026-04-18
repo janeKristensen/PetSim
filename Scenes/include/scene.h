@@ -5,6 +5,7 @@
 #include "SoundManager.h"
 #include "FontManager.h"
 #include "SceneManager.h"
+#include "AnimationManager.h"
 #include "NeedsSystem.h"
 #include "item.h"
 #include "InventorySystem.h"
