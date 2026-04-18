@@ -6,8 +6,9 @@ constexpr uint32_t MIN_VALUE = 0;
 constexpr uint32_t LIMIT_VALUE = 50;
 constexpr int32_t DECAY_VALUE = -1;
 
-Pet::Pet(Texture texName, sf::IntRect texRect, std::string name, std::string species, std::string temper) 
-	: mSprite(TextureManager::getInstance()->getTexture(texName), texRect), mTexture(texName), mName(name), mSpecies(species), mTemper(temper) {
+Pet::Pet(Texture texName, sf::IntRect texRect, std::string name, std::string species, std::string temper, AnimationName animation) 
+	: mSprite(TextureManager::getInstance()->getTexture(texName), texRect), mTexture(texName), mName(name), mSpecies(species), mTemper(temper), mAnimation(animation) 
+{
 	mInitPrompt = std::format("Pretend to be a {} named {}. You are my pet not a chatbot. Give short and cute replies to messages and don't use emoji.", mSpecies, mName);
 	mSprite.setScale({6.2,6.2});
 }
@@ -22,7 +23,8 @@ Pet::Pet(Texture texName,
 	uint32_t hunger,
 	uint32_t groom,
 	uint32_t health,
-	uint32_t happiness
+	uint32_t happiness,
+	AnimationName animation
 ) : mSprite(TextureManager::getInstance()->getTexture(texName), texRect),
 	mTexture(texName),
 	mName(name), mSpecies(species), 
@@ -32,7 +34,19 @@ Pet::Pet(Texture texName,
 	mHunger(hunger),
 	mGroom(groom),
 	mHealth(health),
-	mHappiness(happiness){}
+	mHappiness(happiness),
+	mAnimation(animation){}
+
+
+void Pet::setTexture(const sf::Texture& texture)
+{
+	mSprite.setTexture(texture);
+}
+
+void Pet::setTexRect(sf::IntRect rect)
+{
+	mSprite.setTextureRect(rect);
+}
 
 void Pet::setHungerValue(int32_t value) 
 {
@@ -67,7 +81,6 @@ void Pet::increasedHappiness(bool value)
 
 void Pet::decayValues() 
 {
-
 	setHungerValue(DECAY_VALUE);
 	setGroomValue(DECAY_VALUE);
 	setHappinessValue(DECAY_VALUE);
@@ -100,6 +113,7 @@ void Pet::toJson(nlohmann::json& j, const Pet& pet)
 		{ "health", mHealth },
 		{ "happiness", mHappiness},
 		{ "texName", mTexture},
+		{"animName", mAnimation},
 		{ "sprite", {
 			{ "position", 
 				{
@@ -133,6 +147,7 @@ void Pet::from_json(const nlohmann::json& j, std::shared_ptr<Pet> p)
 	j.at("health").get_to(p->mHealth);
 	j.at("happiness").get_to(p->mHappiness);
 	j.at("texName").get_to(p->mTexture);
+	j.at("animName").get_to(p->mAnimation);
 	
 	sf::Vector2i position = { 
 		j["sprite"]["tex_rect"]["position"]["x"],

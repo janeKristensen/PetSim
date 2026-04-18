@@ -7,8 +7,12 @@
 GameScene::GameScene(sf::Vector2f screenSize, std::shared_ptr<Game> game, std::shared_ptr<Model> model)
 	: Scene(screenSize, game), mModel(model), mScreenSize(screenSize) {
 
-	auto tm = TextureManager::getInstance();
-	auto& sprite_sheet = tm->getTexture(Texture::SPRITESHEET);
+	auto textureManager = TextureManager::getInstance();
+	auto& sprite_sheet = textureManager->getTexture(Texture::SPRITESHEET);
+	auto& animation_sheet = textureManager->getTexture(Texture::ANIMATION_SHEET);
+
+	auto animationManager = AnimationManager::getInstance();
+	animationManager->addAnimation(AnimationName::CAT, Animation(animation_sheet, 6, sf::Vector2i{64, 92}, 0.5));
 	
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -32,7 +36,7 @@ GameScene::GameScene(sf::Vector2f screenSize, std::shared_ptr<Game> game, std::s
 	// Inventory container object
 	float inv_height = bg_Y;
 	std::shared_ptr<sf::RectangleShape> inventory = std::make_shared<sf::RectangleShape>(sf::Vector2f{ INV_WIDTH, inv_height });
-	inventory->setTexture(&tm->getTexture(Texture::INVENTORY));
+	inventory->setTexture(&textureManager->getTexture(Texture::INVENTORY));
 	auto inv_pos = sf::Vector2f{
 			bg_start_X,
 			bg_start_Y 
@@ -43,7 +47,7 @@ GameScene::GameScene(sf::Vector2f screenSize, std::shared_ptr<Game> game, std::s
 	
 	// Scene for pet
 	std::shared_ptr<sf::RectangleShape> scene_background = std::make_shared<sf::RectangleShape>(sf::Vector2f{ 360, 640 });
-	scene_background->setTexture(&tm->getTexture(Texture::GAME_BG));
+	scene_background->setTexture(&textureManager->getTexture(Texture::GAME_BG));
 	scene_background->setPosition(
 		{
 			inv_pos.x + INV_WIDTH + SCREEN_MARGIN,
@@ -237,9 +241,10 @@ GameScene::GameScene(sf::Vector2f screenSize, std::shared_ptr<Game> game, std::s
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-	mPet = std::make_shared<Pet>(Texture::SPRITESHEET, sf::IntRect({ 64,96 }, { 64,96 }), "Kitty", "Cat", "Happy");
+	mPet = std::make_shared<Pet>(Texture::SPRITESHEET, sf::IntRect({ 64,96 }, { 64,96 }), "Kitty", "Cat", "Happy", AnimationName::CAT);
 	mPet->setSpritePosition(mPetPosition);
 	mPet->setScale(sf::Vector2f(2.5,2.5));
+	animationManager->attachAnimation(mPet, AnimationName::CAT);
 
 	mNeedsSystem = std::make_unique<NeedsSystem>(mPet);
 	mNeedsSystem->setModel(mModel);
@@ -267,6 +272,8 @@ GameScene::GameScene(sf::Vector2f screenSize, std::shared_ptr<Game> game, std::s
 
 void GameScene::update(float dt)
 {
+	AnimationManager::getInstance()->update(dt);
+
 	for (auto& item : mItems)
 	{
 		if (!item) continue;
@@ -460,6 +467,9 @@ void GameScene::handleDrag(std::shared_ptr<sf::RenderWindow> window) {
 		if (item == nullptr) continue;
 		else if (item->getSprite().getGlobalBounds().contains(mouse_position)) {
 
+			auto soundManager = SoundManager::getInstance();
+			soundManager->play(Sound::PICKUP);
+
 			auto remove_item = mInventorySystem->removeFromSlot(mouse_position, *item);
 			sf::Vector2f scale = item->getScale();
 			float adjustment = 0;
@@ -468,6 +478,12 @@ void GameScene::handleDrag(std::shared_ptr<sf::RenderWindow> window) {
 				auto size = item->getSprite().getTexture().getSize();
 				auto scale_adjusted = size.x / scale.x;
 				adjustment = scale_adjusted;
+			}
+
+			// This needs fixing - item should spawn immediately when dragging item from slot
+			if (remove_item)
+			{
+				mItemsToAdd.push_back(remove_item);
 			}
 
 			while (sf::Mouse::isButtonPressed(sf::Mouse::Button::Left)) {
@@ -490,11 +506,7 @@ void GameScene::handleDrag(std::shared_ptr<sf::RenderWindow> window) {
 				}
 			}
 
-			// This needs fixing - item should not collide with mouse but should spawn immediately when dragging item from slot
-			if (remove_item)
-			{
-				mItemsToAdd.push_back(remove_item);
-			}
+			
 
 			if (mPet->getSprite().getGlobalBounds().contains(mouse_position)) {
 
@@ -508,6 +520,7 @@ void GameScene::handleDrag(std::shared_ptr<sf::RenderWindow> window) {
 					item->setScale({ mItemScale,mItemScale });
 				}
 				mInventorySystem->addItemToSlot(mouse_position, item);
+				soundManager->play(Sound::PLACE);
 			}
 
 			break;
@@ -620,6 +633,7 @@ void GameScene::loadGame(const std::string& filename) {
 	std::string initPrompt = mPet->getInitPrompt() + mPet->getStatus();
 	mModel->clearModelStringBuffer();
 	mModel->addSystemPrompt(initPrompt);
+	AnimationManager::getInstance()->attachAnimation(mPet, AnimationName::CAT);
 }
 
 void GameScene::addItemToInventory(std::shared_ptr<Item> item, std::uint32_t amount)

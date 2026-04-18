@@ -9,7 +9,8 @@ enum class Texture {
 	PARTICLE,
 	GAME_BG,
 	LITTER_BOX,
-	INVENTORY
+	INVENTORY,
+	ANIMATION_SHEET
 };
 
 class TextureManager

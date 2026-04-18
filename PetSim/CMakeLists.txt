@@ -9,7 +9,7 @@ if (CMAKE_VERSION VERSION_GREATER 3.12)
   set_property(TARGET PetSim PROPERTY CXX_STANDARD 20)
 endif()
 
-add_subdirectory ("ressources")
+#add_subdirectory ("ressources")
 
 add_custom_command(TARGET PetSim POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_directory
