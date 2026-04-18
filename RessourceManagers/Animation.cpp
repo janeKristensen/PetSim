@@ -2,7 +2,8 @@
 
 
 
-Animation::Animation(const sf::Texture& texture, size_t frames, sf::Vector2i frameSize) : mTexture(texture), mFrames(frames), mFrameSize(frameSize)
+Animation::Animation(const sf::Texture& texture, size_t frames, sf::Vector2i frameSize, float frameRate) 
+	: mTexture(texture), mFrames(frames), mFrameSize(frameSize), mFrameRate(frameRate)
 {
 	for (int i = 0; i < frames; i++)
 	{

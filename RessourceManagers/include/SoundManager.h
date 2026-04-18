@@ -1,10 +1,13 @@
 #pragma once
 #include <SFML/Audio.hpp>
+#include <queue>
 #include <iostream>
 
 enum class Sound {
 	CLICK,
-	SAND
+	SAND,
+	PICKUP,
+	PLACE
 };
 
 class SoundManager
@@ -27,5 +30,5 @@ protected:
 private:
 	
 	std::unordered_map<Sound, sf::SoundBuffer> mSounds;
-	std::vector<sf::Sound> mActiveSounds;
+	std::queue<sf::Sound> mActiveSounds;
 };

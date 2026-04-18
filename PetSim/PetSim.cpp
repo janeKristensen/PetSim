@@ -5,18 +5,20 @@
 Game::Game(std::shared_ptr<sf::RenderWindow> window) : mWindow(std::move(window)) {
 
     auto tm = TextureManager::getInstance();
-    tm->loadTexture(Texture::SPRITESHEET, "../PetSim/ressources/assets/spritesheet.png");
-    tm->loadTexture(Texture::ANIMATION_SHEET, "../PetSim/ressources/assets/animationsheet.png");
-    tm->loadTexture(Texture::TITLE_MENU, "../PetSim/ressources/assets/title_menu.png");
-    tm->loadTexture(Texture::LOADING_SCREEN, "../PetSim/ressources/assets/loading.png");
-    tm->loadTexture(Texture::GAME_BG, "fixed_background_scaled.png");
-    tm->loadTexture(Texture::INVENTORY, "shelf.png");
+    tm->loadTexture(Texture::SPRITESHEET, "ressources/assets/spritesheet.png");
+    tm->loadTexture(Texture::ANIMATION_SHEET, "ressources/assets/animationsheet.png");
+    tm->loadTexture(Texture::TITLE_MENU, "ressources/assets/title_menu.png");
+    tm->loadTexture(Texture::LOADING_SCREEN, "ressources/assets/loading.png");
+    tm->loadTexture(Texture::GAME_BG, "ressources/assets/fixed_background_scaled.png");
+    tm->loadTexture(Texture::INVENTORY, "ressources/assets/shelf.png");
    
-    FontManager::getInstance()->loadFont(FontName::TITLE, "../PetSim/ressources/assets/Gabriola.ttf");
+    FontManager::getInstance()->loadFont(FontName::TITLE, "ressources/fonts/Gabriola.ttf");
 
     auto sm = SoundManager::getInstance();
     sm->loadSound(Sound::CLICK, "Sounds/click.wav");
-    sm->loadSound(Sound::SAND, "Sounds/sand_sound.wav");
+    sm->loadSound(Sound::PICKUP, "Sounds/pick_up.wav");
+    sm->loadSound(Sound::PLACE, "Sounds/place.wav");
+    sm->loadSound(Sound::SAND, "Sounds/sand_sound2.wav");
 }
 
 void Game::init()

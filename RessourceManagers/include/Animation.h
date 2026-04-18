@@ -13,7 +13,7 @@ public:
 class Animation
 {
 public:
-	Animation(const sf::Texture& texture, size_t frames, sf::Vector2i frameSize);
+	Animation(const sf::Texture& texture, size_t frames, sf::Vector2i frameSize, float frameRate);
 	Animation(const Animation&) = default;
 	void update(float dt);
 	const sf::Texture& getTexture() const { return mTexture; }

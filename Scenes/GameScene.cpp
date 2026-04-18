@@ -12,7 +12,7 @@ GameScene::GameScene(sf::Vector2f screenSize, std::shared_ptr<Game> game, std::s
 	auto& animation_sheet = textureManager->getTexture(Texture::ANIMATION_SHEET);
 
 	auto animationManager = AnimationManager::getInstance();
-	animationManager->addAnimation(AnimationName::CAT, Animation(animation_sheet, 6, sf::Vector2i{64, 92}));
+	animationManager->addAnimation(AnimationName::CAT, Animation(animation_sheet, 6, sf::Vector2i{64, 92}, 0.5));
 	
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -467,6 +467,9 @@ void GameScene::handleDrag(std::shared_ptr<sf::RenderWindow> window) {
 		if (item == nullptr) continue;
 		else if (item->getSprite().getGlobalBounds().contains(mouse_position)) {
 
+			auto soundManager = SoundManager::getInstance();
+			soundManager->play(Sound::PICKUP);
+
 			auto remove_item = mInventorySystem->removeFromSlot(mouse_position, *item);
 			sf::Vector2f scale = item->getScale();
 			float adjustment = 0;
@@ -475,6 +478,12 @@ void GameScene::handleDrag(std::shared_ptr<sf::RenderWindow> window) {
 				auto size = item->getSprite().getTexture().getSize();
 				auto scale_adjusted = size.x / scale.x;
 				adjustment = scale_adjusted;
+			}
+
+			// This needs fixing - item should spawn immediately when dragging item from slot
+			if (remove_item)
+			{
+				mItemsToAdd.push_back(remove_item);
 			}
 
 			while (sf::Mouse::isButtonPressed(sf::Mouse::Button::Left)) {
@@ -497,11 +506,7 @@ void GameScene::handleDrag(std::shared_ptr<sf::RenderWindow> window) {
 				}
 			}
 
-			// This needs fixing - item should not collide with mouse but should spawn immediately when dragging item from slot
-			if (remove_item)
-			{
-				mItemsToAdd.push_back(remove_item);
-			}
+			
 
 			if (mPet->getSprite().getGlobalBounds().contains(mouse_position)) {
 
@@ -515,6 +520,7 @@ void GameScene::handleDrag(std::shared_ptr<sf::RenderWindow> window) {
 					item->setScale({ mItemScale,mItemScale });
 				}
 				mInventorySystem->addItemToSlot(mouse_position, item);
+				soundManager->play(Sound::PLACE);
 			}
 
 			break;
@@ -627,6 +633,7 @@ void GameScene::loadGame(const std::string& filename) {
 	std::string initPrompt = mPet->getInitPrompt() + mPet->getStatus();
 	mModel->clearModelStringBuffer();
 	mModel->addSystemPrompt(initPrompt);
+	AnimationManager::getInstance()->attachAnimation(mPet, AnimationName::CAT);
 }
 
 void GameScene::addItemToInventory(std::shared_ptr<Item> item, std::uint32_t amount)
