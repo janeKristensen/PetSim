@@ -19,11 +19,14 @@ void Item::toJson(nlohmann::json& j) {
 	position[4] = mSprite.getPosition().x;
 	position[5] = mSprite.getPosition().y;
 
+	auto scale = mSprite.getScale().x;
+
 	j = nlohmann::json{ 
 		{"typeId", mTypeId}, 
 		{"position", position}, 
 		{"value", mValue},
-		{"texName", mTexture}
+		{"texName", mTexture},
+		{"scale", scale}
 	};
 }
 

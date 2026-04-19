@@ -142,7 +142,8 @@ void InventorySystem::addItemToSlotIndex(size_t index, std::shared_ptr<Item> ite
 
 	auto position = getSlotPositionAtIndex(index);
 	auto item_size = item->getSprite().getTexture().getSize();
-	position = { position.x + mSlotSize.x / 2 - item_size.x/2, position.y + mSlotSize.y / 2 - item_size.y / 2};
+	position = { position.x + mSlotSize.x / 4, position.y + mSlotSize.y / 4.f };
+	//position = { position.x + mSlotSize.x / 2 - item_size.x/2, position.y + mSlotSize.y / 2 - item_size.y / 2};
 	item->setPosition(position);
 	adjustItemCount(amount, index);
 	mItems[index] = item;

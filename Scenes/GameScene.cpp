@@ -256,7 +256,6 @@ GameScene::GameScene(sf::Vector2f screenSize, std::shared_ptr<Game> game, std::s
 	mNeedsSystem->setModel(mModel);
 
 	mInventorySystem = std::make_unique<InventorySystem>(sf::Vector2f{INV_WIDTH, inv_height/2}, getObjectPosition(SceneObject::INVENTORY), Texture::SPRITESHEET);
-	//mInventorySystem = std::make_unique<InventorySystem>(getObjectSize(SceneObject::INVENTORY), getObjectPosition(SceneObject::INVENTORY), Texture::SPRITESHEET);
 
 	mItemScale = 2;
 	auto food1 = std::make_shared<Food>(ItemType::BONE, Texture::SPRITESHEET, sf::IntRect({ 0,0 }, { 32,32 }), 10);
@@ -633,7 +632,9 @@ void GameScene::loadGame(const std::string& filename) {
 		auto typeId = element["typeId"].get<ItemType>();
 		uint32_t value = element["value"].get<uint32_t>();
 		Texture texName = element["texName"].get<Texture>();
+		float scale = element["scale"].get<float>();
 		auto item = createItemFromType(typeId, texName, texRect, value);
+		item->setScale({ scale, scale });
 		mItems.push_back(item);
 
 		item->setPosition(sf::Vector2f{ arr[4], arr[5] });
