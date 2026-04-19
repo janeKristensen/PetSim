@@ -27,9 +27,8 @@ private:
 	std::vector<std::string> shaders;
 	sf::Shader mShader;
 #endif 
-	std::shared_ptr<sf::Texture> mCurrentTexture;
 	sf::Texture mParticleTexture;
-	sf::Sprite mLitterBox = sf::Sprite(*mCurrentTexture);
+	sf::Sprite mLitterBox;
 	Bounds mBounds;
 	ParticleManager mParticleManager;
 	sf::VertexArray mVa = sf::VertexArray(sf::PrimitiveType::Points);

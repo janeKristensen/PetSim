@@ -337,10 +337,10 @@ void GameScene::update(float dt)
 	{
 		// Change animation to happy animation
 		animationManager->attachAnimation(mPet, AnimationName::CAT_HAPPY);
+		SoundManager::getInstance()->play(Sound::SHORT_PURR);
 		mPet->increasedHappiness(false);
 		mIsHappy = true;
 	}
-
 
 	// Update the input text field if field is active
 	if (mInTextField) {
@@ -384,7 +384,17 @@ void GameScene::render(sf::RenderWindow& window)
 	for (auto& obj : mSceneObjects)
 	{
 		if (obj.first == SceneObject::BACKGROUND || obj.first == SceneObject::BORDER) continue;
-		window.draw(*obj.second);
+
+		auto btn = dynamic_pointer_cast<Button>(obj.second);
+		if (btn)
+		{
+			mShader->setUniform("texture", sf::Shader::CurrentTexture);
+			window.draw(*obj.second, btn->getShader().get());
+		}
+		else 
+		{
+			window.draw(*obj.second);
+		}	
 	}
 
 	window.draw(mPet->getSprite());

@@ -2,18 +2,17 @@
 #include "GameScene.h"
 
 
-LitterScene::LitterScene(sf::Vector2f screenSize, std::shared_ptr<Game> game, GameScene& scene) : Scene(screenSize, game), mGameScene(scene)
+LitterScene::LitterScene(sf::Vector2f screenSize, std::shared_ptr<Game> game, GameScene& scene) 
+	: Scene(screenSize, game), mGameScene(scene), mLitterBox(sf::Sprite(*TextureManager::getInstance()->getTexture(Texture::LITTER_BOX)))
 {
+
 	auto tm = TextureManager::getInstance();
-	tm->loadTexture(Texture::LITTER_BOX, "Shaders/litterbox.png");
 	
-	mCurrentTexture = tm->getTexture(Texture::LITTER_BOX);
-	mLitterBox.setTexture(*mCurrentTexture, true);
 	auto box_position = sf::Vector2f{ screenSize.x / 5, screenSize.y / 10 };
 	mLitterBox.setPosition(box_position);
 	
 	int rows = 4;
-	auto tex_size = mCurrentTexture->getSize();
+	auto tex_size = mLitterBox.getTexture().getSize();
 	auto cell_size = sf::Vector2f{ (float)tex_size.x/rows, (float)tex_size.y /rows};
 
 	for (int i = 0; i < rows; i++)
