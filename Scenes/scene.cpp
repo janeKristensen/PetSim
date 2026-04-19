@@ -6,7 +6,7 @@ Scene::Scene(sf::Vector2f screenSize, std::shared_ptr<Game> game)
 	: mScreenSize(screenSize), mGame(game) {
 
 	mSceneObjects.reserve(1000);
-	loadShader("Shaders/ShaderBtn2.frag");
+	loadShader("Shaders/ShaderBtn.frag");
 
 	std::shared_ptr<sf::RectangleShape> border = std::make_shared<sf::RectangleShape>(screenSize);
 	border->setFillColor(sf::Color::Black);

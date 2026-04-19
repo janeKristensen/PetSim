@@ -72,7 +72,16 @@ void ShopScene::render(sf::RenderWindow& window)
 			obj.first == SceneObject::BORDER || 
 			obj.first == SceneObject::START_MENU) continue;
 		
-		window.draw(*obj.second);
+		auto btn = dynamic_pointer_cast<Button>(obj.second);
+		if (btn)
+		{
+			mShader->setUniform("texture", sf::Shader::CurrentTexture);
+			window.draw(*obj.second, btn->getShader().get());
+		}
+		else
+		{
+			window.draw(*obj.second);
+		}
 	}
 
 	for (auto& tile : mShopTiles)
@@ -88,6 +97,8 @@ void ShopScene::render(sf::RenderWindow& window)
 
 void ShopScene::handleHover(sf::Vector2f mouseposition)
 {
+	Scene::handleHover(mouseposition);
+
 	for (auto& tile : mShopTiles)
 	{
 		if (tile.getBounds().contains(mouseposition))

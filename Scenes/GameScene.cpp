@@ -73,7 +73,7 @@ GameScene::GameScene(sf::Vector2f screenSize, std::shared_ptr<Game> game, std::s
 			bg_start_X + bg_X - 2*button_width,
 			bg_start_Y + bg_Y - button_height
 	};
-	std::shared_ptr<sf::RectangleShape> submit_btn = std::make_shared<sf::RectangleShape>(sf::Vector2f{ 2*button_width, button_height });
+	std::shared_ptr<sf::RectangleShape> submit_btn = std::make_shared<Button>(sf::Vector2f{ 2*button_width, button_height });
 	submit_btn->setTexture(sprite_sheet.get());
 	submit_btn->setTextureRect({ {128,128}, {64,32} });
 	submit_btn->setPosition(submit_btn_pos);
@@ -129,7 +129,7 @@ GameScene::GameScene(sf::Vector2f screenSize, std::shared_ptr<Game> game, std::s
 	addSceneObject(SceneObject::MONEY, money_icon);
 
 	// Shop button
-	std::shared_ptr<sf::RectangleShape> shop_btn = std::make_shared<sf::RectangleShape>(sf::Vector2f{ button_width, button_height });
+	std::shared_ptr<sf::RectangleShape> shop_btn = std::make_shared<Button>(sf::Vector2f{ button_width, button_height });
 	auto shop_btn_pos = sf::Vector2f
 	{
 		money_icon_pos.x + button_width + SCREEN_MARGIN,
@@ -142,7 +142,7 @@ GameScene::GameScene(sf::Vector2f screenSize, std::shared_ptr<Game> game, std::s
 
 
 	// Litterbox button
-	std::shared_ptr<sf::RectangleShape> litter_btn = std::make_shared<sf::RectangleShape>(sf::Vector2f{ button_width,button_height });
+	std::shared_ptr<sf::RectangleShape> litter_btn = std::make_shared<Button>(sf::Vector2f{ button_width,button_height });
 	litter_btn->setTexture(sprite_sheet.get());
 	litter_btn->setTextureRect({ {128,96}, {64,32} });
 	litter_btn->setPosition({ shop_btn_pos.x + button_width + SCREEN_MARGIN, SCREEN_MARGIN });

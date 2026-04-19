@@ -117,7 +117,16 @@ void LitterScene::render(sf::RenderWindow& window)
 		if (obj.first == SceneObject::BACKGROUND ||
 			obj.first == SceneObject::BORDER) continue;
 
-		window.draw(*obj.second);
+		auto btn = dynamic_pointer_cast<Button>(obj.second);
+		if (btn)
+		{
+			mShader->setUniform("texture", sf::Shader::CurrentTexture);
+			window.draw(*obj.second, btn->getShader().get());
+		}
+		else
+		{
+			window.draw(*obj.second);
+		}
 	}
 
 	
