@@ -38,6 +38,8 @@ public:
 	const Texture getTextureName() const { return mTexture; }
 	const sf::IntRect getTextureRect() const { return mSprite.getTextureRect(); }
 	const sf::Vector2f getScale() const { return mSprite.getScale(); }
+	void setShader(std::shared_ptr<sf::Shader> shader) { mShader = shader; }
+	std::shared_ptr<sf::Shader> getShader() { return mShader; }
 	
 	sf::Sprite& getSprite() { return mSprite; }
 	const uint32_t getValue() const { return mValue; };
@@ -56,6 +58,7 @@ private:
 	void setState(nlohmann::json);
 	void toJson(nlohmann::json& j);
 
+	std::shared_ptr<sf::Shader> mShader = nullptr;
 	std::shared_ptr<SaveComponent> mSaveComponent = std::make_shared<SaveComponent>();
 	std::unique_ptr<SaveManager> mSaveManager = std::make_unique<SaveManager>(mSaveComponent);
 };

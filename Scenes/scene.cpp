@@ -6,7 +6,8 @@ Scene::Scene(sf::Vector2f screenSize, std::shared_ptr<Game> game)
 	: mScreenSize(screenSize), mGame(game) {
 
 	mSceneObjects.reserve(1000);
-	loadShader("Shaders/ShaderBtn.frag");
+	loadShader("Shaders/ShaderBtn.frag", mShader);
+	loadShader("Shaders/ShaderItem.frag", mItemShader);
 
 	std::shared_ptr<sf::RectangleShape> border = std::make_shared<sf::RectangleShape>(screenSize);
 	border->setFillColor(sf::Color::Black);
@@ -21,15 +22,15 @@ Scene::Scene(sf::Vector2f screenSize, std::shared_ptr<Game> game)
 	
 }
 
-void Scene::loadShader(const std::string& filename)
+void Scene::loadShader(const std::string& filename, std::shared_ptr<sf::Shader> shader)
 {
-	if (!mShader->isAvailable())
+	if (!shader->isAvailable())
 	{
 		std::cout << "Shaders not available" << std::endl;
 		throw;
 	}
 
-	if (!mShader->loadFromFile(filename, sf::Shader::Type::Fragment))
+	if (!shader->loadFromFile(filename, sf::Shader::Type::Fragment))
 	{
 		std::cout << "Fragment shader file not found" << std::endl;
 	}

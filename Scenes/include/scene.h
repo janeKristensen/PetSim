@@ -77,7 +77,7 @@ public:
 	virtual void handleDrag(std::shared_ptr<sf::RenderWindow> window) {}
 	virtual void handleTextEntry(const sf::Event& event) {}
 	virtual void loadGame(const std::string& filename) {}
-	virtual void loadShader(const std::string& filename);
+	virtual void loadShader(const std::string& filename, std::shared_ptr<sf::Shader> shader);
 	virtual nlohmann::json setState() { mState["empty"] = ""; return mState; }
 
 	void setEvent(std::optional<sf::Event> event) { mCurrentEvent = event; }
@@ -95,6 +95,7 @@ protected:
 	std::shared_ptr<Game> mGame;
 	nlohmann::json mState;
 	std::shared_ptr<sf::Shader> mShader = std::make_shared<sf::Shader>();
+	std::shared_ptr<sf::Shader> mItemShader = std::make_shared<sf::Shader>();
 private:
 
 	

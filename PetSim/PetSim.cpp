@@ -6,22 +6,13 @@ Game::Game(std::shared_ptr<sf::RenderWindow> window) : mWindow(std::move(window)
 
     auto tm = TextureManager::getInstance();
     tm->loadTexture(Texture::SPRITESHEET, "ressources/assets/spritesheet.png");
-    tm->loadTexture(Texture::ANIMATION_SHEET, "ressources/assets/animationsheet.png");
     tm->loadTexture(Texture::TITLE_MENU, "ressources/assets/title_menu.png");
     tm->loadTexture(Texture::LOADING_SCREEN, "ressources/assets/loading.png");
-    tm->loadTexture(Texture::GAME_BG, "ressources/assets/fixed_background_scaled.png");
-    tm->loadTexture(Texture::INVENTORY, "ressources/assets/shelf.png");
-    tm->loadTexture(Texture::LITTER_BOX, "ressources/assets/litter_box.png");
-   
+
     FontManager::getInstance()->loadFont(FontName::TITLE, "ressources/fonts/Gabriola.ttf");
 
     auto sm = SoundManager::getInstance();
     sm->loadSound(Sound::CLICK, "Sounds/click.wav");
-    sm->loadSound(Sound::PICKUP, "Sounds/pick_up.wav");
-    sm->loadSound(Sound::PLACE, "Sounds/place.wav");
-    sm->loadSound(Sound::SAND, "Sounds/sand_sound2.wav");
-    sm->loadSound(Sound::LONG_PURR, "Sounds/long_low_purr.wav");
-    sm->loadSound(Sound::SHORT_PURR, "Sounds/loud_purr.wav");
 }
 
 void Game::init()

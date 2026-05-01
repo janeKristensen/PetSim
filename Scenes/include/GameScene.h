@@ -18,6 +18,28 @@ public:
 	void render(sf::RenderWindow& window) override;
 	void setModel(std::shared_ptr<Model> model);
 	void handleClick(sf::Vector2f mouseposition) override;
+	void handleHover(sf::Vector2f mouseposition) override
+	{ 
+		Scene::handleHover(mouseposition); 
+		for (auto& obj : mItems)
+		{
+			auto item = dynamic_pointer_cast<Item>(obj);
+			if (item)
+			{
+				if (obj->getSprite().getGlobalBounds().contains(mouseposition))
+				{
+					if (!item->getShader())
+					{
+						item->setShader(mItemShader);
+					}
+				}
+				else
+				{
+					item->setShader(nullptr);
+				}
+			}
+		}
+	}
 	void handleKeyPress(sf::Keyboard::Key key) override;
 	void handleDrag(std::shared_ptr<sf::RenderWindow> window) override;
 	void asyncDrag(std::shared_ptr<sf::RenderWindow> window);
