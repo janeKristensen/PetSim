@@ -9,7 +9,8 @@
 enum class ItemType {
 	BONE,
 	BRUSH,
-	BALL
+	BALL,
+	POOP
 };
 
 class Item {
@@ -94,6 +95,18 @@ public:
 
 	std::string getDescription() override { return std::format("+{} happiness", mValue); }
 	
+
+private:
+
+};
+
+class Poop : public Item {
+public:
+	Poop(ItemType typeId, Texture texName, sf::IntRect texRect, uint32_t value) : Item(typeId, value, texName, texRect) {}
+	Poop(const Poop& other) : Item(other.mTypeId, other.mValue, other.mSprite, other.mTexture, other.mIsAlive, other.mState) {}
+
+	std::string getDescription() override { return std::format("-{} happiness", mValue); }
+
 
 private:
 

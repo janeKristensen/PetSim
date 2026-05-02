@@ -404,7 +404,7 @@ void GameScene::render(sf::RenderWindow& window)
 #ifndef NDEBUG
 		//std::cout << obj->getSprite().getPosition().x << std::endl;
 #endif
-		mShader->setUniform("texture", sf::Shader::CurrentTexture);
+		mItemShader->setUniform("texture", sf::Shader::CurrentTexture);
 		window.draw(obj->getSprite(), obj->getShader().get());
 		//window.draw(obj->getSprite());
 	}

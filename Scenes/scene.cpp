@@ -32,7 +32,7 @@ void Scene::loadShader(const std::string& filename, std::shared_ptr<sf::Shader> 
 
 	if (!shader->loadFromFile(filename, sf::Shader::Type::Fragment))
 	{
-		std::cout << "Fragment shader file not found" << std::endl;
+		std::cout << "Fragment shader file not found" << filename << std::endl;
 	}
 }
 

@@ -23,20 +23,17 @@ public:
 		Scene::handleHover(mouseposition); 
 		for (auto& obj : mItems)
 		{
-			auto item = dynamic_pointer_cast<Item>(obj);
-			if (item)
+			if (!obj) continue;
+			if (obj->getSprite().getGlobalBounds().contains(mouseposition))
 			{
-				if (obj->getSprite().getGlobalBounds().contains(mouseposition))
+				if (!obj->getShader())
 				{
-					if (!item->getShader())
-					{
-						item->setShader(mItemShader);
-					}
+					obj->setShader(mItemShader);
 				}
-				else
-				{
-					item->setShader(nullptr);
-				}
+			}
+			else
+			{
+				obj->setShader(nullptr);
 			}
 		}
 	}

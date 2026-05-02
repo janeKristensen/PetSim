@@ -2,7 +2,7 @@
 #include "scene.h"
 #include "UserInterface.h"
 #include "ParticleManager.h"
-
+#include <cstdlib>
 
 class GameScene;
 
@@ -19,6 +19,8 @@ public:
 	void handleDrag(std::shared_ptr<sf::RenderWindow> window) override;
 
 private:
+	void placeRandomPoops(size_t number);
+
 	GameScene& mGameScene;
 #ifdef  shader
 	sf::RenderTexture mRTA = sf::RenderTexture();
@@ -27,6 +29,7 @@ private:
 	std::vector<std::string> shaders;
 	sf::Shader mShader;
 #endif 
+	std::vector<std::shared_ptr<Item>> mItems;
 	sf::Texture mParticleTexture;
 	sf::Sprite mLitterBox;
 	Bounds mBounds;

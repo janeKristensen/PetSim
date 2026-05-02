@@ -4,6 +4,8 @@
 
 Game::Game(std::shared_ptr<sf::RenderWindow> window) : mWindow(std::move(window)) {
 
+    srand(time(0));
+
     auto tm = TextureManager::getInstance();
     tm->loadTexture(Texture::SPRITESHEET, "ressources/assets/spritesheet.png");
     tm->loadTexture(Texture::TITLE_MENU, "ressources/assets/title_menu.png");

@@ -65,7 +65,8 @@ LitterScene::LitterScene(sf::Vector2f screenSize, std::shared_ptr<Game> game, Ga
 	menu->setPosition({ SCREEN_MARGIN, SCREEN_MARGIN });
 	addSceneObject(SceneObject::START_MENU, menu);
 
-
+	
+	
 	//Add particle manager to the litter box
 	auto position = mLitterBox.getPosition();
 	mBounds = {position , position + mBoxSize };
@@ -80,6 +81,9 @@ LitterScene::LitterScene(sf::Vector2f screenSize, std::shared_ptr<Game> game, Ga
 	addSceneObject(SceneObject::RETURN_BUTTON, return_btn);
 
 	createParticles();
+
+	// Add poop to the litterbox
+	placeRandomPoops(3);
 }
 
 void LitterScene::createParticles()
@@ -129,8 +133,6 @@ void LitterScene::render(sf::RenderWindow& window)
 		}
 	}
 
-	
-
 #ifdef shader
 	mRTB.clear(sf::Color::Red);
 	sf::Sprite sprite(mRTA.getTexture());
@@ -156,9 +158,15 @@ void LitterScene::render(sf::RenderWindow& window)
 		// Color (optional)
 		mVa[p].color = sf::Color(210, 180, 73);
 	}
-	
-	window.draw(mVa);
 
+	window.draw(mVa);
+	for (auto& item : mItems)
+	{
+		if (!item) continue;
+		window.draw(item->getSprite());
+	}
+
+#ifndef NDEBUG
 	for (auto& row : mGrid)
 	{
 		for (auto& cell : row)
@@ -166,6 +174,8 @@ void LitterScene::render(sf::RenderWindow& window)
 			window.draw(cell);
 		}
 	}
+#endif // Debug
+
 }
 
 void LitterScene::handleClick(sf::Vector2f mouseposition)
@@ -188,6 +198,7 @@ void LitterScene::handleKeyPress(sf::Keyboard::Key key)
 void LitterScene::handleDrag(std::shared_ptr<sf::RenderWindow> window)
 {
 	auto sm = SoundManager::getInstance();
+
 	if (!sm->isPlaying())
 	{
 		sm->play(Sound::SAND);
@@ -211,4 +222,21 @@ void LitterScene::handleDrag(std::shared_ptr<sf::RenderWindow> window)
 	mShader.setUniform("u_mouse", uv);
 #endif
 		
+}
+
+void LitterScene::placeRandomPoops(size_t number)
+{
+	auto size = mLitterBox.getTexture().getSize();
+	size_t randX;
+	size_t randY;
+
+	for (int i = 0; i < number; i++)
+	{
+		randX = std::rand() % (int)(mBounds.bottom_right.x - mBounds.top_left.x) + mBounds.top_left.x;
+		randY = std::rand() % (int)(mBounds.bottom_right.y - mBounds.top_left.y) + mBounds.top_left.y;
+		auto poop = std::make_shared<Poop>(ItemType::POOP, Texture::SPRITESHEET, sf::IntRect({ 128,160 }, { 32,32 }), 10);
+		poop->setPosition({(float)randX, (float)randY});
+		mItems.push_back(poop);
+	}
+	
 }

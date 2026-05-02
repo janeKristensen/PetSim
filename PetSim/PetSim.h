@@ -11,6 +11,7 @@
 #include "NeedsSystem.h"
 #include "InventorySystem.h"
 #include <fstream>
+#include <ctime>
 
 //constexpr sf::Vector2f SCREEN_SIZE{ 800.f, 600.f };
 
