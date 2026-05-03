@@ -36,6 +36,13 @@ void NeedsSystem::processItem(Item& item) {
         if (prev_happiness < mPet->getHappinessValue()) mPet->increasedHappiness(true);
         return;
     }
+
+    Poop* poop = dynamic_cast<Poop*>(&item);
+    if (poop)
+    {
+        mPet->setHappinessValue(item.getValue());
+        return;
+    }
 }
 
 void NeedsSystem::decayValues(float dt) {

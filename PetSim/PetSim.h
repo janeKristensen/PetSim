@@ -4,6 +4,7 @@
 #include "SFML/Graphics.hpp"
 #include "item.h"
 #include "TitleScene.h"
+#include "LitterScene.h"
 #include "Memento.h"
 #include "TextureManager.h"
 #include "SoundManager.h"

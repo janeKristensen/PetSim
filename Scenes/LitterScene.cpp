@@ -65,8 +65,7 @@ LitterScene::LitterScene(sf::Vector2f screenSize, std::shared_ptr<Game> game, Ga
 	menu->setPosition({ SCREEN_MARGIN, SCREEN_MARGIN });
 	addSceneObject(SceneObject::START_MENU, menu);
 
-	
-	
+
 	//Add particle manager to the litter box
 	auto position = mLitterBox.getPosition();
 	mBounds = {position , position + mBoxSize };
@@ -84,6 +83,16 @@ LitterScene::LitterScene(sf::Vector2f screenSize, std::shared_ptr<Game> game, Ga
 
 	// Add poop to the litterbox
 	placeRandomPoops(3);
+
+	// Create inventory of tools 
+	mRake = std::make_unique<Rake>(ItemType::RAKE, Texture::SPRITESHEET, sf::IntRect({ 0,128 }, { 32,32 }), 0);
+	mRake->setScale({2.0, 2.0});
+	mRake->setPosition(mBounds.top_left - sf::Vector2f(42,0));
+
+	mShovel = std::make_unique<Shovel>(ItemType::SHOVEL, Texture::SPRITESHEET, sf::IntRect({ 0,160 }, { 32,32 }), 0);
+	mShovel->setScale({ 2.0, 2.0 });
+	mShovel->setPosition(mBounds.top_left - sf::Vector2f(42,42));
+
 }
 
 void LitterScene::createParticles()
@@ -102,12 +111,21 @@ void LitterScene::createParticles()
 
 void LitterScene::update(float dt) 
 {
+	mItems.erase(std::remove(mItems.begin(), mItems.end(), nullptr), mItems.end());
+
+	mTimeSinceLastPoop += dt;
+	if (mTimeSinceLastPoop > 60) placeRandomPoops(1);
+	mParticleManager.moveParticles(dt, mForce);
+	scoopPoop();
+
+	for (auto& item : mItems)
+	{
+		if (!item) continue;
+		if (!item->isAlive()) item = nullptr;
+	}
 #ifdef shader
 	mShader.setUniform("currentTexture", mRTA.getTexture());
-#endif
-	
-	mParticleManager.moveParticles(dt, mForce);
-	
+#endif	
 }
 
 void LitterScene::render(sf::RenderWindow& window) 
@@ -166,6 +184,9 @@ void LitterScene::render(sf::RenderWindow& window)
 		window.draw(item->getSprite());
 	}
 
+	window.draw(mRake->getSprite());
+	window.draw(mShovel->getSprite());
+
 #ifndef NDEBUG
 	for (auto& row : mGrid)
 	{
@@ -197,20 +218,43 @@ void LitterScene::handleKeyPress(sf::Keyboard::Key key)
 
 void LitterScene::handleDrag(std::shared_ptr<sf::RenderWindow> window)
 {
-	auto sm = SoundManager::getInstance();
-
-	if (!sm->isPlaying())
-	{
-		sm->play(Sound::SAND);
-	}
-
 	sf::Vector2i pixelPos = sf::Mouse::getPosition(*window);
-	sf::Vector2f position = window->mapPixelToCoords(pixelPos);
+	sf::Vector2f mouse_position = window->mapPixelToCoords(pixelPos);
+	auto soundManager = SoundManager::getInstance();
+
+	if (mRake->getSprite().getGlobalBounds().contains(mouse_position))
+	{
+		soundManager->play(Sound::PICKUP);
 		
-	mParticleManager.setDirection(position, mRadius);
-	mParticleManager.setDirection(position + sf::Vector2f{ 0, 30 }, mRadius);
-	mParticleManager.setDirection(position + sf::Vector2f{ 0, -30 }, mRadius);
-		
+		while (sf::Mouse::isButtonPressed(sf::Mouse::Button::Left)) 
+		{
+			pixelPos = sf::Mouse::getPosition(*window);
+			mouse_position = window->mapPixelToCoords(pixelPos);
+
+			mRake->setPosition(mouse_position);
+			if (!soundManager->isPlaying())
+			{
+				soundManager->play(Sound::SAND);
+			}
+
+			mParticleManager.setDirection(mouse_position, mRadius);
+			mParticleManager.setDirection(mouse_position + sf::Vector2f{ 0, 30 }, mRadius);
+			mParticleManager.setDirection(mouse_position + sf::Vector2f{ 0, -30 }, mRadius);
+		}
+	}
+	else if (mShovel->getSprite().getGlobalBounds().contains(mouse_position))
+	{
+		soundManager->play(Sound::PICKUP);
+
+		while (sf::Mouse::isButtonPressed(sf::Mouse::Button::Left)) {
+
+			pixelPos = sf::Mouse::getPosition(*window);
+			mouse_position = window->mapPixelToCoords(pixelPos);
+
+			mShovel->setPosition(mouse_position);
+		}
+
+	}
 	
 #ifdef shader
 	sf::Vector2f uv =
@@ -232,11 +276,23 @@ void LitterScene::placeRandomPoops(size_t number)
 
 	for (int i = 0; i < number; i++)
 	{
-		randX = std::rand() % (int)(mBounds.bottom_right.x - mBounds.top_left.x) + mBounds.top_left.x;
-		randY = std::rand() % (int)(mBounds.bottom_right.y - mBounds.top_left.y) + mBounds.top_left.y;
+		randX = std::rand() % (int)((mBounds.bottom_right.x-32) - mBounds.top_left.x) + mBounds.top_left.x;
+		randY = std::rand() % (int)((mBounds.bottom_right.y-32) - mBounds.top_left.y) + mBounds.top_left.y;
 		auto poop = std::make_shared<Poop>(ItemType::POOP, Texture::SPRITESHEET, sf::IntRect({ 128,160 }, { 32,32 }), 10);
 		poop->setPosition({(float)randX, (float)randY});
 		mItems.push_back(poop);
+	}	
+}
+
+void LitterScene::scoopPoop()
+{
+	auto shovel_bounds = mShovel->getSprite().getGlobalBounds();
+	for (auto& item : mItems)
+	{
+		if (item->getSprite().getGlobalBounds().findIntersection(shovel_bounds).has_value())
+		{
+			item->setAlive(false);
+			SoundManager::getInstance()->play(Sound::PICKUP);
+		}
 	}
-	
 }

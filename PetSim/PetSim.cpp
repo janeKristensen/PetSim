@@ -69,7 +69,7 @@ void Game::pollEvents()
         {
             mMouseDownPosition = mouse_position;
             mMouseDown = true;
-            if (std::dynamic_pointer_cast<GameScene>(scene))
+            if (std::dynamic_pointer_cast<GameScene>(scene) || std::dynamic_pointer_cast<LitterScene>(scene))
             {
                 mFutures.push_back(std::async(std::launch::async, &Scene::handleDrag, scene, mWindow));
                 mMouseDown = false;
@@ -83,8 +83,7 @@ void Game::pollEvents()
 
 void Game::update(float dt) 
 {
-    auto sm = SceneManager::getInstance();
-    auto scene = sm->getScene();
+    auto scene = SceneManager::getInstance()->getScene();
 
     if (mMouseDown && !mIsDragging)
     {

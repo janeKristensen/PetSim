@@ -30,26 +30,13 @@ void SoundManager::play(Sound sound)
 bool SoundManager::isPlaying()
 {
 	return mActiveSounds.size() > 0;
-	/*return std::find_if(mActiveSounds.begin(), mActiveSounds.end(),
-		[](const sf::Sound& s)
-		{
-			return s.getStatus() == sf::Sound::Status::Playing;
-		}) != mActiveSounds.end();*/
 }
 
 void SoundManager::update()
 {
-	if (mActiveSounds.size() > 1)
+	while (!mActiveSounds.empty() && mActiveSounds.front().getStatus() == sf::SoundSource::Status::Stopped)
 	{
 		mActiveSounds.pop();
-		/*mActiveSounds.erase(
-			std::remove_if(mActiveSounds.begin(), mActiveSounds.end(),
-				[](const sf::Sound& s)
-				{
-					return s.getStatus() == sf::Sound::Status::Stopped;
-				}),
-			mActiveSounds.end()
-		);*/
 	}
 }
 

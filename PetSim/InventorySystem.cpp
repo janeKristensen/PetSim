@@ -238,8 +238,7 @@ std::shared_ptr<Item>  InventorySystem::removeFromSlot(sf::Vector2f mousePositio
 
 void InventorySystem::dragItem(const sf::Vector2f mousePosition, Item& item) 
 {
-	auto position = mousePosition;
-	item.setPosition(position);
+	item.setPosition(mousePosition);
 }
 
 void InventorySystem::despawnItem(std::shared_ptr<Item> item) {

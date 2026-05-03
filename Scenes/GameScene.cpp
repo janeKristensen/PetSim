@@ -502,7 +502,6 @@ void GameScene::handleDrag(std::shared_ptr<sf::RenderWindow> window) {
 				adjustment = scale_adjusted;
 			}
 
-			// This needs fixing - item should spawn immediately when dragging item from slot
 			if (remove_item)
 			{
 				mItemsToAdd.push_back(remove_item);
@@ -510,7 +509,7 @@ void GameScene::handleDrag(std::shared_ptr<sf::RenderWindow> window) {
 
 			while (sf::Mouse::isButtonPressed(sf::Mouse::Button::Left)) {
 
-				sf::Vector2i pixelPos = sf::Mouse::getPosition(*window);
+				pixelPos = sf::Mouse::getPosition(*window);
 				mouse_position = window->mapPixelToCoords(pixelPos);
 				mouse_position.x -= adjustment;
 				mouse_position.y -= adjustment;
@@ -520,7 +519,7 @@ void GameScene::handleDrag(std::shared_ptr<sf::RenderWindow> window) {
 				auto cutover = INV_WIDTH + 5 * SCREEN_MARGIN;
 				if (mouse_position.x >= cutover)
 				{
-					item->setScale({ 5,5 });
+					item->setScale({ 4,4 });
 				}
 				if (item->getScale().x > mItemScale && mouse_position.x < cutover)
 				{

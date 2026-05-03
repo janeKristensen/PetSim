@@ -10,7 +10,9 @@ enum class ItemType {
 	BONE,
 	BRUSH,
 	BALL,
-	POOP
+	POOP,
+	RAKE,
+	SHOVEL
 };
 
 class Item {
@@ -106,6 +108,31 @@ public:
 	Poop(const Poop& other) : Item(other.mTypeId, other.mValue, other.mSprite, other.mTexture, other.mIsAlive, other.mState) {}
 
 	std::string getDescription() override { return std::format("-{} happiness", mValue); }
+
+
+private:
+
+};
+
+
+class Rake : public Item {
+public:
+	Rake(ItemType typeId, Texture texName, sf::IntRect texRect, uint32_t value) : Item(typeId, value, texName, texRect) {}
+	Rake(const Rake& other) : Item(other.mTypeId, other.mValue, other.mSprite, other.mTexture, other.mIsAlive, other.mState) {}
+
+	std::string getDescription() override { return "Used for raking litter"; }
+
+
+private:
+
+};
+
+class Shovel : public Item {
+public:
+	Shovel(ItemType typeId, Texture texName, sf::IntRect texRect, uint32_t value) : Item(typeId, value, texName, texRect) {}
+	Shovel(const Shovel& other) : Item(other.mTypeId, other.mValue, other.mSprite, other.mTexture, other.mIsAlive, other.mState) {}
+
+	std::string getDescription() override { return "Used shoveling litter"; }
 
 
 private:
