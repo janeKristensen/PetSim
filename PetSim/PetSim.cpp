@@ -4,21 +4,17 @@
 
 Game::Game(std::shared_ptr<sf::RenderWindow> window) : mWindow(std::move(window)) {
 
+    srand(time(0));
+
     auto tm = TextureManager::getInstance();
     tm->loadTexture(Texture::SPRITESHEET, "ressources/assets/spritesheet.png");
-    tm->loadTexture(Texture::ANIMATION_SHEET, "ressources/assets/animationsheet.png");
     tm->loadTexture(Texture::TITLE_MENU, "ressources/assets/title_menu.png");
     tm->loadTexture(Texture::LOADING_SCREEN, "ressources/assets/loading.png");
-    tm->loadTexture(Texture::GAME_BG, "ressources/assets/fixed_background_scaled.png");
-    tm->loadTexture(Texture::INVENTORY, "ressources/assets/shelf.png");
-   
+
     FontManager::getInstance()->loadFont(FontName::TITLE, "ressources/fonts/Gabriola.ttf");
 
     auto sm = SoundManager::getInstance();
     sm->loadSound(Sound::CLICK, "Sounds/click.wav");
-    sm->loadSound(Sound::PICKUP, "Sounds/pick_up.wav");
-    sm->loadSound(Sound::PLACE, "Sounds/place.wav");
-    sm->loadSound(Sound::SAND, "Sounds/sand_sound2.wav");
 }
 
 void Game::init()
@@ -73,7 +69,7 @@ void Game::pollEvents()
         {
             mMouseDownPosition = mouse_position;
             mMouseDown = true;
-            if (std::dynamic_pointer_cast<GameScene>(scene))
+            if (std::dynamic_pointer_cast<GameScene>(scene) || std::dynamic_pointer_cast<LitterScene>(scene))
             {
                 mFutures.push_back(std::async(std::launch::async, &Scene::handleDrag, scene, mWindow));
                 mMouseDown = false;
@@ -87,8 +83,7 @@ void Game::pollEvents()
 
 void Game::update(float dt) 
 {
-    auto sm = SceneManager::getInstance();
-    auto scene = sm->getScene();
+    auto scene = SceneManager::getInstance()->getScene();
 
     if (mMouseDown && !mIsDragging)
     {

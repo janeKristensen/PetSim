@@ -25,10 +25,10 @@ public:
 	{
 		sf::Texture tex;
 		if (!tex.loadFromFile(filename)) std::cout << "Error loading texture from file" << std::endl;;
-		mTextures.insert({ texture, tex });
+		mTextures.insert({ texture, std::make_shared<sf::Texture>(tex)});
 	}
 
-	const sf::Texture& getTexture(Texture texture)
+	std::shared_ptr<sf::Texture> getTexture(Texture texture)
 	{
 		return mTextures[texture];
 	}
@@ -39,5 +39,5 @@ protected:
 
 private:
 	
-	std::unordered_map<Texture, sf::Texture> mTextures;
+	std::unordered_map<Texture, std::shared_ptr<sf::Texture> > mTextures;
 };

@@ -39,6 +39,6 @@ void ShopTile::render(sf::RenderWindow& window)
 
 Item ShopTile::getItem() 
 { 
-	Item item = *std::get<0>(mItem); 
-	return item; 
+	Item item = *std::get<0>(mItem);
+	return item;
 }

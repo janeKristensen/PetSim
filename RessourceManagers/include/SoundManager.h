@@ -7,7 +7,9 @@ enum class Sound {
 	CLICK,
 	SAND,
 	PICKUP,
-	PLACE
+	PLACE,
+	LONG_PURR,
+	SHORT_PURR
 };
 
 class SoundManager

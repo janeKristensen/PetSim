@@ -36,11 +36,15 @@ void ContinueCommand::execute() const
 
 void BuyCommand::execute() const
 {
-
 	// Add item to inventory
-	const auto& item_template = mScene->getSelectedTile().getItem();
-	auto& game_scene = mScene->getGameScene();
-	auto item = game_scene.createItemFromType(item_template.getTypeId(), item_template.getTextureName(), item_template.getTextureRect(), item_template.getValue());
-	item->setScale({ 1,1 });
-	game_scene.addItemToInventory(item, 1);
+	auto tile = mScene->getSelectedTile();
+	if (tile)
+	{
+		const auto& item_template = tile->getItem();
+		auto& game_scene = mScene->getGameScene();
+		auto item = game_scene.createItemFromType(item_template.getTypeId(), item_template.getTextureName(), item_template.getTextureRect(), item_template.getValue());
+		item->setScale({ 1,1 });
+		game_scene.addItemToInventory(item, 1);
+	}
+	
 }

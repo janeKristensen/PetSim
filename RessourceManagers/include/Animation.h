@@ -6,21 +6,25 @@ class IAnimated
 {
 public:
 	virtual ~IAnimated() {};
-	virtual void setTexture(const sf::Texture& texture) = 0;
+	virtual void setTexture(std::shared_ptr<sf::Texture> texture) = 0;
 	virtual void setTexRect(sf::IntRect rect) = 0;
 };
 
 class Animation
 {
 public:
-	Animation(const sf::Texture& texture, size_t frames, sf::Vector2i frameSize, float frameRate);
+	Animation(std::shared_ptr<sf::Texture> texture, size_t frames, sf::Vector2i startPosition, sf::Vector2i frameSize, float frameRate);
 	Animation(const Animation&) = default;
+	
 	void update(float dt);
-	const sf::Texture& getTexture() const { return mTexture; }
+	void resetFrame() { mCurrentFrame = 0; }
+	std::shared_ptr<sf::Texture> getTexture() { return mTexture; }
 	sf::IntRect getFrame();
+	size_t getCurrentFrame() { return mCurrentFrame; }
+	size_t getFrameNumber() { return mFrames; }
 
 private:
-	const sf::Texture& mTexture;
+	std::shared_ptr<sf::Texture> mTexture;
 	sf::Vector2i mFrameSize;
 	size_t mFrames;
 	size_t mCurrentFrame = 0;

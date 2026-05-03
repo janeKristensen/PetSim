@@ -9,13 +9,16 @@
 enum class ItemType {
 	BONE,
 	BRUSH,
-	BALL
+	BALL,
+	POOP,
+	RAKE,
+	SHOVEL
 };
 
 class Item {
 public:
 	Item(ItemType typeId, uint32_t value, Texture texName, sf::IntRect texRect) 
-		: mTypeId(typeId), mValue(value), mTexture(texName), mSprite(TextureManager::getInstance()->getTexture(texName), texRect){}
+		: mTypeId(typeId), mValue(value), mTexture(texName), mSprite(*TextureManager::getInstance()->getTexture(texName), texRect) {}
 
 	Item(const ItemType typeId, const uint32_t value, const sf::Sprite& sprite, const Texture texName, const bool isAlive, const nlohmann::json& state)
 		: mTypeId(typeId), mValue(value), mSprite(sprite), mTexture(texName), mIsAlive(isAlive), mState(state) {}
@@ -38,6 +41,8 @@ public:
 	const Texture getTextureName() const { return mTexture; }
 	const sf::IntRect getTextureRect() const { return mSprite.getTextureRect(); }
 	const sf::Vector2f getScale() const { return mSprite.getScale(); }
+	void setShader(std::shared_ptr<sf::Shader> shader) { mShader = shader; }
+	std::shared_ptr<sf::Shader> getShader() { return mShader; }
 	
 	sf::Sprite& getSprite() { return mSprite; }
 	const uint32_t getValue() const { return mValue; };
@@ -56,6 +61,7 @@ private:
 	void setState(nlohmann::json);
 	void toJson(nlohmann::json& j);
 
+	std::shared_ptr<sf::Shader> mShader = nullptr;
 	std::shared_ptr<SaveComponent> mSaveComponent = std::make_shared<SaveComponent>();
 	std::unique_ptr<SaveManager> mSaveManager = std::make_unique<SaveManager>(mSaveComponent);
 };
@@ -91,6 +97,43 @@ public:
 
 	std::string getDescription() override { return std::format("+{} happiness", mValue); }
 	
+
+private:
+
+};
+
+class Poop : public Item {
+public:
+	Poop(ItemType typeId, Texture texName, sf::IntRect texRect, uint32_t value) : Item(typeId, value, texName, texRect) {}
+	Poop(const Poop& other) : Item(other.mTypeId, other.mValue, other.mSprite, other.mTexture, other.mIsAlive, other.mState) {}
+
+	std::string getDescription() override { return std::format("-{} happiness", mValue); }
+
+
+private:
+
+};
+
+
+class Rake : public Item {
+public:
+	Rake(ItemType typeId, Texture texName, sf::IntRect texRect, uint32_t value) : Item(typeId, value, texName, texRect) {}
+	Rake(const Rake& other) : Item(other.mTypeId, other.mValue, other.mSprite, other.mTexture, other.mIsAlive, other.mState) {}
+
+	std::string getDescription() override { return "Used for raking litter"; }
+
+
+private:
+
+};
+
+class Shovel : public Item {
+public:
+	Shovel(ItemType typeId, Texture texName, sf::IntRect texRect, uint32_t value) : Item(typeId, value, texName, texRect) {}
+	Shovel(const Shovel& other) : Item(other.mTypeId, other.mValue, other.mSprite, other.mTexture, other.mIsAlive, other.mState) {}
+
+	std::string getDescription() override { return "Used shoveling litter"; }
+
 
 private:
 

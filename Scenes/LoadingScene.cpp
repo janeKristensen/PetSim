@@ -15,14 +15,27 @@ LoadingScene::LoadingScene(sf::Vector2f screenSize, std::shared_ptr<Game> game) 
 	mModelFuture = std::async(std::launch::async, makeModel, model_path, 0.2, 1.5);
 
 	auto tm = TextureManager::getInstance();
+	tm->loadTexture(Texture::ANIMATION_SHEET, "ressources/assets/animationsheet.png");
+	tm->loadTexture(Texture::GAME_BG, "ressources/assets/fixed_background_scaled.png");
+	tm->loadTexture(Texture::INVENTORY, "ressources/assets/shelf.png");
+	tm->loadTexture(Texture::LITTER_BOX, "ressources/assets/litter_box.png");
+
+	FontManager::getInstance()->loadFont(FontName::TITLE, "ressources/fonts/Gabriola.ttf");
+
+	auto sm = SoundManager::getInstance();
+	sm->loadSound(Sound::PICKUP, "Sounds/pick_up.wav");
+	sm->loadSound(Sound::PLACE, "Sounds/place.wav");
+	sm->loadSound(Sound::SAND, "Sounds/sand_sound2.wav");
+	sm->loadSound(Sound::LONG_PURR, "Sounds/long_low_purr.wav");
+	sm->loadSound(Sound::SHORT_PURR, "Sounds/loud_purr.wav");
 
 	auto& background = mSceneObjects.at(SceneObject::BACKGROUND);
-	background->setTexture(&tm->getTexture(Texture::LOADING_SCREEN));
+	background->setTexture(tm->getTexture(Texture::LOADING_SCREEN).get());
 
 	mSpinner = sf::RectangleShape({32,32});
 	mSpinner.setPosition({ screenSize.x / 2, screenSize.y / 1.5f });
 	mSpinner.setRotation(sf::degrees(10));
-	mSpinner.setTexture(&tm->getTexture(Texture::SPRITESHEET));
+	mSpinner.setTexture(tm->getTexture(Texture::SPRITESHEET).get());
 	mSpinner.setTextureRect(sf::IntRect({ 126,0 }, { 32,32 }));
 	mSpinner.setOrigin((sf::Vector2f)mSpinner.getLocalBounds().size / 2.f);
 }

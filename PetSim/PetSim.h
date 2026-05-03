@@ -4,6 +4,7 @@
 #include "SFML/Graphics.hpp"
 #include "item.h"
 #include "TitleScene.h"
+#include "LitterScene.h"
 #include "Memento.h"
 #include "TextureManager.h"
 #include "SoundManager.h"
@@ -11,6 +12,7 @@
 #include "NeedsSystem.h"
 #include "InventorySystem.h"
 #include <fstream>
+#include <ctime>
 
 //constexpr sf::Vector2f SCREEN_SIZE{ 800.f, 600.f };
 

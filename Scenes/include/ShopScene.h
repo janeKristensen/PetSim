@@ -14,7 +14,7 @@ public:
 	void handleHover(sf::Vector2f mouseposition) override;
 	void handleClick(sf::Vector2f mouseposition) override;
 	void handleTextEntry(const sf::Event& event) override;
-	ShopTile& getSelectedTile() const { return *mSelectedTile; }
+	ShopTile* getSelectedTile() const { return mSelectedTile; }
 	GameScene& getGameScene() { return mGameScene; }
 
 private:

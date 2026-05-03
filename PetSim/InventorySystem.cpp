@@ -30,7 +30,7 @@ InventorySystem::InventorySystem(sf::Vector2f invDimensions, sf::Vector2f invPos
 			auto& slot_rect = slot.getShape();
 			slot_rect.setSize(mSlotSize);
 			slot_rect.setPosition(slot_position + sf::Vector2f{2*INV_MARGIN,4 * INV_MARGIN });
-			slot_rect.setTexture(&TextureManager::getInstance()->getTexture(mTexture));
+			slot_rect.setTexture(TextureManager::getInstance()->getTexture(mTexture).get());
 			slot_rect.setTextureRect(sf::IntRect({160,0}, {32,32}));
 			slot.setAmount(0);
 
@@ -142,7 +142,8 @@ void InventorySystem::addItemToSlotIndex(size_t index, std::shared_ptr<Item> ite
 
 	auto position = getSlotPositionAtIndex(index);
 	auto item_size = item->getSprite().getTexture().getSize();
-	position = { position.x + mSlotSize.x / 2 - item_size.x/2, position.y + mSlotSize.y / 2 - item_size.y / 2};
+	position = { position.x + mSlotSize.x / 4, position.y + mSlotSize.y / 4.f };
+	//position = { position.x + mSlotSize.x / 2 - item_size.x/2, position.y + mSlotSize.y / 2 - item_size.y / 2};
 	item->setPosition(position);
 	adjustItemCount(amount, index);
 	mItems[index] = item;
@@ -237,8 +238,7 @@ std::shared_ptr<Item>  InventorySystem::removeFromSlot(sf::Vector2f mousePositio
 
 void InventorySystem::dragItem(const sf::Vector2f mousePosition, Item& item) 
 {
-	auto position = mousePosition;
-	item.setPosition(position);
+	item.setPosition(mousePosition);
 }
 
 void InventorySystem::despawnItem(std::shared_ptr<Item> item) {

@@ -1,6 +1,7 @@
 #pragma once
 #include "SFML/Graphics.hpp"
 #include "SFML/Audio.hpp"
+#include "UserInterface.h"
 #include "TextureManager.h"
 #include "SoundManager.h"
 #include "FontManager.h"
@@ -57,7 +58,8 @@ enum class SceneText
 	HUNGER_VALUE,
 	GROOM_VALUE,
 	STATE_VALUE,
-	MONEY_VALUE
+	MONEY_VALUE,
+	HAPPY_VALUE
 };
 
 
@@ -67,21 +69,23 @@ public:
 	Scene(sf::Vector2f screenSize, std::shared_ptr<Game> game);
 	~Scene();
 
-	virtual void render(sf::RenderWindow& window) {};
-	virtual void update(float dt) {};
+	virtual void render(sf::RenderWindow& window) {}
+	virtual void update(float dt) {}
 	virtual void handleClick(sf::Vector2f mouseposition) {}
 	virtual void handleKeyPress(sf::Keyboard::Key key) {}
-	virtual void handleHover(sf::Vector2f mouseposition) {};
+	virtual void handleHover(sf::Vector2f mouseposition);
 	virtual void handleDrag(std::shared_ptr<sf::RenderWindow> window) {}
 	virtual void handleTextEntry(const sf::Event& event) {}
 	virtual void loadGame(const std::string& filename) {}
-	virtual nlohmann::json setState() { mState["empty"] = ""; return mState; };
+	virtual void loadShader(const std::string& filename, std::shared_ptr<sf::Shader> shader);
+	virtual nlohmann::json setState() { mState["empty"] = ""; return mState; }
 
 	void setEvent(std::optional<sf::Event> event) { mCurrentEvent = event; }
 	void addSceneObject(SceneObject object, std::shared_ptr<sf::RectangleShape> shape);
 	void addTextObject(SceneText object, sf::Text&& text);
 	sf::Vector2f getObjectSize(SceneObject object) { return mSceneObjects[object]->getSize(); }
 	sf::Vector2f getObjectPosition(SceneObject object) { return mSceneObjects[object]->getPosition(); }
+	const std::unordered_map<SceneObject, std::shared_ptr<sf::RectangleShape>> getSceneObjects() const { return mSceneObjects; }
 
 protected:
 	sf::Vector2f mScreenSize;
@@ -90,7 +94,8 @@ protected:
 	std::unordered_map<SceneText, sf::Text> mSceneText;
 	std::shared_ptr<Game> mGame;
 	nlohmann::json mState;
-
+	std::shared_ptr<sf::Shader> mShader = std::make_shared<sf::Shader>();
+	std::shared_ptr<sf::Shader> mItemShader = std::make_shared<sf::Shader>();
 private:
 
 	

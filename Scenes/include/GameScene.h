@@ -18,6 +18,25 @@ public:
 	void render(sf::RenderWindow& window) override;
 	void setModel(std::shared_ptr<Model> model);
 	void handleClick(sf::Vector2f mouseposition) override;
+	void handleHover(sf::Vector2f mouseposition) override
+	{ 
+		Scene::handleHover(mouseposition); 
+		for (auto& obj : mItems)
+		{
+			if (!obj) continue;
+			if (obj->getSprite().getGlobalBounds().contains(mouseposition))
+			{
+				if (!obj->getShader())
+				{
+					obj->setShader(mItemShader);
+				}
+			}
+			else
+			{
+				obj->setShader(nullptr);
+			}
+		}
+	}
 	void handleKeyPress(sf::Keyboard::Key key) override;
 	void handleDrag(std::shared_ptr<sf::RenderWindow> window) override;
 	void asyncDrag(std::shared_ptr<sf::RenderWindow> window);
@@ -55,4 +74,5 @@ private:
 	bool mInTextField = false;
 	float mBlipTracker = 0.f;
 	float mResponseTracker = 0.f;
+	bool mIsHappy = false;
 };

@@ -5,7 +5,7 @@
 #include <memory>
 #include "item.h"
 
-class Command;
+//class Command;
 
 class Button : public sf::RectangleShape{
 public:
@@ -15,9 +15,12 @@ public:
 	void setCommand(std::shared_ptr<Command> command) { mCommand = command; }
 	std::shared_ptr<Command> getCommand() { return mCommand; }
 	void onClick() { mCommand->execute(); }
+	void setShader(std::shared_ptr<sf::Shader> shader) { mShader = shader; }
+	std::shared_ptr<sf::Shader> getShader() { return mShader; }
 
 private:
 	std::shared_ptr<Command> mCommand = nullptr;
+	std::shared_ptr<sf::Shader> mShader = nullptr;
 };
 
 class ProgressBar {

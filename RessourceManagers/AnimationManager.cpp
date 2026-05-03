@@ -33,9 +33,17 @@ void AnimationManager::attachAnimation(std::shared_ptr<IAnimated> object, Animat
 	auto it = mAnimationMap.find(name);
 	if (it != mAnimationMap.end())
 	{
-		const auto& animation = it->second;
+		auto& animation = it->second;
 		object->setTexture(animation.getTexture());
-		mAnimations.insert({ object, animation });
+		auto jt = mAnimations.find(object);
+		if (jt == mAnimations.end())
+		{
+			mAnimations.insert({ object, animation });
+		}
+		else
+		{
+			mAnimations.at(object) = animation;
+		}
 	}
 }
 
@@ -47,3 +55,13 @@ Animation& AnimationManager::getAnimation(AnimationName name)
 		return it->second;
 	}
 }
+
+Animation& AnimationManager::getAnimation(std::shared_ptr<IAnimated> object)
+{
+	auto it = mAnimations.find(object);
+	if (it != mAnimations.end())
+	{
+		return it->second;
+	}
+}
+

@@ -2,7 +2,8 @@
 #include "Animation.h"
 
 enum class AnimationName {
-	CAT
+	CAT,
+	CAT_HAPPY
 };
 
 class AnimationManager
@@ -17,6 +18,7 @@ public:
 	void addAnimation(AnimationName name, Animation animation);
 	void attachAnimation(std::shared_ptr<IAnimated> object, AnimationName name);
 	Animation& getAnimation(AnimationName name);
+	Animation& getAnimation(std::shared_ptr<IAnimated> object);
 
 protected:
 	AnimationManager(){}
