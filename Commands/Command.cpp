@@ -6,7 +6,7 @@
 
 void StartCommand::execute() const
 {
-	SceneManager::getInstance()->changeScene(std::make_shared<LoadingScene>(mScreenSize, mGame));
+	SceneManager::getInstance()->changeScene(std::make_shared<LoadingScene>(mScreenSize, mGame, mGame->getServices()));
 }
 
 

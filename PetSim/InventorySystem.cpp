@@ -4,8 +4,8 @@
 constexpr float INV_MARGIN = 10.0;
 
 
-InventorySystem::InventorySystem(sf::Vector2f invDimensions, sf::Vector2f invPosition, Texture texName) 
-	: mTexture(texName){
+InventorySystem::InventorySystem(sf::Vector2f invDimensions, sf::Vector2f invPosition, Texture texName, Services& services) 
+	: mTexture(texName), mServices(services){
 	
 	mSlotSize.x = ((invDimensions.x - (COLUMNS + 2) * INV_MARGIN) / COLUMNS);
 	mSlotSize.y = ((invDimensions.y - ROWS * INV_MARGIN) / ROWS);
@@ -30,11 +30,11 @@ InventorySystem::InventorySystem(sf::Vector2f invDimensions, sf::Vector2f invPos
 			auto& slot_rect = slot.getShape();
 			slot_rect.setSize(mSlotSize);
 			slot_rect.setPosition(slot_position + sf::Vector2f{2*INV_MARGIN,4 * INV_MARGIN });
-			slot_rect.setTexture(TextureManager::getInstance()->getTexture(mTexture).get());
+			slot_rect.setTexture(mServices.textureManager->getTexture(mTexture).get());
 			slot_rect.setTextureRect(sf::IntRect({160,0}, {32,32}));
 			slot.setAmount(0);
 
-			auto& font = FontManager::getInstance()->getFont(FontName::TITLE);
+			auto& font = mServices.fontManager->getFont(FontName::TITLE);
 			size_t char_size = 36;
 			mAmountText.push_back(sf::Text(font, "", char_size));
 			auto slot_rect_pos = slot_rect.getPosition();

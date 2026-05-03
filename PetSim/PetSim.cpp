@@ -6,20 +6,28 @@ Game::Game(std::shared_ptr<sf::RenderWindow> window) : mWindow(std::move(window)
 
     srand(time(0));
 
-    auto tm = TextureManager::getInstance();
-    tm->loadTexture(Texture::SPRITESHEET, "ressources/assets/spritesheet.png");
-    tm->loadTexture(Texture::TITLE_MENU, "ressources/assets/title_menu.png");
-    tm->loadTexture(Texture::LOADING_SCREEN, "ressources/assets/loading.png");
+    // Initialize services
+    mServices.animationManager = &mAnimationManager;
+    mServices.fontManager = &mFontManager;
+    mServices.needsSystem = &mNeedsSystem;
+    mServices.soundManager = &mSoundManager;
+    mServices.textureManager = &mTextureManager;
 
-    FontManager::getInstance()->loadFont(FontName::TITLE, "ressources/fonts/Gabriola.ttf");
+    // Load textures
+    mServices.textureManager->loadTexture(Texture::SPRITESHEET, "ressources/assets/spritesheet.png");
+    mServices.textureManager->loadTexture(Texture::TITLE_MENU, "ressources/assets/title_menu.png");
+    mServices.textureManager->loadTexture(Texture::LOADING_SCREEN, "ressources/assets/loading.png");
 
-    auto sm = SoundManager::getInstance();
-    sm->loadSound(Sound::CLICK, "Sounds/click.wav");
+    // Load fonts
+    mServices.fontManager->loadFont(FontName::TITLE, "ressources/fonts/Gabriola.ttf");
+
+    // Load Sounds
+    mServices.soundManager->loadSound(Sound::CLICK, "Sounds/click.wav");
 }
 
 void Game::init()
 {
-    SceneManager::getInstance()->changeScene(std::make_shared<TitleScene>((sf::Vector2f)mWindow->getSize(), shared_from_this()));
+    SceneManager::getInstance()->changeScene(std::make_shared<TitleScene>((sf::Vector2f)mWindow->getSize(), shared_from_this(), mServices));
 }
 
 void Game::pollEvents() 
@@ -109,7 +117,7 @@ void Game::update(float dt)
         }   
     }
     scene->update(dt);
-    SoundManager::getInstance()->update();
+    mServices.soundManager->update();
    
 }
 

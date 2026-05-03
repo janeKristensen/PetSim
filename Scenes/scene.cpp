@@ -2,8 +2,8 @@
 
 
 
-Scene::Scene(sf::Vector2f screenSize, std::shared_ptr<Game> game)
-	: mScreenSize(screenSize), mGame(game) {
+Scene::Scene(sf::Vector2f screenSize, std::shared_ptr<Game> game, Services& services)
+	: mScreenSize(screenSize), mGame(game), mServices(services) {
 
 	mSceneObjects.reserve(1000);
 	loadShader("Shaders/ShaderBtn.frag", mShader);

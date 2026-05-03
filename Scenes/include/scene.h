@@ -1,13 +1,9 @@
 #pragma once
 #include "SFML/Graphics.hpp"
 #include "SFML/Audio.hpp"
+#include "Services.h"
 #include "UserInterface.h"
-#include "TextureManager.h"
-#include "SoundManager.h"
-#include "FontManager.h"
 #include "SceneManager.h"
-#include "AnimationManager.h"
-#include "NeedsSystem.h"
 #include "item.h"
 #include "InventorySystem.h"
 #include <functional>
@@ -15,7 +11,6 @@
 #include <future>
 #include <iostream>
 #include <optional>
-
 
 class Game;
 
@@ -66,7 +61,7 @@ enum class SceneText
 class Scene {
 
 public:
-	Scene(sf::Vector2f screenSize, std::shared_ptr<Game> game);
+	Scene(sf::Vector2f screenSize, std::shared_ptr<Game> game, Services& services);
 	~Scene();
 
 	virtual void render(sf::RenderWindow& window) {}
@@ -80,6 +75,7 @@ public:
 	virtual void loadShader(const std::string& filename, std::shared_ptr<sf::Shader> shader);
 	virtual nlohmann::json setState() { mState["empty"] = ""; return mState; }
 
+	Services& getServices() { return mServices; }
 	void setEvent(std::optional<sf::Event> event) { mCurrentEvent = event; }
 	void addSceneObject(SceneObject object, std::shared_ptr<sf::RectangleShape> shape);
 	void addTextObject(SceneText object, sf::Text&& text);
@@ -96,6 +92,7 @@ protected:
 	nlohmann::json mState;
 	std::shared_ptr<sf::Shader> mShader = std::make_shared<sf::Shader>();
 	std::shared_ptr<sf::Shader> mItemShader = std::make_shared<sf::Shader>();
+	Services& mServices;
 private:
 
 	

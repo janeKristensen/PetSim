@@ -11,7 +11,7 @@ static void pushRequestToModel(std::string query, std::shared_ptr<Model> model) 
 class GameScene : public Scene {
 
 public:
-	GameScene(sf::Vector2f screenSize, std::shared_ptr<Game> game, std::shared_ptr<Model> model);
+	GameScene(sf::Vector2f screenSize, std::shared_ptr<Game> game, Services& services, std::shared_ptr<Model> model);
 	~GameScene();
 
 	void update(float dt) override;

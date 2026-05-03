@@ -1,13 +1,5 @@
 #include "SoundManager.h"
 
-SoundManager* SoundManager::mInstance = nullptr;
-
-
-SoundManager* SoundManager::getInstance()
-{
-	if (mInstance == nullptr) mInstance = new SoundManager();
-	return mInstance;
-}
 
 void SoundManager::loadSound(Sound sound, const std::string& filename)
 {

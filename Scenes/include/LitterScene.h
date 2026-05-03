@@ -9,7 +9,7 @@ class GameScene;
 class LitterScene : public Scene
 {
 public:
-	LitterScene				(sf::Vector2f screenSize, std::shared_ptr<Game> game, GameScene& scene);
+	LitterScene				(sf::Vector2f screenSize, std::shared_ptr<Game> game, Services& services, GameScene& scene);
 	~LitterScene			() {}
 	void createParticles	();
 	void update				(float dt) override;

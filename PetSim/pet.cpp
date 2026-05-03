@@ -6,8 +6,8 @@ constexpr uint32_t MIN_VALUE = 0;
 constexpr uint32_t LIMIT_VALUE = 50;
 constexpr int32_t DECAY_VALUE = -1;
 
-Pet::Pet(Texture texName, sf::IntRect texRect, std::string name, std::string species, std::string temper, AnimationName animation) 
-	: mSprite(*TextureManager::getInstance()->getTexture(texName), texRect), mTexture(texName), mName(name), mSpecies(species), mTemper(temper), mAnimation(animation) 
+Pet::Pet(Texture texName, sf::IntRect texRect, sf::Texture& texture, std::string name, std::string species, std::string temper, AnimationName animation)
+	: mSprite(texture, texRect), mTexture(texName), mTextureRect(texRect), mName(name), mSpecies(species), mTemper(temper), mAnimation(animation) 
 {
 	mInitPrompt = std::format("Pretend to be a {} named {}. You are my pet not a chatbot. Give short and cute replies to messages and don't use emoji.", mSpecies, mName);
 	mSprite.setScale({6.2,6.2});
@@ -15,6 +15,7 @@ Pet::Pet(Texture texName, sf::IntRect texRect, std::string name, std::string spe
 
 Pet::Pet(Texture texName,
 	sf::IntRect texRect,
+	sf::Texture& texture,
 	std::string name,
 	std::string species,
 	std::string temper,
@@ -25,8 +26,9 @@ Pet::Pet(Texture texName,
 	uint32_t health,
 	uint32_t happiness,
 	AnimationName animation
-) : mSprite(*TextureManager::getInstance()->getTexture(texName), texRect),
+) : mSprite(texture, texRect),
 	mTexture(texName),
+	mTextureRect(texRect),
 	mName(name), mSpecies(species), 
 	mTemper(temper), 
 	mInitPrompt(initPrompt), 
@@ -159,9 +161,7 @@ void Pet::from_json(const nlohmann::json& j, std::shared_ptr<Pet> p)
 		j["sprite"]["tex_rect"]["size"]["y"]
 	};
 
-	sf::IntRect tex_rect(position, size);
-	p->mSprite.setTexture(*TextureManager::getInstance()->getTexture(mTexture));
-	p->mSprite.setTextureRect(tex_rect);
+	mTextureRect = sf::IntRect(position, size);
 }
 
 void Pet::setState(nlohmann::json) 

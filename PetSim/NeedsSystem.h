@@ -12,7 +12,8 @@ constexpr float DECAY_TIME = 2.0f;
 class NeedsSystem {
 
 public:
-	NeedsSystem(std::shared_ptr<Pet> pet) : mPet(pet){}
+	NeedsSystem() {}
+	void setPet(std::shared_ptr<Pet> pet) { mPet = pet; }
 	void setModel(std::shared_ptr<Model> model);
 	void update(float dt);
 	void processItem(Item& item);

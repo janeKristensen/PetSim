@@ -1,8 +1,7 @@
 #pragma once
 #include "Item.h"
 #include <array>
-#include "TextureManager.h"
-#include "FontManager.h"
+#include "Services.h"
 #include <iostream>
 
 constexpr size_t ROWS = 3;
@@ -29,7 +28,7 @@ private:
 
 class InventorySystem {
 public:
-	InventorySystem(sf::Vector2f invDimensions, sf::Vector2f invPosition, Texture texName);
+	InventorySystem(sf::Vector2f invDimensions, sf::Vector2f invPosition, Texture texName, Services& services);
 	void update();
 	void render(sf::RenderWindow& window);
 	const std::tuple<sf::Vector2f, int32_t> getSlotPosition(sf::Vector2f mousePosition) const;
@@ -45,12 +44,14 @@ public:
 
 private:
 	const std::tuple<size_t, size_t> getRowColumnIndex(size_t index) const;
-	
 	size_t getFirstEmptySlot();
 	void adjustItemCount(int32_t value, size_t index);
 	std::shared_ptr<Item> spawnItem(Item& item);
 	void despawnItem(std::shared_ptr<Item> item);
+	void setState(nlohmann::json);
+	void toJson(nlohmann::json& j);
 
+	Services& mServices;
 	std::array<std::array<Slot, COLUMNS>, ROWS> mInventory;
 	std::vector<std::shared_ptr<Item>> mItems{ MAX_SLOTS, nullptr };
 	Texture mTexture;
@@ -59,6 +60,5 @@ private:
 	nlohmann::json mState;
 	std::shared_ptr<SaveComponent> mSaveComponent = std::make_shared<SaveComponent>();
 	std::unique_ptr<SaveManager> mSaveManager = std::make_unique<SaveManager>(mSaveComponent);
-	void setState(nlohmann::json);
-	void toJson(nlohmann::json& j);
+	
 };

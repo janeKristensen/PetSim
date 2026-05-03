@@ -17,8 +17,8 @@ enum class ItemType {
 
 class Item {
 public:
-	Item(ItemType typeId, uint32_t value, Texture texName, sf::IntRect texRect) 
-		: mTypeId(typeId), mValue(value), mTexture(texName), mSprite(*TextureManager::getInstance()->getTexture(texName), texRect) {}
+	Item(ItemType typeId, uint32_t value, Texture texName, sf::IntRect texRect, sf::Texture& texture) 
+		: mTypeId(typeId), mValue(value), mTexture(texName), mSprite(texture, texRect) {}
 
 	Item(const ItemType typeId, const uint32_t value, const sf::Sprite& sprite, const Texture texName, const bool isAlive, const nlohmann::json& state)
 		: mTypeId(typeId), mValue(value), mSprite(sprite), mTexture(texName), mIsAlive(isAlive), mState(state) {}
@@ -68,7 +68,7 @@ private:
 
 class Food : public Item {
 public:
-	Food(ItemType typeId, Texture texName, sf::IntRect texRect, uint32_t value) : Item(typeId, value, texName, texRect) {}
+	Food(ItemType typeId, Texture texName, sf::IntRect texRect, sf::Texture& texture, uint32_t value) : Item(typeId, value, texName, texRect, texture) {}
 	Food(const Food& other) : Item(other.mTypeId, other.mValue, other.mSprite, other.mTexture, other.mIsAlive, other.mState) {}
 	
 	std::string getDescription() override{ return std::format("+{} food", mValue); }
@@ -80,7 +80,7 @@ private:
 
 class GroomItem : public Item {
 public:
-	GroomItem(ItemType typeId, Texture texName, sf::IntRect texRect, uint32_t value) : Item(typeId, value, texName, texRect) {}
+	GroomItem(ItemType typeId, Texture texName, sf::IntRect texRect, sf::Texture& texture, uint32_t value) : Item(typeId, value, texName, texRect, texture) {}
 	GroomItem(const GroomItem& other) : Item(other.mTypeId, other.mValue, other.mSprite, other.mTexture, other.mIsAlive, other.mState) {}
 
 	std::string getDescription() override { return std::format("+{} grooming", mValue); }
@@ -92,7 +92,7 @@ private:
 
 class Toy : public Item {
 public:
-	Toy(ItemType typeId, Texture texName, sf::IntRect texRect, uint32_t value) : Item(typeId, value, texName, texRect) {}
+	Toy(ItemType typeId, Texture texName, sf::IntRect texRect, sf::Texture& texture, uint32_t value) : Item(typeId, value, texName, texRect, texture) {}
 	Toy(const Toy& other) : Item(other.mTypeId, other.mValue, other.mSprite, other.mTexture, other.mIsAlive, other.mState) {}
 
 	std::string getDescription() override { return std::format("+{} happiness", mValue); }
@@ -104,7 +104,7 @@ private:
 
 class Poop : public Item {
 public:
-	Poop(ItemType typeId, Texture texName, sf::IntRect texRect, uint32_t value) : Item(typeId, value, texName, texRect) {}
+	Poop(ItemType typeId, Texture texName, sf::IntRect texRect, sf::Texture& texture, uint32_t value) : Item(typeId, value, texName, texRect, texture) {}
 	Poop(const Poop& other) : Item(other.mTypeId, other.mValue, other.mSprite, other.mTexture, other.mIsAlive, other.mState) {}
 
 	std::string getDescription() override { return std::format("-{} happiness", mValue); }
@@ -117,7 +117,7 @@ private:
 
 class Rake : public Item {
 public:
-	Rake(ItemType typeId, Texture texName, sf::IntRect texRect, uint32_t value) : Item(typeId, value, texName, texRect) {}
+	Rake(ItemType typeId, Texture texName, sf::IntRect texRect, sf::Texture& texture, uint32_t value) : Item(typeId, value, texName, texRect, texture) {}
 	Rake(const Rake& other) : Item(other.mTypeId, other.mValue, other.mSprite, other.mTexture, other.mIsAlive, other.mState) {}
 
 	std::string getDescription() override { return "Used for raking litter"; }
@@ -129,7 +129,7 @@ private:
 
 class Shovel : public Item {
 public:
-	Shovel(ItemType typeId, Texture texName, sf::IntRect texRect, uint32_t value) : Item(typeId, value, texName, texRect) {}
+	Shovel(ItemType typeId, Texture texName, sf::IntRect texRect, sf::Texture& texture, uint32_t value) : Item(typeId, value, texName, texRect, texture) {}
 	Shovel(const Shovel& other) : Item(other.mTypeId, other.mValue, other.mSprite, other.mTexture, other.mIsAlive, other.mState) {}
 
 	std::string getDescription() override { return "Used shoveling litter"; }
