@@ -12,7 +12,8 @@ enum class ItemType {
 	BALL,
 	POOP,
 	RAKE,
-	SHOVEL
+	SHOVEL,
+	NUMBER
 };
 
 class Item {
@@ -137,4 +138,17 @@ public:
 
 private:
 
+};
+
+class Number : public Item {
+public:
+	Number(ItemType typeId, Texture texName, sf::IntRect texRect, sf::Texture& texture, uint32_t value) : Item(typeId, value, texName, texRect, texture) {}
+	Number(const Number& other) : Item(other.mTypeId, other.mValue, other.mSprite, other.mTexture, other.mIsAlive, other.mState) {}
+
+	std::string getDescription() override { return "Floating number"; }
+	void setTarget(sf::Vector2f target) { mTarget = target; }
+	sf::Vector2f getTarget() { return mTarget; }
+
+private:
+	sf::Vector2f mTarget;
 };

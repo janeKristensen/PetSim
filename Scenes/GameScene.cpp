@@ -3,6 +3,7 @@
 #include "MenuScene.h"
 #include "LoadingScene.h"
 #include "LitterScene.h"
+#include "WorkScene.h"
 
 GameScene::GameScene(sf::Vector2f screenSize, std::shared_ptr<Game> game, Services& services, std::shared_ptr<Model> model)
 	: Scene(screenSize, game, services), mModel(model), mScreenSize(screenSize) {
@@ -57,6 +58,18 @@ GameScene::GameScene(sf::Vector2f screenSize, std::shared_ptr<Game> game, Servic
 	auto scene_bg_pos = scene_background->getPosition();
 	auto scene_bg_size = scene_background->getSize();
 	auto scene_end_pos = scene_bg_pos.x + scene_bg_size.x + SCREEN_MARGIN;
+
+	// Computer
+	std::shared_ptr<sf::RectangleShape> computer = std::make_shared<sf::RectangleShape>(sf::Vector2f{ 64, 64 });
+	computer->setTexture(mServices.textureManager->getTexture(Texture::COMPUTER).get());
+	computer->setPosition(
+		{
+			scene_end_pos - 64 - SCREEN_MARGIN,
+			(scene_bg_pos.y + scene_bg_size.y)/3
+		}
+	);
+	addSceneObject(SceneObject::COMPUTER, computer);
+
 
 	// Progress bars
 	auto bar_size = sf::Vector2f{ 100, 13.5 };
@@ -466,6 +479,11 @@ void GameScene::handleClick(sf::Vector2f mouseposition) {
 	{
 		mServices.soundManager->play(Sound::CLICK);
 		SceneManager::getInstance()->changeScene(mLitterScene);
+	}
+	else if (mSceneObjects.at(SceneObject::COMPUTER)->getGlobalBounds().contains(mouseposition))
+	{
+		mServices.soundManager->play(Sound::CLICK);
+		SceneManager::getInstance()->changeScene(std::make_shared<WorkScene>(mScreenSize, mGame, mServices, *this));
 	}
 }
 

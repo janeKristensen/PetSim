@@ -2,7 +2,7 @@
 # project specific logic here.
 #
 
-add_library(scenes STATIC "scene.cpp" "include/scene.h" "GameScene.cpp" "include/GameScene.h"  "SceneManager.cpp" "include/SceneManager.h" "include/MenuScene.h" "MenuScene.cpp" "include/TitleScene.h" "TitleScene.cpp" "LoadingScene.cpp" "include/LoadingScene.h" "include/ShopScene.h" "ShopScene.cpp" "include/LitterScene.h" "LitterScene.cpp")
+add_library(scenes STATIC "scene.cpp" "include/scene.h" "GameScene.cpp" "include/GameScene.h"  "SceneManager.cpp" "include/SceneManager.h" "include/MenuScene.h" "MenuScene.cpp" "include/TitleScene.h" "TitleScene.cpp" "LoadingScene.cpp" "include/LoadingScene.h" "include/ShopScene.h" "ShopScene.cpp" "include/LitterScene.h" "LitterScene.cpp" "include/WorkScene.h" "WorkScene.cpp")
 
 if (CMAKE_VERSION VERSION_GREATER 3.12)
   set_property(TARGET scenes PROPERTY CXX_STANDARD 20)

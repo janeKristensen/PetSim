@@ -10,7 +10,9 @@ enum class Texture {
 	GAME_BG,
 	LITTER_BOX,
 	INVENTORY,
-	ANIMATION_SHEET
+	ANIMATION_SHEET,
+	COMPUTER,
+	NUMBERS
 };
 
 class TextureManager

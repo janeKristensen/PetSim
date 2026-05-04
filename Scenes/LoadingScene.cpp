@@ -18,6 +18,8 @@ LoadingScene::LoadingScene(sf::Vector2f screenSize, std::shared_ptr<Game> game, 
 	mServices.textureManager->loadTexture(Texture::GAME_BG, "ressources/assets/fixed_background_scaled.png");
 	mServices.textureManager->loadTexture(Texture::INVENTORY, "ressources/assets/shelf.png");
 	mServices.textureManager->loadTexture(Texture::LITTER_BOX, "ressources/assets/litter_box.png");
+	mServices.textureManager->loadTexture(Texture::COMPUTER, "ressources/assets/computer.png");
+	mServices.textureManager->loadTexture(Texture::NUMBERS, "ressources/assets/numbers.png");
 
 	mServices.fontManager->loadFont(FontName::TITLE, "ressources/fonts/Gabriola.ttf");
 

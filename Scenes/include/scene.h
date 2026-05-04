@@ -41,7 +41,8 @@ enum class SceneObject
 	LITTER_BOX,
 	LITTER_BUTTON,
 	GAME_BG,
-	MONEY
+	MONEY,
+	COMPUTER
 };
 
 enum class SceneText
