@@ -2,15 +2,13 @@
 #include "GameScene.h"
 #include "PetSim.h"
 
-ShopScene::ShopScene(sf::Vector2f screenSize, std::shared_ptr<Game> game, GameScene& scene) : Scene(screenSize, game), mGameScene(scene)
+ShopScene::ShopScene(sf::Vector2f screenSize, std::shared_ptr<Game> game, Services& services, GameScene& scene) : Scene(screenSize, game, services), mGameScene(scene)
 {
-	auto tm = TextureManager::getInstance();
-
 	std::shared_ptr<sf::RectangleShape> menu = std::make_shared<sf::RectangleShape>(sf::Vector2f{
 			screenSize.x - 2 * SCREEN_MARGIN,
 			screenSize.y - 2 * SCREEN_MARGIN
 		});
-	menu->setTexture(tm->getTexture(Texture::TITLE_MENU).get());
+	menu->setTexture(mServices.textureManager->getTexture(Texture::TITLE_MENU).get());
 	menu->setPosition({ SCREEN_MARGIN, SCREEN_MARGIN });
 	addSceneObject(SceneObject::START_MENU, menu);
 
@@ -18,7 +16,7 @@ ShopScene::ShopScene(sf::Vector2f screenSize, std::shared_ptr<Game> game, GameSc
 	auto pos = menu->getPosition();
 	std::shared_ptr<Command> return_cmd = std::make_shared<ContinueCommand>(mGame);
 	std::shared_ptr<sf::RectangleShape> return_btn = std::make_shared<Button>(sf::Vector2f{ 32,32 }, return_cmd);
-	return_btn->setTexture(tm->getTexture(Texture::SPRITESHEET).get());
+	return_btn->setTexture(mServices.textureManager->getTexture(Texture::SPRITESHEET).get());
 	return_btn->setTextureRect({ {64,0}, {32,32} });
 	return_btn->setPosition({ screenSize.x - SCREEN_MARGIN - return_btn->getSize().x, pos.y + SCREEN_MARGIN});
 	addSceneObject(SceneObject::RETURN_BUTTON, return_btn);
@@ -31,19 +29,19 @@ ShopScene::ShopScene(sf::Vector2f screenSize, std::shared_ptr<Game> game, GameSc
 
 
 	// Add items to shop scene
-	mShopItems.push_back(std::make_tuple(std::make_unique<GroomItem>(ItemType::BRUSH, Texture::SPRITESHEET, sf::IntRect({ 32,0 }, { 32,32 }), 10), 100));
-	mShopItems.push_back(std::make_tuple(std::make_unique<Food>(ItemType::BONE, Texture::SPRITESHEET, sf::IntRect({ 0,0 }, { 32,32 }), 10), 100));
+	mShopItems.push_back(std::make_tuple(std::make_unique<GroomItem>(ItemType::BRUSH, Texture::SPRITESHEET, sf::IntRect({ 32,0 }, { 32,32 }), *mServices.textureManager->getTexture(Texture::SPRITESHEET), 10), 100));
+	mShopItems.push_back(std::make_tuple(std::make_unique<Food>(ItemType::BONE, Texture::SPRITESHEET, sf::IntRect({ 0,0 }, { 32,32 }), *mServices.textureManager->getTexture(Texture::SPRITESHEET), 10), 100));
 
 	sf::Vector2f start_pos = { screenSize.x / 5, screenSize.y / 3 };
 	sf::Vector2f tile_size = { 200,200 };
 
 	// Scene title text
-	addTextObject(SceneText::TITLE, sf::Text(FontManager::getInstance()->getFont(FontName::TITLE), "Pet Shop"));
+	addTextObject(SceneText::TITLE, sf::Text(mServices.fontManager->getFont(FontName::TITLE), "Pet Shop"));
 	auto& title_text = mSceneText.at(SceneText::TITLE);
 	title_text.setFillColor(sf::Color::White);
 	title_text.setPosition({ start_pos.x, start_pos.y - title_text.getCharacterSize() - TEXT_MARGIN});
 
-	const auto& font = FontManager::getInstance()->getFont(FontName::TITLE);
+	const auto& font = mServices.fontManager->getFont(FontName::TITLE);
 	for (auto& item : mShopItems)
 	{
 		mShopTiles.push_back(ShopTile(tile_size, start_pos, item, font));
@@ -114,17 +112,15 @@ void ShopScene::handleHover(sf::Vector2f mouseposition)
 
 void ShopScene::handleClick(sf::Vector2f mouseposition)
 {
-	auto sm = SoundManager::getInstance();
-
 	if (mSceneObjects.at(SceneObject::RETURN_BUTTON)->getGlobalBounds().contains(mouseposition))
 	{
-		sm->play(Sound::CLICK);
+		mServices.soundManager->play(Sound::CLICK);
 		auto btn = std::static_pointer_cast<Button>(mSceneObjects.at(SceneObject::RETURN_BUTTON));
 		btn->onClick();
 	}
 	else if(mSceneObjects.at(SceneObject::BUY_BUTTON)->getGlobalBounds().contains(mouseposition))
 	{
-		sm->play(Sound::CLICK);
+		mServices.soundManager->play(Sound::CLICK);
 		auto btn = std::static_pointer_cast<Button>(mSceneObjects.at(SceneObject::BUY_BUTTON));
 		auto cmd = btn->getCommand();
 		if (!cmd)
@@ -142,7 +138,7 @@ void ShopScene::handleClick(sf::Vector2f mouseposition)
 		{
 			if (tile.getBounds().contains(mouseposition))
 			{
-				sm->play(Sound::CLICK);
+				mServices.soundManager->play(Sound::CLICK);
 				tile.selectTile(true);
 				mSelectedTile = &tile;
 			}

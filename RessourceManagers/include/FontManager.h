@@ -8,7 +8,7 @@ enum class FontName {
 class FontManager
 {
 public:
-	static FontManager* getInstance();
+	FontManager() {};
 	void loadFont(FontName fontName, const std::string& filename)
 	{
 		sf::Font font;
@@ -21,10 +21,6 @@ public:
 	{
 		return mFonts.at(fontName);
 	}
-
-protected:
-	FontManager() {};
-	static FontManager* mInstance;
 
 private:
 	std::unordered_map<FontName, sf::Font> mFonts;

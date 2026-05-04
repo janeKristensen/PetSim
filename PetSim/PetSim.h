@@ -2,15 +2,11 @@
 #include <future>
 #include "Model.h"
 #include "SFML/Graphics.hpp"
+#include "Services.h"
 #include "item.h"
 #include "TitleScene.h"
 #include "LitterScene.h"
 #include "Memento.h"
-#include "TextureManager.h"
-#include "SoundManager.h"
-#include "FontManager.h"
-#include "NeedsSystem.h"
-#include "InventorySystem.h"
 #include <fstream>
 #include <ctime>
 
@@ -28,6 +24,7 @@ public:
 	void saveGame();
 	void loadGame(const std::string& filename);
 	void quitGame();
+	Services& getServices() { return mServices; }
 
 private:
 	void setState();
@@ -40,4 +37,12 @@ private:
 	bool mMouseDown = false;
 	bool mIsDragging = false;
 	sf::Vector2f mMouseDownPosition;
+
+	NeedsSystem mNeedsSystem;
+	AnimationManager mAnimationManager;
+	FontManager mFontManager;
+	SoundManager mSoundManager;
+	TextureManager mTextureManager;
+
+	Services mServices;
 };

@@ -12,6 +12,7 @@ class Pet : public IAnimated{
 public:
 	Pet(Texture tex_name, 
 		sf::IntRect texRect, 
+		sf::Texture& texture,
 		std::string name, 
 		std::string species, 
 		std::string temper,
@@ -19,6 +20,7 @@ public:
 	);
 	Pet(Texture tex_name,
 		sf::IntRect texRect,
+		sf::Texture& texture,
 		std::string name,
 		std::string species,
 		std::string temper,
@@ -45,6 +47,8 @@ public:
 	//void setStatus(std::string prompt) { mCurrentStatus = prompt; }
 	void setTexture(std::shared_ptr<sf::Texture> texture) override;
 	void setTexRect(sf::IntRect rect) override;
+	sf::IntRect getTexRect() { return mTextureRect; }
+	Texture getTextureName() { return mTexture; }
 	void setHungerValue(int32_t value);
 	void setGroomValue(int32_t value);
 	void setHealthValue(int32_t value);
@@ -73,6 +77,7 @@ private:
 	uint32_t mHappiness = 100;
 	bool mIsHappier = false;
 	Texture mTexture;
+	sf::IntRect mTextureRect;
 	sf::Sprite mSprite;
 	AnimationName mAnimation;
 	nlohmann::json mState;

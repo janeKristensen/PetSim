@@ -7,7 +7,7 @@ class GameScene;
 
 class ShopScene : public Scene, public std::enable_shared_from_this<ShopScene> {
 public:
-	ShopScene(sf::Vector2f screenSize, std::shared_ptr<Game> game, GameScene& scene);
+	ShopScene(sf::Vector2f screenSize, std::shared_ptr<Game> game, Services& services, GameScene& scene);
 	~ShopScene() { delete mSelectedTile; }
 	void update(float dt) override;
 	void render(sf::RenderWindow& window) override;

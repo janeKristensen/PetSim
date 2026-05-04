@@ -6,7 +6,7 @@
 class LoadingScene : public Scene{
 
 public:
-	LoadingScene(sf::Vector2f screenSize, std::shared_ptr<Game> game);
+	LoadingScene(sf::Vector2f screenSize, std::shared_ptr<Game> game, Services& services);
 	void update(float dt) override;
 	void render(sf::RenderWindow& window) override;
 

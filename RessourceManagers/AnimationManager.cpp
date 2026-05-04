@@ -1,13 +1,6 @@
 #include "AnimationManager.h"
 
-AnimationManager* AnimationManager::mInstance = nullptr;
 
-
-AnimationManager* AnimationManager::getInstance()
-{
-	if (mInstance == nullptr) mInstance = new AnimationManager();
-	return mInstance;
-}
 
 void AnimationManager::update(float dt)
 {

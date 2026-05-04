@@ -16,11 +16,7 @@ enum class Texture {
 class TextureManager
 {
 public:
-	TextureManager(TextureManager& other) = delete;
-	void operator=(const TextureManager& other) = delete;
-
-	static TextureManager* getInstance();
-	
+	TextureManager() {};
 	void loadTexture(Texture texture, const std::string& filename)
 	{
 		sf::Texture tex;
@@ -32,10 +28,6 @@ public:
 	{
 		return mTextures[texture];
 	}
-
-protected:
-	TextureManager() {};
-	static TextureManager* mInstance;
 
 private:
 	
