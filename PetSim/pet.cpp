@@ -73,7 +73,7 @@ void Pet::setHappinessValue(int32_t value)
 {
 	mHappiness += value;
 	if (mHappiness > MAX_VALUE) mHappiness = MAX_VALUE;
-	else if (mHealth < MIN_VALUE) mHappiness = MIN_VALUE;
+	else if (mHappiness < MIN_VALUE) mHappiness = MIN_VALUE;
 }
 
 void Pet::increasedHappiness(bool value)

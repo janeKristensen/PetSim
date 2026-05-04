@@ -2,6 +2,7 @@
 #include <future>
 #include "Model.h"
 #include "scene.h"
+#include "LitterScene.h"
 #include "UserInterface.h"
 #include "Pet.h"
 
@@ -58,8 +59,8 @@ private:
 
 	std::vector<std::shared_ptr<Item>> mItems;
 	std::vector<std::shared_ptr<Item>> mItemsToAdd;
-	std::unique_ptr<NeedsSystem> mNeedsSystem;
 	std::unique_ptr<InventorySystem> mInventorySystem;
+	std::shared_ptr<LitterScene> mLitterScene = nullptr;
 	std::shared_ptr<Pet> mPet = nullptr;
 	std::shared_ptr<Model> mModel = nullptr;
 	std::vector<std::future<void>> mFutures;

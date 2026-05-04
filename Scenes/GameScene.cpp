@@ -273,6 +273,9 @@ GameScene::GameScene(sf::Vector2f screenSize, std::shared_ptr<Game> game, Servic
 		mInventorySystem->addItemToSlot({ 0, 0 }, toy);
 		mItems.push_back(toy);
 	}
+
+	// Create the litterbox scene
+	mLitterScene = std::make_shared<LitterScene>(mScreenSize, mGame, mServices, *this);
 	
 }
 
@@ -327,6 +330,8 @@ void GameScene::update(float dt)
 	bar_pos_x = mScreenSize.x - mGroomBar.getSize().x - SCREEN_MARGIN;
 	mGroomBar.setPosition(bar_pos_x);
 
+	mLitterScene->addPoop(dt);
+	
 	bool happiness_update = mPet->isHappier();
 	if (happiness_update)
 	{
@@ -362,7 +367,7 @@ void GameScene::update(float dt)
 			mSceneText.at(SceneText::PET_TEXT).setString(str);
 			mResponseTracker = 0.f;
 		}
-		else if (mResponseTracker > 120.f) {
+		else if (mResponseTracker > 60.f) {
 			mResponseTracker = 0.f;
 			mFutures.push_back(std::async(std::launch::async, pushRequestToModel, "Tell me how you feel.", mModel));
 		}
@@ -460,7 +465,7 @@ void GameScene::handleClick(sf::Vector2f mouseposition) {
 	else if (mSceneObjects.at(SceneObject::LITTER_BUTTON)->getGlobalBounds().contains(mouseposition))
 	{
 		mServices.soundManager->play(Sound::CLICK);
-		SceneManager::getInstance()->changeScene(std::make_shared<LitterScene>(mScreenSize, mGame, mServices, *this));
+		SceneManager::getInstance()->changeScene(mLitterScene);
 	}
 }
 
@@ -523,7 +528,7 @@ void GameScene::handleDrag(std::shared_ptr<sf::RenderWindow> window) {
 
 			if (mPet->getSprite().getGlobalBounds().contains(mouse_position)) {
 
-				mNeedsSystem->processItem(*item);
+				mServices.needsSystem->processItem(*item);
 				item.reset();
 			}
 			else {

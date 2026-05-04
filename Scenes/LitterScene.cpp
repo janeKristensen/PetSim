@@ -108,10 +108,9 @@ void LitterScene::createParticles()
 
 void LitterScene::update(float dt) 
 {
+	mGameScene.update(dt);
 	mItems.erase(std::remove(mItems.begin(), mItems.end(), nullptr), mItems.end());
 
-	mTimeSinceLastPoop += dt;
-	if (mTimeSinceLastPoop > 60) placeRandomPoops(1);
 	mParticleManager.moveParticles(dt, mForce);
 	scoopPoop();
 
@@ -272,7 +271,7 @@ void LitterScene::placeRandomPoops(size_t number)
 	{
 		randX = std::rand() % (int)((mBounds.bottom_right.x-32) - mBounds.top_left.x) + mBounds.top_left.x;
 		randY = std::rand() % (int)((mBounds.bottom_right.y-32) - mBounds.top_left.y) + mBounds.top_left.y;
-		auto poop = std::make_shared<Poop>(ItemType::POOP, Texture::SPRITESHEET, sf::IntRect({ 128,160 }, { 32,32 }), *mServices.textureManager->getTexture(Texture::SPRITESHEET), 10);
+		auto poop = std::make_shared<Poop>(ItemType::POOP, Texture::SPRITESHEET, sf::IntRect({ 128,160 }, { 32,32 }), *mServices.textureManager->getTexture(Texture::SPRITESHEET), -10);
 		poop->setPosition({(float)randX, (float)randY});
 		mItems.push_back(poop);
 		mServices.needsSystem->processItem(*poop);
@@ -289,5 +288,15 @@ void LitterScene::scoopPoop()
 			item->setAlive(false);
 			mServices.soundManager->play(Sound::PICKUP);
 		}
+	}
+}
+
+void LitterScene::addPoop(float dt)
+{
+	mTimeSinceLastPoop += dt;
+	if (mTimeSinceLastPoop > 10)
+	{
+		mTimeSinceLastPoop = 0;
+		placeRandomPoops(1);
 	}
 }

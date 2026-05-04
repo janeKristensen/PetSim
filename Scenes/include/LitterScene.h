@@ -17,6 +17,7 @@ public:
 	void handleClick		(sf::Vector2f mouseposition) override;
 	void handleKeyPress		(sf::Keyboard::Key key) override;
 	void handleDrag			(std::shared_ptr<sf::RenderWindow> window) override;
+	void addPoop			(float dt);
 
 private:
 	void placeRandomPoops	(size_t number);
@@ -37,7 +38,7 @@ private:
 	float								mParticleSpeed = 50.f;
 	float								mRadius = 5.5f;
 	float								mForce = 50.f;
-	float								mTimeSinceLastPoop;
+	float								mTimeSinceLastPoop = 0.f;
 
 #ifdef shader
 	sf::Texture mParticleTexture;
