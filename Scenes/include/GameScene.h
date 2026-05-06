@@ -45,9 +45,12 @@ public:
 	nlohmann::json setState() override;
 	void loadGame(const std::string& filename) override;
 	void addItemToInventory(std::shared_ptr<Item> item, std::uint32_t amount);
-	void addMoney(uint32_t value) { mMoney += value; }
+	void addMoney(uint32_t value);
+	uint32_t getMoney() { return mMoney; }
+	void removeMoney(uint32_t value);
 	// Move to item manager
 	std::shared_ptr<Item> createItemFromType(const ItemType type, Texture texName, sf::IntRect texRect, uint32_t value);
+	std::string wrapText(const std::string& text, uint32_t maxCharacters);
 
 private:
 	std::string getPrompt();

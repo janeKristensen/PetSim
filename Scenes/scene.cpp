@@ -7,6 +7,7 @@ Scene::Scene(sf::Vector2f screenSize, std::shared_ptr<Game> game, Services& serv
 
 	mSceneObjects.reserve(1000);
 	loadShader("Shaders/ShaderBtn.frag", mShader);
+	loadShader("Shaders/ShaderInactiveBtn.frag", mInactiveShader);
 	loadShader("Shaders/ShaderItem.frag", mItemShader);
 
 	std::shared_ptr<sf::RectangleShape> border = std::make_shared<sf::RectangleShape>(screenSize);
@@ -62,7 +63,8 @@ void Scene::handleHover(sf::Vector2f mouseposition)
 			}
 			else
 			{
-				btn->setShader(nullptr);
+				if (!btn->isActive()) btn->setShader(mInactiveShader);
+				else btn->setShader(nullptr);
 			}
 		}
 	}

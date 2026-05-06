@@ -92,6 +92,7 @@ protected:
 	std::shared_ptr<Game> mGame;
 	nlohmann::json mState;
 	std::shared_ptr<sf::Shader> mShader = std::make_shared<sf::Shader>();
+	std::shared_ptr<sf::Shader> mInactiveShader = std::make_shared<sf::Shader>();
 	std::shared_ptr<sf::Shader> mItemShader = std::make_shared<sf::Shader>();
 	Services& mServices;
 private:

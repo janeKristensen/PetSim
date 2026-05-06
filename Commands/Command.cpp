@@ -42,9 +42,8 @@ void BuyCommand::execute() const
 	{
 		const auto& item_template = tile->getItem();
 		auto& game_scene = mScene->getGameScene();
-		auto item = game_scene.createItemFromType(item_template.getTypeId(), item_template.getTextureName(), item_template.getTextureRect(), item_template.getValue());
-		item->setScale({ 1,1 });
-		game_scene.addItemToInventory(item, 1);
+			auto item = game_scene.createItemFromType(item_template.getTypeId(), item_template.getTextureName(), item_template.getTextureRect(), item_template.getValue());
+			game_scene.addItemToInventory(item, 1);
+			game_scene.removeMoney(tile->getPrice());
 	}
-	
 }

@@ -16,11 +16,15 @@ public:
 	std::shared_ptr<Command> getCommand() { return mCommand; }
 	void onClick() { mCommand->execute(); }
 	void setShader(std::shared_ptr<sf::Shader> shader) { mShader = shader; }
+	void setActive() { mIsActive = true; }
+	void setInactive() { mIsActive = false; }
 	std::shared_ptr<sf::Shader> getShader() { return mShader; }
+	bool isActive() { return mIsActive; }
 
 private:
 	std::shared_ptr<Command> mCommand = nullptr;
 	std::shared_ptr<sf::Shader> mShader = nullptr;
+	bool mIsActive = true;
 };
 
 class ProgressBar {
@@ -60,6 +64,7 @@ public:
 	void setHoverState(bool state) { mIsHovering = state; }
 	void selectTile(bool state) { mIsSelected = state; };
 	Item getItem();
+	uint32_t getPrice() { return mPrice; }
 	sf::FloatRect getBounds() { return mTile.getGlobalBounds(); }
 
 private:

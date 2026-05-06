@@ -7,6 +7,7 @@ ShopTile::ShopTile(sf::Vector2f size, sf::Vector2f position, std::tuple<std::uni
 {
 	float TEXT_MARGIN = 20.f;
 
+	mPrice = std::get<1>(mItem);
 	mTile.setPosition(position);
 	mTile.setSize(size);
 	mTile.setFillColor(sf::Color::Magenta);

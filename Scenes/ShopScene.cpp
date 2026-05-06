@@ -26,11 +26,15 @@ ShopScene::ShopScene(sf::Vector2f screenSize, std::shared_ptr<Game> game, Servic
 	buy_btn->setFillColor(sf::Color::Magenta);
 	buy_btn->setPosition({ screenSize.x - 2*SCREEN_MARGIN - buy_btn->getSize().x, screenSize.y - 2 * SCREEN_MARGIN - buy_btn->getSize().y });
 	addSceneObject(SceneObject::BUY_BUTTON, buy_btn);
+	auto buy_btn_ptr = std::static_pointer_cast<Button>(mSceneObjects.at(SceneObject::BUY_BUTTON));
+	buy_btn_ptr->setInactive();
+	buy_btn_ptr->setShader(mInactiveShader);
 
 
 	// Add items to shop scene
 	mShopItems.push_back(std::make_tuple(std::make_unique<GroomItem>(ItemType::BRUSH, Texture::SPRITESHEET, sf::IntRect({ 32,0 }, { 32,32 }), *mServices.textureManager->getTexture(Texture::SPRITESHEET), 10), 100));
 	mShopItems.push_back(std::make_tuple(std::make_unique<Food>(ItemType::BONE, Texture::SPRITESHEET, sf::IntRect({ 0,0 }, { 32,32 }), *mServices.textureManager->getTexture(Texture::SPRITESHEET), 10), 100));
+	mShopItems.push_back(std::make_tuple(std::make_unique<Toy>(ItemType::BALL, Texture::SPRITESHEET, sf::IntRect({ 96,0 }, { 32,32 }), *mServices.textureManager->getTexture(Texture::SPRITESHEET), 10), 200));
 
 	sf::Vector2f start_pos = { screenSize.x / 5, screenSize.y / 3 };
 	sf::Vector2f tile_size = { 200,200 };
@@ -55,6 +59,21 @@ void ShopScene::update(float dt)
 	{
 		tile.update();
 	}
+
+	if (mSelectedTile)
+	{
+		auto btn = std::static_pointer_cast<Button>(mSceneObjects.at(SceneObject::BUY_BUTTON));
+		if (mGameScene.getMoney() < mSelectedTile->getPrice())
+		{
+			btn->setInactive();
+			btn->setShader(mInactiveShader);
+		}
+		else
+		{
+			btn->setActive();
+			btn->setShader(nullptr);
+		}
+	}
 }
 
 
@@ -74,6 +93,7 @@ void ShopScene::render(sf::RenderWindow& window)
 		if (btn)
 		{
 			mShader->setUniform("texture", sf::Shader::CurrentTexture);
+			mInactiveShader->setUniform("texture", sf::Shader::CurrentTexture);
 			window.draw(*obj.second, btn->getShader().get());
 		}
 		else
@@ -96,7 +116,6 @@ void ShopScene::render(sf::RenderWindow& window)
 void ShopScene::handleHover(sf::Vector2f mouseposition)
 {
 	Scene::handleHover(mouseposition);
-
 	for (auto& tile : mShopTiles)
 	{
 		if (tile.getBounds().contains(mouseposition))
@@ -122,18 +141,23 @@ void ShopScene::handleClick(sf::Vector2f mouseposition)
 	{
 		mServices.soundManager->play(Sound::CLICK);
 		auto btn = std::static_pointer_cast<Button>(mSceneObjects.at(SceneObject::BUY_BUTTON));
-		auto cmd = btn->getCommand();
-		if (!cmd)
+		if (btn->isActive())
 		{
-			std::shared_ptr<Command> buy_cmd = std::make_shared<BuyCommand>(shared_from_this());
-			btn->setCommand(buy_cmd);
-		}
+			auto cmd = btn->getCommand();
+			if (!cmd)
+			{
+				std::shared_ptr<Command> buy_cmd = std::make_shared<BuyCommand>(shared_from_this());
+				btn->setCommand(buy_cmd);
+			}
 
-		btn->onClick();
+			btn->onClick();
+		}
 	}
 	else 
 	{
 		mSelectedTile = nullptr;
+		auto btn = std::static_pointer_cast<Button>(mSceneObjects.at(SceneObject::BUY_BUTTON));
+
 		for (auto& tile : mShopTiles)
 		{
 			if (tile.getBounds().contains(mouseposition))
@@ -146,6 +170,12 @@ void ShopScene::handleClick(sf::Vector2f mouseposition)
 			{
 				tile.selectTile(false);
 			}
+		}
+
+		if (!mSelectedTile)
+		{
+			btn->setInactive();
+			btn->setShader(mInactiveShader);
 		}
 	}
 }

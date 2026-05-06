@@ -106,7 +106,7 @@ GameScene::GameScene(sf::Vector2f screenSize, std::shared_ptr<Game> game, Servic
 	
 
 	// Text output field
-	float output_txt_height = 200.f;
+	float output_txt_height = 400.f;
 	std::shared_ptr<sf::RectangleShape> output_field = std::make_shared<sf::RectangleShape>(sf::Vector2f{ txt_width, output_txt_height });
 	output_field->setFillColor(sf::Color::White);
 	auto output_field_pos = sf::Vector2f{
@@ -177,7 +177,7 @@ GameScene::GameScene(sf::Vector2f screenSize, std::shared_ptr<Game> game, Servic
 	// Adding scene text objects.
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	auto char_size = 24;
+	auto char_size = 16;
 
 	// Output text by AI
 	auto& font = mServices.fontManager->getFont(FontName::TITLE);
@@ -358,10 +358,11 @@ void GameScene::update(float dt)
 
 	// Update the input text field if field is active
 	if (mInTextField) {
-		mSceneText.at(SceneText::PROMPT_TEXT).setString(mStringBuffer);
+		const auto& text = wrapText(mStringBuffer, 30);
+		mSceneText.at(SceneText::PROMPT_TEXT).setString(text);
 		auto& prompt_text = mSceneText.at(SceneText::PROMPT_TEXT);
 		auto& text_blip = mSceneObjects.at(SceneObject::TEXT_BLIP);
-		text_blip->setPosition({prompt_text.getPosition().x + prompt_text.getGlobalBounds().size.x + 2, prompt_text.getPosition().y + 6});
+		text_blip->setPosition({prompt_text.getPosition().x + prompt_text.getGlobalBounds().size.x + 2, prompt_text.getPosition().y + prompt_text.getLocalBounds().size.y - prompt_text.getCharacterSize()});
 
 		mBlipTracker += dt;
 
@@ -378,7 +379,8 @@ void GameScene::update(float dt)
 		std::string str = mModel->getModelStringBuffer();
 		mResponseTracker += dt;
 		if (!str.empty()) {
-			mSceneText.at(SceneText::PET_TEXT).setString(str);
+			const auto& text = wrapText(str, 30);
+			mSceneText.at(SceneText::PET_TEXT).setString(text);
 			mResponseTracker = 0.f;
 		}
 		else if (mResponseTracker > 60.f) {
@@ -601,6 +603,31 @@ nlohmann::json GameScene::setState() {
 	return mState;
 }
 
+void GameScene::addMoney(uint32_t value) 
+{ 
+	auto max = std::numeric_limits<uint32_t>::max();
+	if (mMoney + value >= max)
+	{
+		mMoney = max;
+	}
+	else
+	{
+		mMoney += value;
+	}
+}
+
+void GameScene::removeMoney(uint32_t value) 
+{ 
+	if (mMoney - value < 0) 
+	{ 
+		mMoney = 0; 
+	} 
+	else
+	{
+		mMoney -= value;
+	}
+}
+
 
 // Move to item manager
 std::shared_ptr<Item> GameScene::createItemFromType(const ItemType type, Texture texName, sf::IntRect texRect, uint32_t value)
@@ -684,6 +711,24 @@ void GameScene::addItemToInventory(std::shared_ptr<Item> item, std::uint32_t amo
 	mItems.push_back(item);
 
 	// withdraw money for object
+}
+
+std::string GameScene::wrapText(const std::string& text, uint32_t maxCharacters) 
+{
+	std::string new_string = "";
+	uint32_t count = 0;
+	for(const char& c : text)
+	{
+		new_string += c;
+		count++;
+		if (count >= maxCharacters)
+		{
+			new_string += "\n";
+			count = 0;
+		}
+	}
+
+	return new_string;
 }
 
 GameScene::~GameScene() {
