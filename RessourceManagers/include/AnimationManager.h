@@ -3,7 +3,8 @@
 
 enum class AnimationName {
 	CAT,
-	CAT_HAPPY
+	CAT_HAPPY,
+	ROBOT_IDLE
 };
 
 class AnimationManager

@@ -20,6 +20,7 @@ private:
 
 	GameScene& mGameScene;
 	std::vector<std::unique_ptr<Item>> mItems;
+	std::shared_ptr<Entity> mRobot = nullptr;
 	sf::Vector2f mScreenPosition;
 	sf::Vector2f mScreenSize;
 };

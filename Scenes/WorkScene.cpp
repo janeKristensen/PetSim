@@ -40,13 +40,27 @@ WorkScene::WorkScene(sf::Vector2f screenSize, std::shared_ptr<Game> game, Servic
 	return_btn->setPosition({ screenSize.x - SCREEN_MARGIN - return_btn->getSize().x, mScreenPosition.y + SCREEN_MARGIN });
 	addSceneObject(SceneObject::RETURN_BUTTON, return_btn);
 
+	// Populate moving numbers
 	createNumbers(20);
+
+	// Create robot
+	mRobot = std::make_shared<Entity>(
+		Texture::ROBOT,
+		sf::IntRect({ 0,0 }, { 128,128 }),
+		*mServices.textureManager->getTexture(Texture::ROBOT),
+		AnimationName::ROBOT_IDLE
+	);
+
+	mRobot->setPosition({mScreenPosition.x, mScreenPosition.y + mScreenSize.y - mRobot->getSprite().getTextureRect().size.y});
+	mServices.animationManager->attachAnimation(mRobot, mRobot->getAnimationName());
 }
 
 
 void WorkScene::update(float dt)
 {
 	mItems.erase(std::remove(mItems.begin(), mItems.end(), nullptr), mItems.end());
+
+	mServices.animationManager->update(dt);
 
 	for (auto& obj : mItems)
 	{
@@ -105,6 +119,8 @@ void WorkScene::render(sf::RenderWindow& window)
 		window.draw(obj->getSprite(), obj->getShader().get());*/
 		window.draw(obj->getSprite());
 	}
+
+	window.draw(mRobot->getSprite());
 }
 
 void WorkScene::handleClick(sf::Vector2f mouseposition)

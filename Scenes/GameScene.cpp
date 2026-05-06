@@ -13,6 +13,7 @@ GameScene::GameScene(sf::Vector2f screenSize, std::shared_ptr<Game> game, Servic
 
 	mServices.animationManager->addAnimation(AnimationName::CAT, Animation(animation_sheet, 6, sf::Vector2i{ 64, 0 }, sf::Vector2i{64, 92}, 0.5));
 	mServices.animationManager->addAnimation(AnimationName::CAT_HAPPY, Animation(animation_sheet, 6, sf::Vector2i{ 64, 92 }, sf::Vector2i{ 64, 92 }, 0.5));
+	mServices.animationManager->addAnimation(AnimationName::ROBOT_IDLE, Animation(mServices.textureManager->getTexture(Texture::ROBOT), 5, sf::Vector2i{128, 0}, sf::Vector2i{128, 128}, 0.4));
 	
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -259,7 +260,7 @@ GameScene::GameScene(sf::Vector2f screenSize, std::shared_ptr<Game> game, Servic
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 	mPet = std::make_shared<Pet>(Texture::SPRITESHEET, sf::IntRect({ 64,96 }, { 64,96 }), *mServices.textureManager->getTexture(Texture::SPRITESHEET), "Kitty", "Cat", "Happy", AnimationName::CAT);
-	mPet->setSpritePosition(mPetPosition);
+	mPet->setPosition(mPetPosition);
 	mPet->setScale(sf::Vector2f(2.5,2.5));
 	mServices.animationManager->attachAnimation(mPet, AnimationName::CAT);
 

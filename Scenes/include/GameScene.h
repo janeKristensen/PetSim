@@ -51,7 +51,7 @@ public:
 
 private:
 	std::string getPrompt();
-	void setCurrentPet(std::shared_ptr<Pet> pet) { mPet = pet; mPet->setSpritePosition(mPetPosition); }
+	void setCurrentPet(std::shared_ptr<Pet> pet) { mPet = pet; mPet->setPosition(mPetPosition); }
 	void addToStringBuffer(const char text) { mStringBuffer += text; }
 	void eraseFromStringBuffer();
 	bool isInTextField() { return mInTextField; }

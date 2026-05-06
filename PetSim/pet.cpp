@@ -6,8 +6,17 @@ constexpr uint32_t MIN_VALUE = 0;
 constexpr uint32_t LIMIT_VALUE = 50;
 constexpr int32_t DECAY_VALUE = -1;
 
-Pet::Pet(Texture texName, sf::IntRect texRect, sf::Texture& texture, std::string name, std::string species, std::string temper, AnimationName animation)
-	: mSprite(texture, texRect), mTexture(texName), mTextureRect(texRect), mName(name), mSpecies(species), mTemper(temper), mAnimation(animation) 
+Pet::Pet(Texture tex_name,
+	sf::IntRect texRect,
+	sf::Texture& texture,
+	std::string name,
+	std::string species,
+	std::string temper,
+	AnimationName animation
+) : Entity(tex_name,
+	texRect,
+	texture,
+	animation), mName(name), mSpecies(species), mTemper(temper)
 {
 	mInitPrompt = std::format("Pretend to be a {} named {}. You are my pet not a chatbot. Give short and cute replies to messages and don't use emoji.", mSpecies, mName);
 	mSprite.setScale({6.2,6.2});
@@ -26,9 +35,10 @@ Pet::Pet(Texture texName,
 	uint32_t health,
 	uint32_t happiness,
 	AnimationName animation
-) : mSprite(texture, texRect),
-	mTexture(texName),
-	mTextureRect(texRect),
+) :  Entity(texName,
+	texRect,
+	texture,
+	animation),
 	mName(name), mSpecies(species), 
 	mTemper(temper), 
 	mInitPrompt(initPrompt), 
@@ -36,16 +46,16 @@ Pet::Pet(Texture texName,
 	mHunger(hunger),
 	mGroom(groom),
 	mHealth(health),
-	mHappiness(happiness),
-	mAnimation(animation){}
+	mHappiness(happiness)
+	{}
 
 
-void Pet::setTexture(std::shared_ptr<sf::Texture> texture)
+void Entity::setTexture(std::shared_ptr<sf::Texture> texture)
 {
 	mSprite.setTexture(*texture);
 }
 
-void Pet::setTexRect(sf::IntRect rect)
+void Entity::setTexRect(sf::IntRect rect)
 {
 	mSprite.setTextureRect(rect);
 }
@@ -88,16 +98,6 @@ void Pet::decayValues()
 	setHappinessValue(DECAY_VALUE);
 	if (mGroom < LIMIT_VALUE || mHunger < LIMIT_VALUE) setHealthValue(DECAY_VALUE);
 	if (mHealth < LIMIT_VALUE) setHappinessValue(DECAY_VALUE);
-}
-
-void Pet::setSpritePosition(sf::Vector2f position)
-{
-	mSprite.setPosition(position);
-}
-
-void Pet::scaleSprite(sf::Vector2f factors) 
-{
-	mSprite.setScale(factors);
 }
 
 void Pet::toJson(nlohmann::json& j, const Pet& pet) 

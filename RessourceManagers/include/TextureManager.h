@@ -12,7 +12,8 @@ enum class Texture {
 	INVENTORY,
 	ANIMATION_SHEET,
 	COMPUTER,
-	NUMBERS
+	NUMBERS, 
+	ROBOT
 };
 
 class TextureManager

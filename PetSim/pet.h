@@ -8,9 +8,38 @@
 
 enum class AnimationName;
 
-class Pet : public IAnimated{
+class Entity : public IAnimated
+{
 public:
-	Pet(Texture tex_name, 
+	Entity(Texture texName,
+		sf::IntRect texRect,
+		sf::Texture& texture,
+		AnimationName animation) : mSprite(texture, texRect), mTexture(texName), mTextureRect(texRect), mAnimation(animation) {}
+
+	void setPosition(sf::Vector2f position) { mSprite.setPosition(position); }
+	void setScale(sf::Vector2f scale) { mSprite.setScale(scale); }
+	void setTexture(std::shared_ptr<sf::Texture> texture) override;
+	void setTexRect(sf::IntRect rect) override;
+
+	sf::Vector2f getPosition() { return mSprite.getPosition(); }
+	const sf::Sprite getSprite() const { return mSprite; }
+	sf::IntRect getTexRect() { return mTextureRect; }
+	Texture getTextureName() { return mTexture; }
+	AnimationName getAnimationName() { return mAnimation; }
+
+protected:
+	Texture mTexture;
+	sf::IntRect mTextureRect;
+	sf::Sprite mSprite;
+	AnimationName mAnimation;
+
+private:
+};
+
+class Pet : public Entity{
+public:
+	Pet(
+		Texture texName, 
 		sf::IntRect texRect, 
 		sf::Texture& texture,
 		std::string name, 
@@ -18,7 +47,8 @@ public:
 		std::string temper,
 		AnimationName animation
 	);
-	Pet(Texture tex_name,
+	Pet(
+		Texture texName,
 		sf::IntRect texRect,
 		sf::Texture& texture,
 		std::string name,
@@ -42,13 +72,7 @@ public:
 	const uint32_t getHealthValue() const { return mHealth; }
 	const uint32_t getHappinessValue() const { return mHappiness; }
 	const bool isHappier() const { return mIsHappier; }
-	const sf::Sprite getSprite() const { return mSprite; }
-	void setScale(sf::Vector2f scale) { mSprite.setScale(scale); }
-	//void setStatus(std::string prompt) { mCurrentStatus = prompt; }
-	void setTexture(std::shared_ptr<sf::Texture> texture) override;
-	void setTexRect(sf::IntRect rect) override;
-	sf::IntRect getTexRect() { return mTextureRect; }
-	Texture getTextureName() { return mTexture; }
+	
 	void setHungerValue(int32_t value);
 	void setGroomValue(int32_t value);
 	void setHealthValue(int32_t value);
@@ -56,8 +80,6 @@ public:
 	void increasedHappiness(bool value);
 	void setStatus(const std::string& str) { mCurrentStatus = str; }
 	void decayValues();
-	void setSpritePosition(sf::Vector2f position);
-	void scaleSprite(sf::Vector2f factors);
 	void from_json(const nlohmann::json& j, std::shared_ptr<Pet> p);
 	nlohmann::json saveData();
 
@@ -65,7 +87,6 @@ private:
 	void setState(nlohmann::json);
 	void toJson(nlohmann::json& j, const Pet& pet);
 	
-
 	std::string mName = "";
 	std::string mSpecies = "";
 	std::string mTemper = "";
@@ -76,10 +97,6 @@ private:
 	uint32_t mHealth = 100;
 	uint32_t mHappiness = 100;
 	bool mIsHappier = false;
-	Texture mTexture;
-	sf::IntRect mTextureRect;
-	sf::Sprite mSprite;
-	AnimationName mAnimation;
 	nlohmann::json mState;
 	std::shared_ptr<SaveComponent> mSaveComponent = std::make_shared<SaveComponent>();
 	std::unique_ptr<SaveManager> mSaveManager = std::make_unique<SaveManager>(mSaveComponent);
