@@ -14,6 +14,8 @@ LoadingScene::LoadingScene(sf::Vector2f screenSize, std::shared_ptr<Game> game, 
 	std::string model_path = "../PetSim/ressources/models/SmolLM2-1.7B-Instruct-IQ4_XS.gguf";
 	mModelFuture = std::async(std::launch::async, makeModel, model_path, 0.2, 1.5);
 
+	mServices.dialogManager->loadDialog("dialog.txt");
+
 	mServices.textureManager->loadTexture(Texture::ANIMATION_SHEET, "ressources/assets/animationsheet.png");
 	mServices.textureManager->loadTexture(Texture::GAME_BG, "ressources/assets/fixed_background_scaled.png");
 	mServices.textureManager->loadTexture(Texture::INVENTORY, "ressources/assets/shelf.png");

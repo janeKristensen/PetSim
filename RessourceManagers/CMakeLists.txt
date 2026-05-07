@@ -2,7 +2,7 @@
 # project specific logic here.
 #
 
-add_library(ressource_managers STATIC "TextureManager.cpp" "include/TextureManager.h" "FontManager.cpp" "include/FontManager.h" "SoundManager.cpp" "include/SoundManager.h" "include/Animation.h" "include/AnimationManager.h" "AnimationManager.cpp" "Animation.cpp")
+add_library(ressource_managers STATIC "TextureManager.cpp" "include/TextureManager.h" "FontManager.cpp" "include/FontManager.h" "SoundManager.cpp" "include/SoundManager.h" "include/Animation.h" "include/AnimationManager.h" "AnimationManager.cpp" "Animation.cpp" "DialogManager.cpp" "include/DialogManager.h")
 
 if (CMAKE_VERSION VERSION_GREATER 3.12)
   set_property(TARGET ressource_managers PROPERTY CXX_STANDARD 20)
@@ -15,13 +15,14 @@ set(SFML_DIR ${CMAKE_SOURCE_DIR}/external/SFML-3.0.0)
 
 target_include_directories(ressource_managers PUBLIC
     ${SFML_DIR}/include
-    ${CMAKE_CURRENT_SOURCE_DIR}/include
-    
+    ${CMAKE_CURRENT_SOURCE_DIR}/include  
+    DialogSystem/include
 )
 
    # Link SFML libraries
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
     target_link_libraries(ressource_managers PUBLIC
+    DialogSystem
     ${SFML_DIR}/lib/sfml-system-d.lib
     ${SFML_DIR}/lib/sfml-window-d.lib
     ${SFML_DIR}/lib/sfml-audio-d.lib
@@ -29,6 +30,7 @@ if(CMAKE_BUILD_TYPE STREQUAL "Debug")
     )
 else()
     target_link_libraries(ressource_managers PUBLIC
+    DialogSystem
     ${SFML_DIR}/lib/sfml-system.lib
     ${SFML_DIR}/lib/sfml-window.lib
     ${SFML_DIR}/lib/sfml-audio.lib

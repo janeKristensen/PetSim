@@ -12,6 +12,7 @@ Game::Game(std::shared_ptr<sf::RenderWindow> window) : mWindow(std::move(window)
     mServices.needsSystem = &mNeedsSystem;
     mServices.soundManager = &mSoundManager;
     mServices.textureManager = &mTextureManager;
+    mServices.dialogManager = &mDialogManager;
 
     // Load textures
     mServices.textureManager->loadTexture(Texture::SPRITESHEET, "ressources/assets/spritesheet.png");

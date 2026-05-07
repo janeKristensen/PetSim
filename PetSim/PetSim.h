@@ -43,6 +43,7 @@ private:
 	FontManager mFontManager;
 	SoundManager mSoundManager;
 	TextureManager mTextureManager;
+	DialogManager mDialogManager;
 
 	Services mServices;
 };

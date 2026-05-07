@@ -5,6 +5,7 @@
 #include "LitterScene.h"
 #include "WorkScene.h"
 
+
 GameScene::GameScene(sf::Vector2f screenSize, std::shared_ptr<Game> game, Services& services, std::shared_ptr<Model> model)
 	: Scene(screenSize, game, services), mModel(model), mScreenSize(screenSize) {
 
@@ -106,7 +107,7 @@ GameScene::GameScene(sf::Vector2f screenSize, std::shared_ptr<Game> game, Servic
 	
 
 	// Text output field
-	float output_txt_height = 400.f;
+	float output_txt_height = 300.f;
 	std::shared_ptr<sf::RectangleShape> output_field = std::make_shared<sf::RectangleShape>(sf::Vector2f{ txt_width, output_txt_height });
 	output_field->setFillColor(sf::Color::White);
 	auto output_field_pos = sf::Vector2f{
@@ -290,6 +291,7 @@ GameScene::GameScene(sf::Vector2f screenSize, std::shared_ptr<Game> game, Servic
 
 	// Create the litterbox scene
 	mLitterScene = std::make_shared<LitterScene>(mScreenSize, mGame, mServices, *this);
+	mWorkScene = std::make_shared<WorkScene>(mScreenSize, mGame, mServices, *this);
 	
 }
 
@@ -486,7 +488,14 @@ void GameScene::handleClick(sf::Vector2f mouseposition) {
 	else if (mSceneObjects.at(SceneObject::COMPUTER)->getGlobalBounds().contains(mouseposition))
 	{
 		mServices.soundManager->play(Sound::CLICK);
-		SceneManager::getInstance()->changeScene(std::make_shared<WorkScene>(mScreenSize, mGame, mServices, *this));
+		if (mWorkScene)
+		{
+			SceneManager::getInstance()->changeScene(mWorkScene);
+		}
+		else 
+		{
+			SceneManager::getInstance()->changeScene(mWorkScene);
+		}
 	}
 }
 

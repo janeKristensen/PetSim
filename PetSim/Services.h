@@ -4,6 +4,7 @@
 #include "FontManager.h"
 #include "SoundManager.h"
 #include "TextureManager.h"
+#include "DialogManager.h"
 
 struct Services
 {
@@ -12,4 +13,5 @@ struct Services
 	FontManager* fontManager = nullptr;
 	SoundManager* soundManager = nullptr;
 	TextureManager* textureManager = nullptr;
+	DialogManager* dialogManager = nullptr;
 };

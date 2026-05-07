@@ -25,7 +25,9 @@ include_directories(PetSim
     commands/include
     save_system/include
     ressource_managers/include
-    scenes/include)
+    scenes/include
+    DialogSystem/include
+)
 
     # Link SFML libraries
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
@@ -35,6 +37,7 @@ if(CMAKE_BUILD_TYPE STREQUAL "Debug")
     save_system
     scenes
     ressource_managers
+    DialogSystem
     ${SFML_DIR}/lib/sfml-system-d.lib
     ${SFML_DIR}/lib/sfml-window-d.lib
     ${SFML_DIR}/lib/sfml-audio-d.lib
@@ -47,6 +50,7 @@ else()
     save_system
     scenes
     ressource_managers
+    DialogSystem
     ${SFML_DIR}/lib/sfml-system.lib
     ${SFML_DIR}/lib/sfml-window.lib
     ${SFML_DIR}/lib/sfml-audio.lib

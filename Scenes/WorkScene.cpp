@@ -53,6 +53,7 @@ WorkScene::WorkScene(sf::Vector2f screenSize, std::shared_ptr<Game> game, Servic
 
 	mRobot->setPosition({mScreenPosition.x, mScreenPosition.y + mScreenSize.y - mRobot->getSprite().getTextureRect().size.y});
 	mServices.animationManager->attachAnimation(mRobot, mRobot->getAnimationName());
+	mServices.dialogManager->attachDialog(mRobot, DialogName::ROBOT_FIRST_DIALOG);
 }
 
 
@@ -130,6 +131,17 @@ void WorkScene::handleClick(sf::Vector2f mouseposition)
 		mServices.soundManager->play(Sound::CLICK);
 		auto btn = std::static_pointer_cast<Button>(mSceneObjects.at(SceneObject::RETURN_BUTTON));
 		btn->onClick();
+	}
+	else if (mRobot->getSprite().getGlobalBounds().contains(mouseposition))
+	{
+		mServices.soundManager->play(Sound::CLICK);
+		try {
+			mServices.dialogManager->getDialog(mRobot)->performDialog();
+		}
+		catch (const std::exception& e) {
+			std::cout << e.what() << '\n';
+		};
+		
 	}
 	else 
 	{

@@ -1,0 +1,28 @@
+[
+  {
+    "dialogText": "Hello world",
+    "dialogOptions": [
+      {
+        "optionText": "Go away",
+        "nextNode": null
+      },
+      {
+        "optionText": "Hi",
+        "nextNode": 1
+      }
+    ]
+  },
+  {
+    "dialogText": "Hi",
+    "dialogOptions": [
+      {
+        "optionText": "Go away2",
+        "nextNode": null
+      },
+      {
+        "optionText": "Hi2",
+        "nextNode": null
+      }
+    ]
+  }
+]

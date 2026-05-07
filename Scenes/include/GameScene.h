@@ -2,12 +2,15 @@
 #include <future>
 #include "Model.h"
 #include "scene.h"
-#include "LitterScene.h"
+#include "InventorySystem.h"
 #include "UserInterface.h"
 #include "Pet.h"
 
 
 static void pushRequestToModel(std::string query, std::shared_ptr<Model> model) { model->userQuery(query); }
+
+class WorkScene;
+class LitterScene;
 
 class GameScene : public Scene {
 
@@ -40,7 +43,7 @@ public:
 	}
 	void handleKeyPress(sf::Keyboard::Key key) override;
 	void handleDrag(std::shared_ptr<sf::RenderWindow> window) override;
-	void asyncDrag(std::shared_ptr<sf::RenderWindow> window);
+	void asyncDrag(std::shared_ptr<sf::RenderWindow> window) {};
 	void handleTextEntry(const sf::Event& event) override;
 	nlohmann::json setState() override;
 	void loadGame(const std::string& filename) override;
@@ -65,6 +68,7 @@ private:
 	std::vector<std::shared_ptr<Item>> mItemsToAdd;
 	std::unique_ptr<InventorySystem> mInventorySystem;
 	std::shared_ptr<LitterScene> mLitterScene = nullptr;
+	std::shared_ptr<WorkScene> mWorkScene = nullptr;
 	std::shared_ptr<Pet> mPet = nullptr;
 	std::shared_ptr<Model> mModel = nullptr;
 	std::vector<std::future<void>> mFutures;

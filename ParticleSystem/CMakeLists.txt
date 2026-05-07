@@ -1,6 +1,4 @@
-﻿# CMakeList.txt : CMake project for PetSim, include source and define
-# project specific logic here.
-#
+﻿
 
 add_library(particles STATIC "ParticleManager.cpp" "include/ParticleManager.h" "Particle.cpp" "include/Particle.h")
 
