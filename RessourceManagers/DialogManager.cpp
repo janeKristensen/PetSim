@@ -61,3 +61,12 @@ void DialogManager::removeDialog(std::shared_ptr<Entity> entity)
 		mDialogs.at(entity) = nullptr;
 	}
 }
+
+std::vector<std::shared_ptr<DialogOption>> DialogManager::performDialog(std::shared_ptr<Entity> entity)
+{
+	auto tree = mDialogs.at(entity);
+	if (tree)
+	{
+		return tree->getNode()->dialogOptions;
+	}
+}

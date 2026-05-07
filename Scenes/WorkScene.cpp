@@ -54,6 +54,50 @@ WorkScene::WorkScene(sf::Vector2f screenSize, std::shared_ptr<Game> game, Servic
 	mRobot->setPosition({mScreenPosition.x, mScreenPosition.y + mScreenSize.y - mRobot->getSprite().getTextureRect().size.y});
 	mServices.animationManager->attachAnimation(mRobot, mRobot->getAnimationName());
 	mServices.dialogManager->attachDialog(mRobot, DialogName::ROBOT_FIRST_DIALOG);
+
+
+	// Dialog box
+	auto dialogSize = sf::Vector2f{ 250,250 };
+	std::shared_ptr<sf::RectangleShape> dialog = std::make_shared<sf::RectangleShape>(dialogSize);
+	//menu->setTexture(mServices.textureManager->getTexture(Texture::TITLE_MENU).get());
+	dialog->setPosition({ mScreenSize.x - 250 - SCREEN_MARGIN, mScreenSize.y - 250 - SCREEN_MARGIN });
+	addSceneObject(SceneObject::DIALOG, dialog);
+	auto dialogPos = dialog->getPosition();
+	
+
+	// Dialog options button
+	mDialogOptions = mServices.dialogManager->getDialog(mRobot)->getNode()->dialogOptions;
+	std::shared_ptr<Command> option1 = std::make_shared<DialogCommand>(mRobot, mGame, mDialogOptions[0]);
+	std::shared_ptr<Command> option2 = std::make_shared<DialogCommand>(mRobot, mGame, mDialogOptions[1]);
+
+	std::shared_ptr<sf::RectangleShape> option_btn = std::make_shared<Button>(sf::Vector2f{ 64,32 }, option1);
+	//option_btn->setTexture(mServices.textureManager->getTexture(Texture::SPRITESHEET).get());
+	//option_btn->setTextureRect({ {64,0}, {32,32} });
+	auto optionPos1 = sf::Vector2f{dialogPos.x + SCREEN_MARGIN, dialogPos.y + SCREEN_MARGIN + option_btn->getSize().y};
+	option_btn->setPosition(optionPos1);
+	option_btn->setFillColor(sf::Color::White);
+	addSceneObject(SceneObject::OPTION_BUTTON_1, option_btn);
+
+	std::shared_ptr<sf::RectangleShape> option_btn2 = std::make_shared<Button>(sf::Vector2f{ 64,32 }, option2);
+	//option_btn->setTexture(mServices.textureManager->getTexture(Texture::SPRITESHEET).get());
+	//option_btn->setTextureRect({ {64,0}, {32,32} });
+	option_btn2->setFillColor(sf::Color::White);
+	auto optionPos2 = sf::Vector2f{ dialogPos.x + dialogSize.x - SCREEN_MARGIN - option_btn2->getSize().x, dialogPos.y + SCREEN_MARGIN + option_btn2->getSize().y };
+	option_btn2->setPosition(optionPos2);
+	addSceneObject(SceneObject::OPTION_BUTTON_2, option_btn2);
+
+	// Option text
+	auto& font = mServices.fontManager->getFont(FontName::TITLE);
+
+	addTextObject(SceneText::OPTION_1_TEXT, sf::Text(font, "", 14));
+	auto& opt1_text = mSceneText.at(SceneText::OPTION_1_TEXT);
+	opt1_text.setFillColor(sf::Color::Black);
+	opt1_text.setPosition(optionPos1);
+
+	addTextObject(SceneText::OPTION_2_TEXT, sf::Text(font, "", 14));
+	auto& opt2_text = mSceneText.at(SceneText::OPTION_2_TEXT);
+	opt2_text.setFillColor(sf::Color::Black);
+	opt2_text.setPosition(optionPos2);
 }
 
 
@@ -83,6 +127,9 @@ void WorkScene::update(float dt)
 			}
 		}
 	}
+
+	mSceneText.at(SceneText::OPTION_1_TEXT).setString(mDialogOptions[0]->optionText);
+	mSceneText.at(SceneText::OPTION_2_TEXT).setString(mDialogOptions[1]->optionText);
 
 	for (auto& item : mItems)
 	{
@@ -122,6 +169,11 @@ void WorkScene::render(sf::RenderWindow& window)
 	}
 
 	window.draw(mRobot->getSprite());
+
+	for (auto& txt : mSceneText)
+	{
+		window.draw(txt.second);
+	}
 }
 
 void WorkScene::handleClick(sf::Vector2f mouseposition)
@@ -136,7 +188,7 @@ void WorkScene::handleClick(sf::Vector2f mouseposition)
 	{
 		mServices.soundManager->play(Sound::CLICK);
 		try {
-			mServices.dialogManager->getDialog(mRobot)->performDialog();
+			mDialogOptions = mServices.dialogManager->performDialog(mRobot);
 		}
 		catch (const std::exception& e) {
 			std::cout << e.what() << '\n';

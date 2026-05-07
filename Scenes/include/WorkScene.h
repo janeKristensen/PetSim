@@ -2,6 +2,7 @@
 #include "scene.h"
 #include "GameScene.h"
 
+class DialogOptions;
 
 class WorkScene : public Scene
 {
@@ -23,4 +24,5 @@ private:
 	std::shared_ptr<Entity> mRobot = nullptr;
 	sf::Vector2f mScreenPosition;
 	sf::Vector2f mScreenSize;
+	std::vector<std::shared_ptr<DialogOption>> mDialogOptions;
 };

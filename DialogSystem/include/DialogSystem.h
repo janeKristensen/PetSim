@@ -48,11 +48,12 @@ class DialogTree
 public:
 	DialogTree(std::string filename);
 	DialogTree(nlohmann::json tree);
-	void performDialog();
+	void setNode(std::shared_ptr<DialogNode> node) { mCurrentNode = node; }
+	std::shared_ptr<DialogNode> getNode() { return mCurrentNode; }
 
 private:
 	void populateTree(nlohmann::json& node, std::shared_ptr<DialogNode> dialogNode);
 
-	std::vector<std::shared_ptr<DialogNode>> m_dialogNodes;
-	std::shared_ptr<DialogNode> m_currentNode;
+	std::vector<std::shared_ptr<DialogNode>> mDialogNodes;
+	std::shared_ptr<DialogNode> mCurrentNode;
 };

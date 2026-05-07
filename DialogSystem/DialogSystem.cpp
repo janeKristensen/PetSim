@@ -21,12 +21,12 @@ DialogTree::DialogTree(std::string filename)
 	auto len = data.size();
 	for (int i = 0; i < len; i++)
 	{
-		m_dialogNodes.push_back(std::make_shared<DialogNode>());
+		mDialogNodes.push_back(std::make_shared<DialogNode>());
 	}
 
 	for (int i = 0; i < len; i++)
 	{
-		populateTree(data[i], m_dialogNodes[i]);
+		populateTree(data[i], mDialogNodes[i]);
 	}
 }
 
@@ -35,13 +35,15 @@ DialogTree::DialogTree(nlohmann::json tree)
 	auto len = tree.size();
 	for (int i = 0; i < len; i++)
 	{
-		m_dialogNodes.push_back(std::make_shared<DialogNode>());
+		mDialogNodes.push_back(std::make_shared<DialogNode>());
 	}
 
 	for (int i = 0; i < len; i++)
 	{
-		populateTree(tree[i], m_dialogNodes[i]);
+		populateTree(tree[i], mDialogNodes[i]);
 	}
+
+	mCurrentNode = mDialogNodes[0];
 }
 
 void DialogTree::populateTree(nlohmann::json& node, std::shared_ptr<DialogNode> dialogNode)
@@ -52,7 +54,7 @@ void DialogTree::populateTree(nlohmann::json& node, std::shared_ptr<DialogNode> 
 		std::shared_ptr<DialogNode> nextNode = nullptr;
 		if (option["nextNode"] != nullptr)
 		{
-			nextNode = m_dialogNodes[option["nextNode"]];
+			nextNode = mDialogNodes[option["nextNode"]];
 		}
 		dialogNode->dialogOptions.push_back(std::make_shared<DialogOption>(option["optionText"], nextNode));
 	}
@@ -60,18 +62,5 @@ void DialogTree::populateTree(nlohmann::json& node, std::shared_ptr<DialogNode> 
 	
 }
 
-void DialogTree::performDialog()
-{
-	if (!m_dialogNodes.empty())
-	{
-		for (auto& node : m_dialogNodes)
-		{
-			std::cout << node->dialogText << std::endl;
-			for (auto& option : node->dialogOptions)
-			{
-				std::cout << option->optionText << std::endl;
-			}
-		}
-	}
-}
+
 

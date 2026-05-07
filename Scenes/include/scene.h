@@ -42,7 +42,10 @@ enum class SceneObject
 	LITTER_BUTTON,
 	GAME_BG,
 	MONEY,
-	COMPUTER
+	COMPUTER, 
+	DIALOG,
+	OPTION_BUTTON_1,
+	OPTION_BUTTON_2
 };
 
 enum class SceneText
@@ -55,7 +58,9 @@ enum class SceneText
 	GROOM_VALUE,
 	STATE_VALUE,
 	MONEY_VALUE,
-	HAPPY_VALUE
+	HAPPY_VALUE,
+	OPTION_1_TEXT,
+	OPTION_2_TEXT
 };
 
 

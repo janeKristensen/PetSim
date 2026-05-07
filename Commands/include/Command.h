@@ -5,6 +5,9 @@
 
 class Game;
 class ShopScene;
+class Scene;
+class Entity;
+class DialogOption;
 
 class Command{
 public:
@@ -74,4 +77,15 @@ public:
 
 private:
 	std::shared_ptr<ShopScene> mScene;
+};
+
+class DialogCommand : public Command{
+public:
+	DialogCommand(std::shared_ptr<Entity> entity, std::shared_ptr<Game> game, std::shared_ptr<DialogOption> option)
+		: mEntity(entity), mGame(game), mOption(option){}
+	void execute() const override;
+private:
+	std::shared_ptr<Entity> mEntity;
+	std::shared_ptr<Game> mGame;
+	std::shared_ptr<DialogOption> mOption;
 };

@@ -47,3 +47,10 @@ void BuyCommand::execute() const
 			game_scene.removeMoney(tile->getPrice());
 	}
 }
+
+void DialogCommand::execute() const
+{
+	auto dialogManager = mGame->getServices().dialogManager;
+	dialogManager->setDialog(mEntity, mOption);
+	dialogManager->performDialog(mEntity);
+}

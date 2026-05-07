@@ -17,6 +17,8 @@ public:
 	std::shared_ptr<DialogTree> getDialog(std::shared_ptr<Entity> entity) { return mDialogs.at(entity); }
 	void attachDialog(std::shared_ptr<Entity> entity, DialogName dialog);
 	void removeDialog(std::shared_ptr<Entity> entity);
+	void setDialog(std::shared_ptr<Entity> entity, std::shared_ptr<DialogOption> option) { mDialogs.at(entity)->setNode(option->nextNode); }
+	std::vector<std::shared_ptr<DialogOption>> performDialog(std::shared_ptr<Entity> entity);
 
 private:
 	
