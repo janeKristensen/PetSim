@@ -56,17 +56,30 @@ void DialogManager::attachDialog(std::shared_ptr<Entity> entity, DialogName dial
 
 void DialogManager::removeDialog(std::shared_ptr<Entity> entity)
 {
-	if (!mDialogs.contains(entity))
+	if (mDialogs.contains(entity))
 	{
 		mDialogs.at(entity) = nullptr;
 	}
 }
 
-std::vector<std::shared_ptr<DialogOption>> DialogManager::performDialog(std::shared_ptr<Entity> entity)
+
+std::vector<std::shared_ptr<DialogOption>>* DialogManager::performDialog(std::shared_ptr<Entity> entity)
 {
 	auto tree = mDialogs.at(entity);
 	if (tree)
 	{
-		return tree->getNode()->dialogOptions;
+		return &tree->getNode()->dialogOptions;
 	}
+}
+
+
+const std::string DialogManager::getDialogText(std::shared_ptr<Entity> entity) 
+{
+	std::string text = "";
+	auto node = mDialogs.at(entity)->getNode();
+	if (node)
+	{
+		text = node->dialogText;
+	}
+	return text;
 }

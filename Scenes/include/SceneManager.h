@@ -4,6 +4,7 @@
 
 class Scene;
 
+
 class SceneManager {
 
 public:
@@ -20,7 +21,7 @@ public:
 	void setStateOfScenes();
 
 private:
-	SceneManager() {};
+	SceneManager(){};
 	static SceneManager* mInstance;
 	std::shared_ptr<Scene> mPreviousScene;
 	std::stack<std::shared_ptr<Scene>> mScenes;

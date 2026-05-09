@@ -15,10 +15,12 @@ public:
 	
 	void loadDialog(std::string filename);
 	std::shared_ptr<DialogTree> getDialog(std::shared_ptr<Entity> entity) { return mDialogs.at(entity); }
+	std::vector<std::shared_ptr<DialogOption>>* getDialogOptions(std::shared_ptr<Entity> entity) { return &mDialogs.at(entity)->getNode()->dialogOptions; }
+	const std::string getDialogText(std::shared_ptr<Entity> entity);
 	void attachDialog(std::shared_ptr<Entity> entity, DialogName dialog);
 	void removeDialog(std::shared_ptr<Entity> entity);
 	void setDialog(std::shared_ptr<Entity> entity, std::shared_ptr<DialogOption> option) { mDialogs.at(entity)->setNode(option->nextNode); }
-	std::vector<std::shared_ptr<DialogOption>> performDialog(std::shared_ptr<Entity> entity);
+	std::vector<std::shared_ptr<DialogOption>>* performDialog(std::shared_ptr<Entity> entity);
 
 private:
 	

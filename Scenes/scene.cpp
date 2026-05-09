@@ -70,6 +70,26 @@ void Scene::handleHover(sf::Vector2f mouseposition)
 	}
 }
 
+void Scene::setupDialog(std::shared_ptr<Entity> entity)
+{
+	if (mDialogOptions)
+	{
+		mSceneText.at(SceneText::DIALOG).setString(mServices.dialogManager->getDialogText(entity));
+		mSceneText.at(SceneText::OPTION_1_TEXT).setString(mDialogOptions->at(0)->optionText);
+		mSceneText.at(SceneText::OPTION_2_TEXT).setString(mDialogOptions->at(1)->optionText);
+	}
+}
+
+void Scene::resetDialog(std::shared_ptr<Entity> entity)
+{
+	if (mDialogOptions)
+	{
+		mSceneText.at(SceneText::DIALOG).setString("");
+		mSceneText.at(SceneText::OPTION_1_TEXT).setString("");
+		mSceneText.at(SceneText::OPTION_2_TEXT).setString("");
+	}
+}
+
 
 Scene::~Scene() {
 

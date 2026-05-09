@@ -24,5 +24,5 @@ private:
 	std::shared_ptr<Entity> mRobot = nullptr;
 	sf::Vector2f mScreenPosition;
 	sf::Vector2f mScreenSize;
-	std::vector<std::shared_ptr<DialogOption>> mDialogOptions;
+	std::queue<DialogName> mRobotDialog;
 };

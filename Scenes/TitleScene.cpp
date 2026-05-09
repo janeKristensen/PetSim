@@ -47,8 +47,15 @@ void TitleScene::render(sf::RenderWindow& window)
 		auto btn = dynamic_pointer_cast<Button>(obj.second);
 		if (btn)
 		{
-			mShader->setUniform("texture", sf::Shader::CurrentTexture);
-			window.draw(*obj.second, btn->getShader().get());
+			if (btn->getTexture())
+			{
+				mShader->setUniform("texture", sf::Shader::CurrentTexture);
+				window.draw(*obj.second, btn->getShader().get());
+			}
+			else
+			{
+				window.draw(*obj.second);
+			}	
 		}
 		else
 		{

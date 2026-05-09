@@ -43,6 +43,10 @@ WorkScene::WorkScene(sf::Vector2f screenSize, std::shared_ptr<Game> game, Servic
 	// Populate moving numbers
 	createNumbers(20);
 
+	// Dialogs for robot
+	mRobotDialog.push(DialogName::ROBOT_FIRST_DIALOG);
+	mRobotDialog.push(DialogName::ROBOT_SECOND_DIALOG);
+		
 	// Create robot
 	mRobot = std::make_shared<Entity>(
 		Texture::ROBOT,
@@ -53,7 +57,7 @@ WorkScene::WorkScene(sf::Vector2f screenSize, std::shared_ptr<Game> game, Servic
 
 	mRobot->setPosition({mScreenPosition.x, mScreenPosition.y + mScreenSize.y - mRobot->getSprite().getTextureRect().size.y});
 	mServices.animationManager->attachAnimation(mRobot, mRobot->getAnimationName());
-	mServices.dialogManager->attachDialog(mRobot, DialogName::ROBOT_FIRST_DIALOG);
+	mServices.dialogManager->attachDialog(mRobot, mRobotDialog.front());
 
 
 	// Dialog box
@@ -66,14 +70,14 @@ WorkScene::WorkScene(sf::Vector2f screenSize, std::shared_ptr<Game> game, Servic
 	
 
 	// Dialog options button
-	mDialogOptions = mServices.dialogManager->getDialog(mRobot)->getNode()->dialogOptions;
-	std::shared_ptr<Command> option1 = std::make_shared<DialogCommand>(mRobot, mGame, mDialogOptions[0]);
-	std::shared_ptr<Command> option2 = std::make_shared<DialogCommand>(mRobot, mGame, mDialogOptions[1]);
+	mDialogOptions = mServices.dialogManager->getDialogOptions(mRobot);
+	std::shared_ptr<Command> option1 = std::make_shared<DialogCommand>(mRobot, mGame, mDialogOptions->at(0));
+	std::shared_ptr<Command> option2 = std::make_shared<DialogCommand>(mRobot, mGame, mDialogOptions->at(1));
 
 	std::shared_ptr<sf::RectangleShape> option_btn = std::make_shared<Button>(sf::Vector2f{ 64,32 }, option1);
 	//option_btn->setTexture(mServices.textureManager->getTexture(Texture::SPRITESHEET).get());
 	//option_btn->setTextureRect({ {64,0}, {32,32} });
-	auto optionPos1 = sf::Vector2f{dialogPos.x + SCREEN_MARGIN, dialogPos.y + SCREEN_MARGIN + option_btn->getSize().y};
+	auto optionPos1 = sf::Vector2f{dialogPos.x + SCREEN_MARGIN, dialogPos.y + SCREEN_MARGIN + 2*option_btn->getSize().y};
 	option_btn->setPosition(optionPos1);
 	option_btn->setFillColor(sf::Color::White);
 	addSceneObject(SceneObject::OPTION_BUTTON_1, option_btn);
@@ -82,12 +86,17 @@ WorkScene::WorkScene(sf::Vector2f screenSize, std::shared_ptr<Game> game, Servic
 	//option_btn->setTexture(mServices.textureManager->getTexture(Texture::SPRITESHEET).get());
 	//option_btn->setTextureRect({ {64,0}, {32,32} });
 	option_btn2->setFillColor(sf::Color::White);
-	auto optionPos2 = sf::Vector2f{ dialogPos.x + dialogSize.x - SCREEN_MARGIN - option_btn2->getSize().x, dialogPos.y + SCREEN_MARGIN + option_btn2->getSize().y };
+	auto optionPos2 = sf::Vector2f{ dialogPos.x + SCREEN_MARGIN, dialogPos.y + 3*SCREEN_MARGIN + 3*option_btn2->getSize().y };
 	option_btn2->setPosition(optionPos2);
 	addSceneObject(SceneObject::OPTION_BUTTON_2, option_btn2);
 
 	// Option text
 	auto& font = mServices.fontManager->getFont(FontName::TITLE);
+
+	addTextObject(SceneText::DIALOG, sf::Text(font, "", 14));
+	auto& dialog_text = mSceneText.at(SceneText::DIALOG);
+	dialog_text.setFillColor(sf::Color::Black);
+	dialog_text.setPosition({ dialogPos.x + SCREEN_MARGIN , dialogPos.y + SCREEN_MARGIN });
 
 	addTextObject(SceneText::OPTION_1_TEXT, sf::Text(font, "", 14));
 	auto& opt1_text = mSceneText.at(SceneText::OPTION_1_TEXT);
@@ -128,8 +137,6 @@ void WorkScene::update(float dt)
 		}
 	}
 
-	mSceneText.at(SceneText::OPTION_1_TEXT).setString(mDialogOptions[0]->optionText);
-	mSceneText.at(SceneText::OPTION_2_TEXT).setString(mDialogOptions[1]->optionText);
 
 	for (auto& item : mItems)
 	{
@@ -151,8 +158,30 @@ void WorkScene::render(sf::RenderWindow& window)
 		auto btn = dynamic_pointer_cast<Button>(obj.second);
 		if (btn)
 		{
-			mShader->setUniform("texture", sf::Shader::CurrentTexture);
-			window.draw(*obj.second, btn->getShader().get());
+			if (obj.first == SceneObject::OPTION_BUTTON_1 ||
+				obj.first == SceneObject::OPTION_BUTTON_2)
+			{
+				if (!mIsDialogActive)
+				{
+					continue;
+				}
+			}
+			else if (btn->getTexture())
+			{
+				mShader->setUniform("texture", sf::Shader::CurrentTexture);
+				window.draw(*obj.second, btn->getShader().get());
+			}
+			else
+			{
+				window.draw(*obj.second);
+			}
+		}
+		else if(obj.first == SceneObject::DIALOG)
+		{
+			if (mIsDialogActive)
+			{
+				window.draw(*obj.second);
+			}	
 		}
 		else
 		{
@@ -172,7 +201,19 @@ void WorkScene::render(sf::RenderWindow& window)
 
 	for (auto& txt : mSceneText)
 	{
-		window.draw(txt.second);
+		if (txt.first == SceneText::DIALOG ||
+			txt.first == SceneText::OPTION_1_TEXT||
+			txt.first == SceneText::OPTION_2_TEXT)
+		{
+			if (mIsDialogActive)
+			{
+				window.draw(txt.second);
+			}
+		}
+		else 
+		{
+			window.draw(txt.second);
+		}
 	}
 }
 
@@ -187,13 +228,47 @@ void WorkScene::handleClick(sf::Vector2f mouseposition)
 	else if (mRobot->getSprite().getGlobalBounds().contains(mouseposition))
 	{
 		mServices.soundManager->play(Sound::CLICK);
-		try {
-			mDialogOptions = mServices.dialogManager->performDialog(mRobot);
+		try 
+		{
+			if (!mServices.dialogManager->getDialog(mRobot))
+			{
+				if (!mRobotDialog.empty())
+				{
+					mServices.dialogManager->attachDialog(mRobot, mRobotDialog.front());
+					activateDialog();
+					mDialogOptions = mServices.dialogManager->performDialog(mRobot);
+					setupDialog(mRobot);
+				}	
+			}
+			else
+			{
+				activateDialog();
+				mDialogOptions = mServices.dialogManager->performDialog(mRobot);
+				setupDialog(mRobot);
+			}
+
+			if (!mRobotDialog.empty())
+			{
+				mRobotDialog.pop();
+			}
 		}
-		catch (const std::exception& e) {
+		catch (const std::exception& e) 
+		{
 			std::cout << e.what() << '\n';
 		};
 		
+	}
+	else if (mSceneObjects.at(SceneObject::OPTION_BUTTON_1)->getGlobalBounds().contains(mouseposition))
+	{
+		auto btn = std::static_pointer_cast<Button>(mSceneObjects.at(SceneObject::OPTION_BUTTON_1));
+		btn->onClick();
+		setupDialog(mRobot);
+	}
+	else if (mSceneObjects.at(SceneObject::OPTION_BUTTON_2)->getGlobalBounds().contains(mouseposition))
+	{
+		auto btn = std::static_pointer_cast<Button>(mSceneObjects.at(SceneObject::OPTION_BUTTON_2));
+		btn->onClick();
+		setupDialog(mRobot);
 	}
 	else 
 	{
