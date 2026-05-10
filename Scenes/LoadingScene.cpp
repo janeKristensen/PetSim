@@ -15,6 +15,9 @@ LoadingScene::LoadingScene(sf::Vector2f screenSize, std::shared_ptr<Game> game, 
 	mModelFuture = std::async(std::launch::async, makeModel, model_path, 0.2, 1.5);
 
 	mServices.dialogManager->loadDialog("dialog.txt");
+#ifndef NDEBUG
+	mServices.dialogManager->printDialogTrees();
+#endif
 
 	mServices.textureManager->loadTexture(Texture::ANIMATION_SHEET, "ressources/assets/animationsheet.png");
 	mServices.textureManager->loadTexture(Texture::GAME_BG, "ressources/assets/fixed_background_scaled.png");

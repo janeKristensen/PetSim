@@ -70,9 +70,9 @@ WorkScene::WorkScene(sf::Vector2f screenSize, std::shared_ptr<Game> game, Servic
 	
 
 	// Dialog options button
-	mDialogOptions = mServices.dialogManager->getDialogOptions(mRobot);
-	std::shared_ptr<Command> option1 = std::make_shared<DialogCommand>(mRobot, mGame, mDialogOptions->at(0));
-	std::shared_ptr<Command> option2 = std::make_shared<DialogCommand>(mRobot, mGame, mDialogOptions->at(1));
+	mDialogOptions = *mServices.dialogManager->getDialogOptions(mRobot);
+	std::shared_ptr<Command> option1 = std::make_shared<DialogCommand>(mRobot, mGame, &mDialogOptions, 0);
+	std::shared_ptr<Command> option2 = std::make_shared<DialogCommand>(mRobot, mGame, &mDialogOptions, 1);
 
 	std::shared_ptr<sf::RectangleShape> option_btn = std::make_shared<Button>(sf::Vector2f{ 64,32 }, option1);
 	//option_btn->setTexture(mServices.textureManager->getTexture(Texture::SPRITESHEET).get());
@@ -235,16 +235,12 @@ void WorkScene::handleClick(sf::Vector2f mouseposition)
 				if (!mRobotDialog.empty())
 				{
 					mServices.dialogManager->attachDialog(mRobot, mRobotDialog.front());
-					activateDialog();
-					mDialogOptions = mServices.dialogManager->performDialog(mRobot);
-					setupDialog(mRobot);
+					startDialog(mRobot);
 				}	
 			}
 			else
 			{
-				activateDialog();
-				mDialogOptions = mServices.dialogManager->performDialog(mRobot);
-				setupDialog(mRobot);
+				startDialog(mRobot);
 			}
 
 			if (!mRobotDialog.empty())
@@ -298,7 +294,7 @@ void WorkScene::createNumbers(size_t amount)
 {
 	for (int i = 0; i < amount; i++)
 	{
-		auto random_number = rand() % (9 - 0) + 0;
+		auto random_number = rand() % (1 - 0) + 0;
 		auto sprite_number = sf::Vector2i{ random_number * 32, 0 };
 		mItems.push_back(std::make_unique<Number>(ItemType::NUMBER, Texture::NUMBERS, sf::IntRect(sprite_number, { 32,32 }), *mServices.textureManager->getTexture(Texture::NUMBERS), 10));
 		auto item = dynamic_cast<Number*>(mItems.back().get());

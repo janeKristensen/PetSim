@@ -70,19 +70,39 @@ void Scene::handleHover(sf::Vector2f mouseposition)
 	}
 }
 
+void Scene::setDialogOptions(std::vector<std::shared_ptr<DialogOption>>* options) 
+{ 
+	if (options)
+	{
+		mDialogOptions = *options;
+	}
+	else
+	{
+		mDialogOptions.clear();
+	}
+}
+
 void Scene::setupDialog(std::shared_ptr<Entity> entity)
 {
-	if (mDialogOptions)
+	if (!mDialogOptions.empty())
 	{
 		mSceneText.at(SceneText::DIALOG).setString(mServices.dialogManager->getDialogText(entity));
-		mSceneText.at(SceneText::OPTION_1_TEXT).setString(mDialogOptions->at(0)->optionText);
-		mSceneText.at(SceneText::OPTION_2_TEXT).setString(mDialogOptions->at(1)->optionText);
+		mSceneText.at(SceneText::OPTION_1_TEXT).setString(mDialogOptions[0]->optionText);
+		mSceneText.at(SceneText::OPTION_2_TEXT).setString(mDialogOptions[1]->optionText);
 	}
+}
+
+void Scene::startDialog(std::shared_ptr<Entity> entity)
+{
+	activateDialog();
+	auto options = mServices.dialogManager->performDialog(entity);
+	mDialogOptions = *options;
+	setupDialog(entity);
 }
 
 void Scene::resetDialog(std::shared_ptr<Entity> entity)
 {
-	if (mDialogOptions)
+	if (!mDialogOptions.empty())
 	{
 		mSceneText.at(SceneText::DIALOG).setString("");
 		mSceneText.at(SceneText::OPTION_1_TEXT).setString("");

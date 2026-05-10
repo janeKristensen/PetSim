@@ -51,9 +51,9 @@ void BuyCommand::execute() const
 void DialogCommand::execute() const
 {
 	auto dialogManager = mGame->getServices().dialogManager;
-	if (mOption->nextNode)
+	if ((*mDialogOptions)[mIndex]->nextNode)
 	{
-		dialogManager->setDialog(mEntity, mOption);
+		dialogManager->setDialog(mEntity, (*mDialogOptions)[mIndex]);
 		SceneManager::getInstance()->getScene()->setDialogOptions(dialogManager->performDialog(mEntity));
 	}
 	else

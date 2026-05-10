@@ -83,3 +83,12 @@ const std::string DialogManager::getDialogText(std::shared_ptr<Entity> entity)
 	}
 	return text;
 }
+
+
+void DialogManager::printDialogTrees()
+{
+	for (auto& tree : mDialogTrees)
+	{
+		tree.second->printTree();
+	}
+}

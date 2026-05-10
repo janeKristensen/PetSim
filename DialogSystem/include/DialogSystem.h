@@ -49,6 +49,7 @@ public:
 	DialogTree(std::string filename);
 	DialogTree(nlohmann::json tree);
 	void setNode(std::shared_ptr<DialogNode> node) { mCurrentNode = node; }
+	void printTree();
 	std::shared_ptr<DialogNode> getNode() { return mCurrentNode; }
 
 private:

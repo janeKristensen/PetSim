@@ -58,9 +58,19 @@ void DialogTree::populateTree(nlohmann::json& node, std::shared_ptr<DialogNode> 
 		}
 		dialogNode->dialogOptions.push_back(std::make_shared<DialogOption>(option["optionText"], nextNode));
 	}
-
-	
 }
 
+void DialogTree::printTree()
+{
+	for (auto& node : mDialogNodes)
+	{
+		std::cout << "Dialog text: " << node->dialogText << std::endl;
+		for (auto& option : node->dialogOptions)
+		{
+			std::cout << "Option: " << option->optionText << ", next option: " << option->nextNode << std::endl;
+		}
+		std::cout << "\n" << std::endl;
+	}
+}
 
 

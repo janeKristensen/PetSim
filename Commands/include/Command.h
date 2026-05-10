@@ -81,11 +81,12 @@ private:
 
 class DialogCommand : public Command{
 public:
-	DialogCommand(std::shared_ptr<Entity> entity, std::shared_ptr<Game> game, std::shared_ptr<DialogOption> option)
-		: mEntity(entity), mGame(game), mOption(option){}
+	DialogCommand(std::shared_ptr<Entity> entity, std::shared_ptr<Game> game, std::vector<std::shared_ptr<DialogOption>>* dialogOptions, size_t index)
+		: mEntity(entity), mGame(game), mDialogOptions(dialogOptions), mIndex(index){}
 	void execute() const override;
 private:
 	std::shared_ptr<Entity> mEntity;
 	std::shared_ptr<Game> mGame;
-	std::shared_ptr<DialogOption> mOption;
+	std::vector<std::shared_ptr<DialogOption>>* mDialogOptions;
+	size_t mIndex;
 };
