@@ -21,12 +21,13 @@ ShopScene::ShopScene(sf::Vector2f screenSize, std::shared_ptr<Game> game, Servic
 	return_btn->setPosition({ screenSize.x - SCREEN_MARGIN - return_btn->getSize().x, pos.y + SCREEN_MARGIN});
 	addSceneObject(SceneObject::RETURN_BUTTON, return_btn);
 
-
+	// Buy button
 	std::shared_ptr<sf::RectangleShape> buy_btn = std::make_shared<Button>(sf::Vector2f{ 100,50 });
-	buy_btn->setFillColor(sf::Color::Magenta);
+	buy_btn->setTexture(mServices.textureManager->getTexture(Texture::SPRITESHEET).get());
+	buy_btn->setTextureRect({ {64,64}, {64,32} });
 	buy_btn->setPosition({ screenSize.x - 2*SCREEN_MARGIN - buy_btn->getSize().x, screenSize.y - 2 * SCREEN_MARGIN - buy_btn->getSize().y });
 	addSceneObject(SceneObject::BUY_BUTTON, buy_btn);
-	auto buy_btn_ptr = std::static_pointer_cast<Button>(mSceneObjects.at(SceneObject::BUY_BUTTON));
+	auto buy_btn_ptr = std::static_pointer_cast<Button>(buy_btn);
 	buy_btn_ptr->setInactive();
 	buy_btn_ptr->setShader(mInactiveShader);
 
@@ -71,7 +72,6 @@ void ShopScene::update(float dt)
 		else
 		{
 			btn->setActive();
-			btn->setShader(nullptr);
 		}
 	}
 }
@@ -97,16 +97,11 @@ void ShopScene::render(sf::RenderWindow& window)
 				mShader->setUniform("texture", sf::Shader::CurrentTexture);
 				mInactiveShader->setUniform("texture", sf::Shader::CurrentTexture);
 				window.draw(*obj.second, btn->getShader().get());
-			}
-			else
-			{
-				window.draw(*obj.second);
+				continue;
 			}
 		}
-		else
-		{
-			window.draw(*obj.second);
-		}
+	
+		window.draw(*obj.second);	
 	}
 
 	for (auto& tile : mShopTiles)

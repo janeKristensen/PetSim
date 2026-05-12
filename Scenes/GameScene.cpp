@@ -72,14 +72,12 @@ GameScene::GameScene(sf::Vector2f screenSize, std::shared_ptr<Game> game, Servic
 	);
 	addSceneObject(SceneObject::COMPUTER, computer);
 
-
 	// Progress bars
 	auto bar_size = sf::Vector2f{ 100, 13.5 };
 	auto bar_pos_x = mScreenSize.x - bar_size.x - SCREEN_MARGIN;
 	mFoodBar = ProgressBar{ bar_size, sf::Vector2f{ bar_pos_x, SCREEN_MARGIN }, sf::Color::Red };
 	auto foodbar_pos = mFoodBar.getShape().getPosition();
 	mGroomBar = ProgressBar{ bar_size, sf::Vector2f{ bar_pos_x, foodbar_pos.y + bar_size.y + SCREEN_MARGIN / 2 }, sf::Color::Blue };
-
 
 	// Button for submitting text
 	auto submit_btn_pos = sf::Vector2f{
@@ -192,7 +190,6 @@ GameScene::GameScene(sf::Vector2f screenSize, std::shared_ptr<Game> game, Servic
 		}
 	);
 	
-
 	// User prompting text
 	addTextObject(SceneText::PROMPT_TEXT, sf::Text(font, "", char_size));
 	auto& prompt_text = mSceneText.at(SceneText::PROMPT_TEXT);
@@ -260,7 +257,7 @@ GameScene::GameScene(sf::Vector2f screenSize, std::shared_ptr<Game> game, Servic
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-	mPet = std::make_shared<Pet>(Texture::SPRITESHEET, sf::IntRect({ 64,96 }, { 64,96 }), *mServices.textureManager->getTexture(Texture::SPRITESHEET), "Kitty", "Cat", "Happy", AnimationName::CAT);
+	mPet = std::make_shared<Pet>(Texture::CAT, sf::IntRect({ 0,0 }, { 59,98 }), *mServices.textureManager->getTexture(Texture::CAT), "Kitty", "Cat", "Happy", AnimationName::CAT);
 	mPet->setPosition(mPetPosition);
 	mPet->setScale(sf::Vector2f(2.5,2.5));
 	mServices.animationManager->attachAnimation(mPet, AnimationName::CAT);
@@ -381,7 +378,7 @@ void GameScene::update(float dt)
 		std::string str = mModel->getModelStringBuffer();
 		mResponseTracker += dt;
 		if (!str.empty()) {
-			const auto& text = wrapText(str, 30);
+			const auto& text = wrapText(str, 90);
 			mSceneText.at(SceneText::PET_TEXT).setString(text);
 			mResponseTracker = 0.f;
 		}
@@ -511,6 +508,26 @@ void GameScene::handleKeyPress(sf::Keyboard::Key key)
 	}
 }
 
+void GameScene::handleHover(sf::Vector2f mouseposition)
+{
+	Scene::handleHover(mouseposition);
+	for (auto& obj : mItems)
+	{
+		if (!obj) continue;
+		if (obj->getSprite().getGlobalBounds().contains(mouseposition))
+		{
+			if (!obj->getShader())
+			{
+				obj->setShader(mItemShader);
+			}
+		}
+		else
+		{
+			obj->setShader(nullptr);
+		}
+	}
+}
+
 void GameScene::handleDrag(std::shared_ptr<sf::RenderWindow> window) {
 
 	if (mItems.empty()) return;
@@ -521,8 +538,8 @@ void GameScene::handleDrag(std::shared_ptr<sf::RenderWindow> window) {
 	for (auto& item : mItems) {
 
 		if (item == nullptr) continue;
-		else if (item->getSprite().getGlobalBounds().contains(mouse_position)) {
-
+		else if (item->getSprite().getGlobalBounds().contains(mouse_position)) 
+		{
 			mServices.soundManager->play(Sound::PICKUP);
 
 			auto remove_item = mInventorySystem->removeFromSlot(mouse_position, *item);
@@ -575,8 +592,16 @@ void GameScene::handleDrag(std::shared_ptr<sf::RenderWindow> window) {
 				mServices.soundManager->play(Sound::PLACE);
 			}
 
-			break;
+			return;
 		}
+	}
+
+	if (mPet->getSprite().getGlobalBounds().contains(mouse_position))
+	{
+		mServices.soundManager->play(Sound::LONG_PURR);
+		mServices.animationManager->attachAnimation(mPet, AnimationName::CAT_HAPPY);
+		mPet->setHappinessValue(1);
+		mIsHappy = true;
 	}
 }
 

@@ -1,5 +1,7 @@
 #include "WorkScene.h"
 
+const size_t DIALOG_FONT_SIZE = 16;
+const size_t ROBOT_HEIGHT = 128;
 
 WorkScene::WorkScene(sf::Vector2f screenSize, std::shared_ptr<Game> game, Services& services, GameScene& scene)
 	: Scene(screenSize, game, services), mGameScene(scene)
@@ -48,23 +50,25 @@ WorkScene::WorkScene(sf::Vector2f screenSize, std::shared_ptr<Game> game, Servic
 	mRobotDialog.push(DialogName::ROBOT_SECOND_DIALOG);
 		
 	// Create robot
+	sf::Vector2i robot_size = { 128,ROBOT_HEIGHT };
 	mRobot = std::make_shared<Entity>(
 		Texture::ROBOT,
-		sf::IntRect({ 0,0 }, { 128,128 }),
+		sf::IntRect({ 0,0 }, robot_size),
 		*mServices.textureManager->getTexture(Texture::ROBOT),
 		AnimationName::ROBOT_IDLE
 	);
-
-	mRobot->setPosition({mScreenPosition.x, mScreenPosition.y + mScreenSize.y - mRobot->getSprite().getTextureRect().size.y});
+	auto robot_position = sf::Vector2f{ mScreenPosition.x, mScreenPosition.y + mScreenSize.y - robot_size.y };
+	mRobot->setPosition(robot_position);
 	mServices.animationManager->attachAnimation(mRobot, mRobot->getAnimationName());
 	mServices.dialogManager->attachDialog(mRobot, mRobotDialog.front());
 
 
 	// Dialog box
-	auto dialogSize = sf::Vector2f{ 250,250 };
+	auto dialogSize = sf::Vector2f{ 500,128 };
+	sf::Vector2f btn_size = { dialogSize.x - 2*SCREEN_MARGIN, 32 };
 	std::shared_ptr<sf::RectangleShape> dialog = std::make_shared<sf::RectangleShape>(dialogSize);
 	//menu->setTexture(mServices.textureManager->getTexture(Texture::TITLE_MENU).get());
-	dialog->setPosition({ mScreenSize.x - 250 - SCREEN_MARGIN, mScreenSize.y - 250 - SCREEN_MARGIN });
+	dialog->setPosition({ robot_position.x + robot_size.x + SCREEN_MARGIN, robot_position.y });
 	addSceneObject(SceneObject::DIALOG, dialog);
 	auto dialogPos = dialog->getPosition();
 	
@@ -73,40 +77,43 @@ WorkScene::WorkScene(sf::Vector2f screenSize, std::shared_ptr<Game> game, Servic
 	mDialogOptions = *mServices.dialogManager->getDialogOptions(mRobot);
 	std::shared_ptr<Command> option1 = std::make_shared<DialogCommand>(mRobot, mGame, &mDialogOptions, 0);
 	std::shared_ptr<Command> option2 = std::make_shared<DialogCommand>(mRobot, mGame, &mDialogOptions, 1);
+	
 
-	std::shared_ptr<sf::RectangleShape> option_btn = std::make_shared<Button>(sf::Vector2f{ 64,32 }, option1);
-	//option_btn->setTexture(mServices.textureManager->getTexture(Texture::SPRITESHEET).get());
-	//option_btn->setTextureRect({ {64,0}, {32,32} });
-	auto optionPos1 = sf::Vector2f{dialogPos.x + SCREEN_MARGIN, dialogPos.y + SCREEN_MARGIN + 2*option_btn->getSize().y};
+	// option button 1
+	std::shared_ptr<sf::RectangleShape> option_btn = std::make_shared<Button>(btn_size, option1);
+	option_btn->setTexture(mServices.textureManager->getTexture(Texture::CHOICE_BTN).get());
+	option_btn->setTextureRect({ {0,0}, (sf::Vector2i)btn_size });
+	auto optionPos1 = sf::Vector2f{dialogPos.x + SCREEN_MARGIN, dialogPos.y + SCREEN_MARGIN + 2 * DIALOG_FONT_SIZE };
 	option_btn->setPosition(optionPos1);
 	option_btn->setFillColor(sf::Color::White);
 	addSceneObject(SceneObject::OPTION_BUTTON_1, option_btn);
 
-	std::shared_ptr<sf::RectangleShape> option_btn2 = std::make_shared<Button>(sf::Vector2f{ 64,32 }, option2);
-	//option_btn->setTexture(mServices.textureManager->getTexture(Texture::SPRITESHEET).get());
-	//option_btn->setTextureRect({ {64,0}, {32,32} });
+	// option button 2
+	std::shared_ptr<sf::RectangleShape> option_btn2 = std::make_shared<Button>(btn_size, option2);
+	option_btn2->setTexture(mServices.textureManager->getTexture(Texture::CHOICE_BTN).get());
+	option_btn2->setTextureRect({ {0,0}, (sf::Vector2i)btn_size });
 	option_btn2->setFillColor(sf::Color::White);
-	auto optionPos2 = sf::Vector2f{ dialogPos.x + SCREEN_MARGIN, dialogPos.y + 3*SCREEN_MARGIN + 3*option_btn2->getSize().y };
+	auto optionPos2 = sf::Vector2f{ dialogPos.x + SCREEN_MARGIN, optionPos1.y + option_btn->getSize().y + SCREEN_MARGIN };
 	option_btn2->setPosition(optionPos2);
 	addSceneObject(SceneObject::OPTION_BUTTON_2, option_btn2);
 
 	// Option text
 	auto& font = mServices.fontManager->getFont(FontName::TITLE);
-
-	addTextObject(SceneText::DIALOG, sf::Text(font, "", 14));
+	size_t text_offset = SCREEN_MARGIN * 2;
+	addTextObject(SceneText::DIALOG, sf::Text(font, "", DIALOG_FONT_SIZE));
 	auto& dialog_text = mSceneText.at(SceneText::DIALOG);
 	dialog_text.setFillColor(sf::Color::Black);
 	dialog_text.setPosition({ dialogPos.x + SCREEN_MARGIN , dialogPos.y + SCREEN_MARGIN });
 
-	addTextObject(SceneText::OPTION_1_TEXT, sf::Text(font, "", 14));
+	addTextObject(SceneText::OPTION_1_TEXT, sf::Text(font, "", DIALOG_FONT_SIZE));
 	auto& opt1_text = mSceneText.at(SceneText::OPTION_1_TEXT);
 	opt1_text.setFillColor(sf::Color::Black);
-	opt1_text.setPosition(optionPos1);
+	opt1_text.setPosition({ optionPos1.x + text_offset, optionPos1.y });
 
-	addTextObject(SceneText::OPTION_2_TEXT, sf::Text(font, "", 14));
+	addTextObject(SceneText::OPTION_2_TEXT, sf::Text(font, "", DIALOG_FONT_SIZE));
 	auto& opt2_text = mSceneText.at(SceneText::OPTION_2_TEXT);
 	opt2_text.setFillColor(sf::Color::Black);
-	opt2_text.setPosition(optionPos2);
+	opt2_text.setPosition({ optionPos2.x + text_offset, optionPos2.y });
 }
 
 
@@ -151,10 +158,18 @@ void WorkScene::render(sf::RenderWindow& window)
 	window.draw(*mSceneObjects.at(SceneObject::BACKGROUND));
 	window.draw(*mSceneObjects.at(SceneObject::START_MENU));
 
+	if(mIsDialogActive)
+	{
+		window.draw(*mSceneObjects.at(SceneObject::DIALOG));
+	}
+
 	for (auto& obj : mSceneObjects)
 	{
-		if (obj.first == SceneObject::BACKGROUND || obj.first == SceneObject::BORDER) continue;
-
+		if (obj.first == SceneObject::BACKGROUND || 
+			obj.first == SceneObject::BORDER ||
+			obj.first == SceneObject::DIALOG ||
+			obj.first == SceneObject::START_MENU) continue;
+		
 		auto btn = dynamic_pointer_cast<Button>(obj.second);
 		if (btn)
 		{
@@ -166,27 +181,16 @@ void WorkScene::render(sf::RenderWindow& window)
 					continue;
 				}
 			}
-			else if (btn->getTexture())
+			
+			if (btn->getTexture())
 			{
 				mShader->setUniform("texture", sf::Shader::CurrentTexture);
 				window.draw(*obj.second, btn->getShader().get());
-			}
-			else
-			{
-				window.draw(*obj.second);
+				continue;
 			}
 		}
-		else if(obj.first == SceneObject::DIALOG)
-		{
-			if (mIsDialogActive)
-			{
-				window.draw(*obj.second);
-			}	
-		}
-		else
-		{
-			window.draw(*obj.second);
-		}
+
+		window.draw(*obj.second);	
 	}
 
 	for (auto& obj : mItems) {
@@ -205,15 +209,13 @@ void WorkScene::render(sf::RenderWindow& window)
 			txt.first == SceneText::OPTION_1_TEXT||
 			txt.first == SceneText::OPTION_2_TEXT)
 		{
-			if (mIsDialogActive)
+			if (!mIsDialogActive)
 			{
-				window.draw(txt.second);
+				continue;
 			}
 		}
-		else 
-		{
-			window.draw(txt.second);
-		}
+		
+		window.draw(txt.second);	
 	}
 }
 
@@ -294,7 +296,7 @@ void WorkScene::createNumbers(size_t amount)
 {
 	for (int i = 0; i < amount; i++)
 	{
-		auto random_number = rand() % (1 - 0) + 0;
+		auto random_number = rand() % 2;
 		auto sprite_number = sf::Vector2i{ random_number * 32, 0 };
 		mItems.push_back(std::make_unique<Number>(ItemType::NUMBER, Texture::NUMBERS, sf::IntRect(sprite_number, { 32,32 }), *mServices.textureManager->getTexture(Texture::NUMBERS), 10));
 		auto item = dynamic_cast<Number*>(mItems.back().get());
@@ -308,7 +310,7 @@ sf::Vector2f WorkScene::getRandomPosition()
 	sf::Vector2f position;
 
 	position.x = std::rand() % (int)((mScreenPosition.x + mScreenSize.x - 32) - mScreenPosition.x) + mScreenPosition.x;
-	position.y = std::rand() % (int)((mScreenPosition.y + mScreenSize.y - 32) - mScreenPosition.y) + mScreenPosition.y;
+	position.y = std::rand() % (int)((mScreenPosition.y + mScreenSize.y - ROBOT_HEIGHT-32) - mScreenPosition.y) + mScreenPosition.y;
 	
 	return position;
 }

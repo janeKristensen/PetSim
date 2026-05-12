@@ -13,7 +13,9 @@ enum class Texture {
 	ANIMATION_SHEET,
 	COMPUTER,
 	NUMBERS, 
-	ROBOT
+	ROBOT,
+	CAT,
+	CHOICE_BTN
 };
 
 class TextureManager
