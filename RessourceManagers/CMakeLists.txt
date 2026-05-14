@@ -2,7 +2,7 @@
 # project specific logic here.
 #
 
-add_library(ressource_managers STATIC "TextureManager.cpp" "include/TextureManager.h" "FontManager.cpp" "include/FontManager.h" "SoundManager.cpp" "include/SoundManager.h" "include/Animation.h" "include/AnimationManager.h" "AnimationManager.cpp" "Animation.cpp" "DialogManager.cpp" "include/DialogManager.h")
+add_library(ressource_managers STATIC "TextureManager.cpp" "include/TextureManager.h" "FontManager.cpp" "include/FontManager.h" "SoundManager.cpp" "include/SoundManager.h" "include/Animation.h" "include/AnimationManager.h" "AnimationManager.cpp" "Animation.cpp" "DialogManager.cpp" "include/DialogManager.h" "include/ItemManager.h" "ItemManager.cpp")
 
 if (CMAKE_VERSION VERSION_GREATER 3.12)
   set_property(TARGET ressource_managers PROPERTY CXX_STANDARD 20)

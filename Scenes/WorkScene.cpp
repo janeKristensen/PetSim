@@ -315,4 +315,23 @@ sf::Vector2f WorkScene::getRandomPosition()
 	return position;
 }
 
+void WorkScene::setState()
+{
+	std::vector<nlohmann::json> items;
+	for (const auto& item : mItems) {
+
+		items.push_back(item->saveData());
+	}
+
+	std::vector<nlohmann::json> dialog;
+	while(!mRobotDialog.empty()) {
+
+		dialog.push_back(mRobotDialog.front());
+		mRobotDialog.pop();
+	}
+
+	mState["items"] = items;
+	mState["robot"] = mRobot->saveData();
+	mState["dialogNames"] = dialog;
+}
 

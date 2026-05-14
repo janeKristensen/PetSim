@@ -15,6 +15,8 @@ public:
 	void handleClick(sf::Vector2f mouseposition) override;
 	void handleKeyPress(sf::Keyboard::Key key) override;
 	void handleDrag(std::shared_ptr<sf::RenderWindow> window) override;
+	void setState() override;
+
 private:
 	void createNumbers(size_t amount);
 	sf::Vector2f getRandomPosition();
@@ -25,4 +27,6 @@ private:
 	sf::Vector2f mScreenPosition;
 	sf::Vector2f mScreenSize;
 	std::queue<DialogName> mRobotDialog;
+	std::shared_ptr<SaveComponent> mSaveComponent = std::make_shared<SaveComponent>();
+	std::unique_ptr<SaveManager> mSaveManager = std::make_unique<SaveManager>(mSaveComponent);
 };

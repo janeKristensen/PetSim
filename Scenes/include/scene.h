@@ -78,12 +78,13 @@ public:
 	virtual void handleHover(sf::Vector2f mouseposition);
 	virtual void handleDrag(std::shared_ptr<sf::RenderWindow> window) {}
 	virtual void handleTextEntry(const sf::Event& event) {}
-	virtual void loadGame(const std::string& filename) {}
+	virtual void loadGame(const std::string& filename) { mState["empty"] = ""; }
 	virtual void loadShader(const std::string& filename, std::shared_ptr<sf::Shader> shader);
 	virtual void setupDialog(std::shared_ptr<Entity> entity);
 	virtual void startDialog(std::shared_ptr<Entity> entity);
 	virtual void resetDialog(std::shared_ptr<Entity> entity);
-	virtual nlohmann::json setState() { mState["empty"] = ""; return mState; }
+	virtual void setState() { mState["empty"] = ""; mSaveComponent->setState(mState);}
+	virtual nlohmann::json saveData() { setState(); return mState; }
 
 	Services& getServices() { return mServices; }
 	void setEvent(std::optional<sf::Event> event) { mCurrentEvent = event; }
@@ -108,6 +109,7 @@ protected:
 	std::shared_ptr<sf::Shader> mShader = std::make_shared<sf::Shader>();
 	std::shared_ptr<sf::Shader> mInactiveShader = std::make_shared<sf::Shader>();
 	std::shared_ptr<sf::Shader> mItemShader = std::make_shared<sf::Shader>();
+	std::shared_ptr<SaveComponent> mSaveComponent = std::make_shared<SaveComponent>();
 	Services& mServices;
 	bool mIsDialogActive = false;
 private:

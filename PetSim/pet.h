@@ -20,6 +20,8 @@ public:
 	void setScale(sf::Vector2f scale) { mSprite.setScale(scale); }
 	void setTexture(std::shared_ptr<sf::Texture> texture) override;
 	void setTexRect(sf::IntRect rect) override;
+	nlohmann::json saveData();
+	void from_json(const nlohmann::json& j, std::shared_ptr<Entity> entity);
 
 	sf::Vector2f getPosition() { return mSprite.getPosition(); }
 	const sf::Sprite getSprite() const { return mSprite; }
@@ -27,13 +29,20 @@ public:
 	Texture getTextureName() { return mTexture; }
 	AnimationName getAnimationName() { return mAnimation; }
 
+
 protected:
+	virtual void setState(nlohmann::json);
+
 	Texture mTexture;
 	sf::IntRect mTextureRect;
 	sf::Sprite mSprite;
 	AnimationName mAnimation;
+	nlohmann::json mState;
+	std::shared_ptr<SaveComponent> mSaveComponent = std::make_shared<SaveComponent>();
+	
 
 private:
+	void toJson(nlohmann::json& j, const Entity& entity);
 };
 
 class Pet : public Entity{
@@ -81,10 +90,10 @@ public:
 	void setStatus(const std::string& str) { mCurrentStatus = str; }
 	void decayValues();
 	void from_json(const nlohmann::json& j, std::shared_ptr<Pet> p);
-	nlohmann::json saveData();
+	
 
 private:
-	void setState(nlohmann::json);
+	void setState(nlohmann::json) override;
 	void toJson(nlohmann::json& j, const Pet& pet);
 	
 	std::string mName = "";
@@ -97,7 +106,6 @@ private:
 	uint32_t mHealth = 100;
 	uint32_t mHappiness = 100;
 	bool mIsHappier = false;
-	nlohmann::json mState;
-	std::shared_ptr<SaveComponent> mSaveComponent = std::make_shared<SaveComponent>();
-	std::unique_ptr<SaveManager> mSaveManager = std::make_unique<SaveManager>(mSaveComponent);
+
+	
 };

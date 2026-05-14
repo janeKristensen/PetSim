@@ -6,6 +6,69 @@ constexpr uint32_t MIN_VALUE = 0;
 constexpr uint32_t LIMIT_VALUE = 50;
 constexpr int32_t DECAY_VALUE = -1;
 
+void Entity::setState(nlohmann::json)
+{
+	toJson(mState, *this);
+	mSaveComponent->setState(mState);
+}
+
+nlohmann::json Entity::saveData()
+{
+	setState(mState);
+	return mState;
+}
+
+void Entity::toJson(nlohmann::json& j, const Entity& pet)
+{
+	auto tex_rect = mSprite.getTextureRect();
+
+	j = nlohmann::json{
+		{ "texName", mTexture},
+		{"animName", mAnimation},
+		{ "sprite", {
+			{ "position",
+				{
+					{ "x", mSprite.getPosition().x },
+					{ "y", mSprite.getPosition().y }
+				}
+			},
+			{ "tex_rect", {
+				{ "position", {
+					{ "x", tex_rect.position.x },
+					{ "y", tex_rect.position.y }
+				}},
+				{ "size", {
+					{ "x", tex_rect.size.x },
+					{ "y", tex_rect.size.y }
+				}}}
+			}}
+		}
+	};
+}
+
+void Entity::from_json(const nlohmann::json& j, std::shared_ptr<Entity> entity)
+{
+	j.at("texName").get_to(entity->mTexture);
+	j.at("animName").get_to(entity->mAnimation);
+
+	sf::Vector2i position = {
+		j["sprite"]["tex_rect"]["position"]["x"],
+		j["sprite"]["tex_rect"]["position"]["y"]
+	};
+
+	sf::Vector2i size = {
+		j["sprite"]["tex_rect"]["size"]["x"],
+		j["sprite"]["tex_rect"]["size"]["y"]
+	};
+
+	mTextureRect = sf::IntRect(position, size);
+}
+
+/********************************************************************************************************/
+/* PET */
+/********************************************************************************************************/
+
+
 Pet::Pet(Texture tex_name,
 	sf::IntRect texRect,
 	sf::Texture& texture,
@@ -164,14 +227,8 @@ void Pet::from_json(const nlohmann::json& j, std::shared_ptr<Pet> p)
 	mTextureRect = sf::IntRect(position, size);
 }
 
-void Pet::setState(nlohmann::json) 
+void Pet::setState(nlohmann::json)
 {
 	toJson(mState, *this);
 	mSaveComponent->setState(mState);
-}
-
-nlohmann::json Pet::saveData() 
-{
-	setState(mState);
-	return mState;
 }

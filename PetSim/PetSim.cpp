@@ -148,7 +148,7 @@ void Game::loadGame(const std::string& filename)
     }
     else
     {
-        mState = scene_mng->getScene()->setState();
+        scene->loadGame(filename);
     }
 }
 
@@ -166,11 +166,11 @@ void Game::setState()
     if (menu)
     {
         auto game_scene = static_pointer_cast<GameScene>(scene_mng->getPreviousScene());
-        mState = game_scene->setState();
+        mState = game_scene->saveData();
     }
     else
     {
-        mState = scene_mng->getScene()->setState();
+        mState = scene->saveData();
     }
     
     mSaveComponent->setState(mState);

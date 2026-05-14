@@ -626,7 +626,7 @@ void GameScene::eraseFromStringBuffer() {
 		mStringBuffer.pop_back();
 }
 
-nlohmann::json GameScene::setState() {
+void GameScene::setState() {
 
 	std::vector<nlohmann::json> items;
 	for (const auto& item : mItems) {
@@ -637,8 +637,7 @@ nlohmann::json GameScene::setState() {
 	mState["pet"] = mPet->saveData();
 	mState["items"] = items;
 	mState["inventory"] = mInventorySystem->saveData();
-
-	return mState;
+	mState["work"] = mWorkScene->saveData();
 }
 
 void GameScene::addMoney(uint32_t value) 
@@ -668,21 +667,21 @@ void GameScene::removeMoney(uint32_t value)
 
 
 // Move to item manager
-std::shared_ptr<Item> GameScene::createItemFromType(const ItemType type, Texture texName, sf::IntRect texRect, uint32_t value)
+std::shared_ptr<Item> GameScene::createItemFromType(const ItemType type)
 {
 	std::shared_ptr<Item> item = nullptr;
 
 	if (type == ItemType::BONE)
 	{
-		item = std::make_shared<Food>(type, texName, texRect, *mServices.textureManager->getTexture(texName), value);
+		item = std::make_shared<Food>(type);
 	}
 	else if (type == ItemType::BRUSH)
 	{
-		item = std::make_shared<GroomItem>(type, texName, texRect, *mServices.textureManager->getTexture(texName), value);
+		item = std::make_shared<GroomItem>(type);
 	}
 	else if (type == ItemType::BALL)
 	{
-		item = std::make_shared<Toy>(type, texName, texRect, *mServices.textureManager->getTexture(texName), value);
+		item = std::make_shared<Toy>(type);
 	}
 		
 	return item;
@@ -704,32 +703,18 @@ void GameScene::loadGame(const std::string& filename) {
 
 	for (const auto& element : j["items"]) {
 
-		// Get item texture rect
-		sf::IntRect texRect;
-		auto arr = element["position"].get<std::array<float, 6>>();
-		texRect.position.x = arr[0];
-		texRect.position.y = arr[1];
-		texRect.size.x = arr[2];
-		texRect.size.y = arr[3];
-
 		// create new item instance from typeId
 		auto typeId = element["typeId"].get<ItemType>();
-		uint32_t value = element["value"].get<uint32_t>();
-		Texture texName = element["texName"].get<Texture>();
-		float scale = element["scale"].get<float>();
-		auto item = createItemFromType(typeId, texName, texRect, value);
-		item->setScale({ scale, scale });
+		auto item = createItemFromType(typeId);
+		item->loadData(element);
 		mItems.push_back(item);
 
-		item->setPosition(sf::Vector2f{ arr[4], arr[5] });
 		auto slot = mInventorySystem->getSlotPosition(item->getSprite().getPosition());
 		mInventorySystem->addItemToSlotIndex(std::get<1>(slot), item, slotValues[std::get<1>(slot)]);
 	}
 
 	// Load Pet status from json
 	mPet->from_json(j["pet"], mPet);
-	mPet->setTexture(mServices.textureManager->getTexture(mPet->getTextureName()));
-	mPet->setTexRect(mPet->getTexRect());
 	std::string initPrompt = mPet->getInitPrompt() + mPet->getStatus();
 	mModel->clearModelStringBuffer();
 	mModel->addSystemPrompt(initPrompt);

@@ -16,6 +16,7 @@ llama.cpp/
 ressources/
 out/
 llm_model/models/
+Sprites
 
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs
