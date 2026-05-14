@@ -8,7 +8,7 @@ constexpr int32_t DECAY_VALUE = -1;
 
 void Entity::setState(nlohmann::json)
 {
-	toJson(mState, *this);
+	toJson(mState);
 	mSaveComponent->setState(mState);
 }
 
@@ -18,7 +18,7 @@ nlohmann::json Entity::saveData()
 	return mState;
 }
 
-void Entity::toJson(nlohmann::json& j, const Entity& pet)
+void Entity::toJson(nlohmann::json& j)
 {
 	auto tex_rect = mSprite.getTextureRect();
 
@@ -46,10 +46,10 @@ void Entity::toJson(nlohmann::json& j, const Entity& pet)
 	};
 }
 
-void Entity::from_json(const nlohmann::json& j, std::shared_ptr<Entity> entity)
+void Entity::from_json(const nlohmann::json& j)
 {
-	j.at("texName").get_to(entity->mTexture);
-	j.at("animName").get_to(entity->mAnimation);
+	j.at("texName").get_to(mTexture);
+	j.at("animName").get_to(mAnimation);
 
 	sf::Vector2i position = {
 		j["sprite"]["tex_rect"]["position"]["x"],
@@ -125,28 +125,32 @@ void Entity::setTexRect(sf::IntRect rect)
 
 void Pet::setHungerValue(int32_t value) 
 {
-	mHunger += value;
-	if (mHunger > MAX_VALUE) mHunger = MAX_VALUE;
-	else if (mHunger < MIN_VALUE) mHunger = MIN_VALUE;
+	auto newValue = mHunger += value;
+	if (newValue > MAX_VALUE) mHunger = MAX_VALUE;
+	else if (newValue < MIN_VALUE) mHunger = MIN_VALUE;
+	else newValue += value;
 }
 void Pet::setGroomValue(int32_t value) 
 {
-	mGroom += value;
-	if (mGroom > MAX_VALUE) mGroom = MAX_VALUE;
-	else if (mGroom < MIN_VALUE) mGroom = MIN_VALUE;
+	auto newValue = mGroom += value;
+	if (newValue > MAX_VALUE) mGroom = MAX_VALUE;
+	else if (newValue < MIN_VALUE) mGroom = MIN_VALUE;
+	else mGroom += value;
 }
 void Pet::setHealthValue(int32_t value) 
 {
-	mHealth += value;
-	if (mHealth > MAX_VALUE) mHealth = MAX_VALUE;
-	else if (mHealth < MIN_VALUE) mHealth = MIN_VALUE;
+	auto newValue = mHealth += value;
+	if (newValue > MAX_VALUE) mHealth = MAX_VALUE;
+	else if (newValue < MIN_VALUE) mHealth = MIN_VALUE;
+	else mHealth += value;
 }
 
 void Pet::setHappinessValue(int32_t value) 
 {
-	mHappiness += value;
-	if (mHappiness > MAX_VALUE) mHappiness = MAX_VALUE;
-	else if (mHappiness < MIN_VALUE) mHappiness = MIN_VALUE;
+	auto newValue = mHappiness += value;
+	if (newValue > MAX_VALUE) mHappiness = MAX_VALUE;
+	else if (newValue < MIN_VALUE) mHappiness = MIN_VALUE;
+	else mHappiness += value;
 }
 
 void Pet::increasedHappiness(bool value)
@@ -163,7 +167,7 @@ void Pet::decayValues()
 	if (mHealth < LIMIT_VALUE) setHappinessValue(DECAY_VALUE);
 }
 
-void Pet::toJson(nlohmann::json& j, const Pet& pet) 
+void Pet::toJson(nlohmann::json& j) 
 {
 	auto tex_rect = mSprite.getTextureRect();
 
@@ -200,19 +204,19 @@ void Pet::toJson(nlohmann::json& j, const Pet& pet)
 	};
 }
 
-void Pet::from_json(const nlohmann::json& j, std::shared_ptr<Pet> p) 
+void Pet::from_json(const nlohmann::json& j) 
 {
-	j.at("name").get_to(p->mName);
-	j.at("species").get_to(p->mSpecies);
-	j.at("temper").get_to(p->mTemper);
-	j.at("initPrompt").get_to(p->mInitPrompt);
-	j.at("currentStatus").get_to(p->mCurrentStatus);
-	j.at("hunger").get_to(p->mHunger);
-	j.at("groom").get_to(p->mGroom);
-	j.at("health").get_to(p->mHealth);
-	j.at("happiness").get_to(p->mHappiness);
-	j.at("texName").get_to(p->mTexture);
-	j.at("animName").get_to(p->mAnimation);
+	j.at("name").get_to(mName);
+	j.at("species").get_to(mSpecies);
+	j.at("temper").get_to(mTemper);
+	j.at("initPrompt").get_to(mInitPrompt);
+	j.at("currentStatus").get_to(mCurrentStatus);
+	j.at("hunger").get_to(mHunger);
+	j.at("groom").get_to(mGroom);
+	j.at("health").get_to(mHealth);
+	j.at("happiness").get_to(mHappiness);
+	j.at("texName").get_to(mTexture);
+	j.at("animName").get_to(mAnimation);
 	
 	sf::Vector2i position = { 
 		j["sprite"]["tex_rect"]["position"]["x"],
@@ -227,8 +231,3 @@ void Pet::from_json(const nlohmann::json& j, std::shared_ptr<Pet> p)
 	mTextureRect = sf::IntRect(position, size);
 }
 
-void Pet::setState(nlohmann::json)
-{
-	toJson(mState, *this);
-	mSaveComponent->setState(mState);
-}

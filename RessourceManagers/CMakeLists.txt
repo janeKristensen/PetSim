@@ -17,12 +17,14 @@ target_include_directories(ressource_managers PUBLIC
     ${SFML_DIR}/include
     ${CMAKE_CURRENT_SOURCE_DIR}/include  
     DialogSystem/include
+    entities/include
 )
 
    # Link SFML libraries
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
     target_link_libraries(ressource_managers PUBLIC
     DialogSystem
+    entities
     ${SFML_DIR}/lib/sfml-system-d.lib
     ${SFML_DIR}/lib/sfml-window-d.lib
     ${SFML_DIR}/lib/sfml-audio-d.lib
@@ -31,6 +33,7 @@ if(CMAKE_BUILD_TYPE STREQUAL "Debug")
 else()
     target_link_libraries(ressource_managers PUBLIC
     DialogSystem
+    entities
     ${SFML_DIR}/lib/sfml-system.lib
     ${SFML_DIR}/lib/sfml-window.lib
     ${SFML_DIR}/lib/sfml-audio.lib

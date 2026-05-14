@@ -665,60 +665,42 @@ void GameScene::removeMoney(uint32_t value)
 	}
 }
 
-
-// Move to item manager
-std::shared_ptr<Item> GameScene::createItemFromType(const ItemType type)
-{
-	std::shared_ptr<Item> item = nullptr;
-
-	if (type == ItemType::BONE)
-	{
-		item = std::make_shared<Food>(type);
-	}
-	else if (type == ItemType::BRUSH)
-	{
-		item = std::make_shared<GroomItem>(type);
-	}
-	else if (type == ItemType::BALL)
-	{
-		item = std::make_shared<Toy>(type);
-	}
-		
-	return item;
-}
-
-
 void GameScene::loadGame(const std::string& filename) {
 
-	// load json save file
-	std::ifstream ifs(filename);
-	nlohmann::json j;
-	ifs >> j;
+		// load json save file
+		std::ifstream ifs(filename);
+		nlohmann::json j;
+		ifs >> j;
 
-	mItems.clear();
-	mInventorySystem->clearSlots();
+		mItems.clear();
+		mInventorySystem->clearSlots();
 
-	// set items in inventory
-	auto slotValues = j["inventory"]["slotValues"].get<std::array<int, MAX_SLOTS>>();
+		// set items in inventory
+		auto slotValues = j["inventory"]["slotValues"].get<std::array<int, MAX_SLOTS>>();
 
-	for (const auto& element : j["items"]) {
+		for (const auto& element : j["items"]) {
 
-		// create new item instance from typeId
-		auto typeId = element["typeId"].get<ItemType>();
-		auto item = createItemFromType(typeId);
-		item->loadData(element);
-		mItems.push_back(item);
+			// create new item instance from typeId
+			auto typeId = element["typeId"].get<ItemType>();
+			auto item = mServices.itemManager->createItemFromType(typeId);
+			item->loadData(element);
+			item->setTexture(mServices.textureManager->getTexture(item->getTextureName()));
+			mItems.push_back(item);
 
-		auto slot = mInventorySystem->getSlotPosition(item->getSprite().getPosition());
-		mInventorySystem->addItemToSlotIndex(std::get<1>(slot), item, slotValues[std::get<1>(slot)]);
-	}
+			auto slot = mInventorySystem->getSlotPosition(item->getSprite().getPosition());
+			mInventorySystem->addItemToSlotIndex(std::get<1>(slot), item, slotValues[std::get<1>(slot)]);
+		}
 
-	// Load Pet status from json
-	mPet->from_json(j["pet"], mPet);
-	std::string initPrompt = mPet->getInitPrompt() + mPet->getStatus();
-	mModel->clearModelStringBuffer();
-	mModel->addSystemPrompt(initPrompt);
-	mServices.animationManager->attachAnimation(mPet, AnimationName::CAT);
+		// Load Pet status from json
+		mPet->from_json(j["pet"]);
+		std::string initPrompt = mPet->getInitPrompt() + mPet->getStatus();
+		mModel->clearModelStringBuffer();
+		mModel->addSystemPrompt(initPrompt);
+		mServices.animationManager->attachAnimation(mPet, AnimationName::CAT);
+		
+		// Load workScene
+		mWorkScene->loadData(j["work"]);
+	
 }
 
 void GameScene::addItemToInventory(std::shared_ptr<Item> item, std::uint32_t amount)

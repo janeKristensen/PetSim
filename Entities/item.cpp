@@ -45,16 +45,15 @@ nlohmann::json Item::saveData() {
 void Item::loadData(nlohmann::json data)
 {
 	// Get item texture rect
-	sf::IntRect texRect;
 	auto arr = data["position"].get<std::array<float, 6>>();
-	texRect.position.x = arr[0];
-	texRect.position.y = arr[1];
-	texRect.size.x = arr[2];
-	texRect.size.y = arr[3];
+	mTexRect.position.x = arr[0];
+	mTexRect.position.y = arr[1];
+	mTexRect.size.x = arr[2];
+	mTexRect.size.y = arr[3];
 
 	mValue = data["value"].get<uint32_t>();
 	mTexture = data["texName"].get<Texture>();
-	(*mSprite).setTextureRect(texRect);
+	mSprite = sf::Sprite(mTex, mTexRect);
 	float scale = data["scale"].get<float>();
 	setScale({ scale, scale });
 	setPosition(sf::Vector2f{ arr[4], arr[5] });

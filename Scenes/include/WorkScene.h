@@ -16,17 +16,17 @@ public:
 	void handleKeyPress(sf::Keyboard::Key key) override;
 	void handleDrag(std::shared_ptr<sf::RenderWindow> window) override;
 	void setState() override;
+	void loadData(nlohmann::json data) override;
 
 private:
 	void createNumbers(size_t amount);
 	sf::Vector2f getRandomPosition();
 
 	GameScene& mGameScene;
-	std::vector<std::unique_ptr<Item>> mItems;
+	std::vector<std::shared_ptr<Item>> mItems;
 	std::shared_ptr<Entity> mRobot = nullptr;
 	sf::Vector2f mScreenPosition;
 	sf::Vector2f mScreenSize;
 	std::queue<DialogName> mRobotDialog;
 	std::shared_ptr<SaveComponent> mSaveComponent = std::make_shared<SaveComponent>();
-	std::unique_ptr<SaveManager> mSaveManager = std::make_unique<SaveManager>(mSaveComponent);
 };

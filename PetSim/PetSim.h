@@ -44,6 +44,7 @@ private:
 	SoundManager mSoundManager;
 	TextureManager mTextureManager;
 	DialogManager mDialogManager;
+	ItemManager mItemManager;
 
 	Services mServices;
 };

@@ -2,9 +2,9 @@
 #include <cstdint>
 #include "SFML/Graphics.hpp"
 #include <nlohmann/json.hpp>
-#include "TextureManager.h"
 #include <format>
 #include "Memento.h"
+#include "TextureManager.h"
 
 enum class ItemType {
 	BONE,
@@ -15,6 +15,7 @@ enum class ItemType {
 	SHOVEL,
 	NUMBER
 };
+
 
 class Item {
 public:
@@ -35,13 +36,17 @@ public:
 	virtual void printStats() const {}
 	void setPosition(sf::Vector2f position) { if (mSprite)(*mSprite).setPosition(position); }
 	void setScale(sf::Vector2f scale) { if (mSprite)(*mSprite).setScale(scale); }
+	void setTexture(std::shared_ptr<sf::Texture> texture) { mTex = *texture;  if (mSprite)mSprite->setTexture(*texture); }
+	void setTextureRect(sf::IntRect texRect) { if (mSprite) (*mSprite).setTextureRect(texRect); }
+	void setValue(uint32_t value) { mValue = value; }
+	void setTextureName(Texture name) { mTexture = name; }
 	void setAlive(bool value) { mIsAlive = value; }
 	void setPicked(bool value) { mIsPicked = value; }
 	const bool isAlive() const { return mIsAlive; }
 	const bool isPicked() const { return mIsPicked; }
 	const ItemType getTypeId() const { return mTypeId; }
 	const Texture getTextureName() const { return mTexture; }
-	const sf::IntRect getTextureRect() const { if(mSprite) return (*mSprite).getTextureRect(); }
+	const sf::IntRect& getTextureRect() const { if(mSprite) return (*mSprite).getTextureRect(); }
 	const sf::Vector2f getScale() const { if(mSprite) return (*mSprite).getScale(); }
 	void setShader(std::shared_ptr<sf::Shader> shader) { mShader = shader; }
 	std::shared_ptr<sf::Shader> getShader() { return mShader; }
@@ -52,12 +57,14 @@ public:
 	void loadData(nlohmann::json data);
 
 protected:
-	uint32_t mValue;
+	uint32_t mValue = 0;
 	const ItemType mTypeId;
 	bool mIsAlive = true;
 	bool mIsPicked = false;
 	std::optional<sf::Sprite> mSprite;
 	Texture mTexture;
+	sf::Texture mTex;
+	sf::IntRect mTexRect;
 	nlohmann::json mState;
 
 private:
@@ -70,6 +77,7 @@ private:
 
 class Food : public Item {
 public:
+	Food(ItemType typeId) : Item(typeId) {}
 	Food(ItemType typeId, Texture texName, sf::IntRect texRect, sf::Texture& texture, uint32_t value) : Item(typeId, value, texName, texRect, texture) {}
 	Food(const Food& other) : Item(other.mTypeId, other.mValue, (*other.mSprite), other.mTexture, other.mIsAlive, other.mState) {}
 	
@@ -82,6 +90,7 @@ private:
 
 class GroomItem : public Item {
 public:
+	GroomItem(ItemType typeId) : Item(typeId) {}
 	GroomItem(ItemType typeId, Texture texName, sf::IntRect texRect, sf::Texture& texture, uint32_t value) : Item(typeId, value, texName, texRect, texture) {}
 	GroomItem(const GroomItem& other) : Item(other.mTypeId, other.mValue, (*other.mSprite), other.mTexture, other.mIsAlive, other.mState) {}
 
@@ -94,6 +103,7 @@ private:
 
 class Toy : public Item {
 public:
+	Toy(ItemType typeId) : Item(typeId) {}
 	Toy(ItemType typeId, Texture texName, sf::IntRect texRect, sf::Texture& texture, uint32_t value) : Item(typeId, value, texName, texRect, texture) {}
 	Toy(const Toy& other) : Item(other.mTypeId, other.mValue, (*other.mSprite), other.mTexture, other.mIsAlive, other.mState) {}
 
@@ -106,6 +116,7 @@ private:
 
 class Poop : public Item {
 public:
+	Poop(ItemType typeId) : Item(typeId) {}
 	Poop(ItemType typeId, Texture texName, sf::IntRect texRect, sf::Texture& texture, uint32_t value) : Item(typeId, value, texName, texRect, texture) {}
 	Poop(const Poop& other) : Item(other.mTypeId, other.mValue, (*other.mSprite), other.mTexture, other.mIsAlive, other.mState) {}
 
@@ -119,6 +130,7 @@ private:
 
 class Rake : public Item {
 public:
+	Rake(ItemType typeId) : Item(typeId) {}
 	Rake(ItemType typeId, Texture texName, sf::IntRect texRect, sf::Texture& texture, uint32_t value) : Item(typeId, value, texName, texRect, texture) {}
 	Rake(const Rake& other) : Item(other.mTypeId, other.mValue, (*other.mSprite), other.mTexture, other.mIsAlive, other.mState) {}
 
@@ -131,6 +143,7 @@ private:
 
 class Shovel : public Item {
 public:
+	Shovel(ItemType typeId) : Item(typeId) {}
 	Shovel(ItemType typeId, Texture texName, sf::IntRect texRect, sf::Texture& texture, uint32_t value) : Item(typeId, value, texName, texRect, texture) {}
 	Shovel(const Shovel& other) : Item(other.mTypeId, other.mValue, (*other.mSprite), other.mTexture, other.mIsAlive, other.mState) {}
 
@@ -143,6 +156,7 @@ private:
 
 class Number : public Item {
 public:
+	Number(ItemType typeId) : Item(typeId) {}
 	Number(ItemType typeId, Texture texName, sf::IntRect texRect, sf::Texture& texture, uint32_t value) : Item(typeId, value, texName, texRect, texture) {}
 	Number(const Number& other) : Item(other.mTypeId, other.mValue, (*other.mSprite), other.mTexture, other.mIsAlive, other.mState) {}
 

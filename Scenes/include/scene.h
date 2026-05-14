@@ -85,6 +85,7 @@ public:
 	virtual void resetDialog(std::shared_ptr<Entity> entity);
 	virtual void setState() { mState["empty"] = ""; mSaveComponent->setState(mState);}
 	virtual nlohmann::json saveData() { setState(); return mState; }
+	virtual void loadData(nlohmann::json data) {}
 
 	Services& getServices() { return mServices; }
 	void setEvent(std::optional<sf::Event> event) { mCurrentEvent = event; }

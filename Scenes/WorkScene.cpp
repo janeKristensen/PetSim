@@ -298,7 +298,7 @@ void WorkScene::createNumbers(size_t amount)
 	{
 		auto random_number = rand() % 2;
 		auto sprite_number = sf::Vector2i{ random_number * 32, 0 };
-		mItems.push_back(std::make_unique<Number>(ItemType::NUMBER, Texture::NUMBERS, sf::IntRect(sprite_number, { 32,32 }), *mServices.textureManager->getTexture(Texture::NUMBERS), 10));
+		mItems.push_back(std::make_shared<Number>(ItemType::NUMBER, Texture::NUMBERS, sf::IntRect(sprite_number, { 32,32 }), *mServices.textureManager->getTexture(Texture::NUMBERS), 10));
 		auto item = dynamic_cast<Number*>(mItems.back().get());
 		item->setPosition(getRandomPosition());
 		item->setTarget(getRandomPosition());
@@ -333,5 +333,25 @@ void WorkScene::setState()
 	mState["items"] = items;
 	mState["robot"] = mRobot->saveData();
 	mState["dialogNames"] = dialog;
+}
+
+void WorkScene::loadData(nlohmann::json data)
+{
+	mRobot->from_json(data["robot"]);
+
+	for (const auto& element : data["items"])
+	{
+		// create new item instance from typeId
+		auto typeId = element["typeId"].get<ItemType>();
+		auto item = mServices.itemManager->createItemFromType(typeId);
+		item->loadData(element);
+		item->setTexture(mServices.textureManager->getTexture(item->getTextureName()));
+		mItems.push_back(item);
+	}
+
+	for (const auto& dialog : data["dialogNames"])
+	{
+		mRobotDialog.push(dialog);
+	}
 }
 
