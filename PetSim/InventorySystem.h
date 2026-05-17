@@ -21,7 +21,7 @@ public:
 
 private:
 	sf::RectangleShape mShape;
-	int32_t mAmount;
+	int32_t mAmount = 0;
 };
 
 

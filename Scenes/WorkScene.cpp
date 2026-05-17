@@ -144,12 +144,13 @@ void WorkScene::update(float dt)
 		}
 	}
 
-
 	for (auto& item : mItems)
 	{
 		if (!item) continue;
 		if (!item->isAlive()) item = nullptr;
 	}
+
+	mGameScene.update(dt);
 }
 
 void WorkScene::render(sf::RenderWindow& window)
@@ -337,7 +338,7 @@ void WorkScene::setState()
 
 void WorkScene::loadData(nlohmann::json data)
 {
-	mRobot->from_json(data["robot"]);
+	mRobot->loadData(data["robot"]);
 
 	for (const auto& element : data["items"])
 	{
@@ -353,5 +354,7 @@ void WorkScene::loadData(nlohmann::json data)
 	{
 		mRobotDialog.push(dialog);
 	}
+
+	mServices.dialogManager->attachDialog(mRobot, mRobotDialog.front());
 }
 

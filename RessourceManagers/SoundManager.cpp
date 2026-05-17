@@ -32,3 +32,27 @@ void SoundManager::update()
 	}
 }
 
+void SoundManager::playTrack(std::string filename)
+{
+	mMusic = sf::Music(filename);
+	mMusic.setPosition({0, 1, 10});
+	//mMusic.setPitch(2);
+	mMusic.setVolume(100);
+	mMusic.setLooping(true);
+	mMusic.play();
+}
+
+void SoundManager::pauseMusic()
+{
+	mMusic.pause();
+}
+
+void SoundManager::stopMusic()
+{
+	mMusic.stop();
+}
+
+void SoundManager::startMusic()
+{
+	mMusic.play();
+}

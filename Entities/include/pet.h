@@ -21,7 +21,7 @@ public:
 	void setTexture(std::shared_ptr<sf::Texture> texture) override;
 	void setTexRect(sf::IntRect rect) override;
 	nlohmann::json saveData();
-	virtual void from_json(const nlohmann::json& j);
+	virtual void loadData(const nlohmann::json& j);
 
 	sf::Vector2f getPosition() { return mSprite.getPosition(); }
 	const sf::Sprite getSprite() const { return mSprite; }
@@ -31,8 +31,6 @@ public:
 
 
 protected:
-	virtual void setState(nlohmann::json);
-
 	Texture mTexture;
 	sf::IntRect mTextureRect;
 	sf::Sprite mSprite;
@@ -42,7 +40,7 @@ protected:
 	
 
 private:
-	virtual void toJson(nlohmann::json& j);
+	virtual void setState(nlohmann::json& j);
 };
 
 class Pet : public Entity{
@@ -89,12 +87,11 @@ public:
 	void increasedHappiness(bool value);
 	void setStatus(const std::string& str) { mCurrentStatus = str; }
 	void decayValues();
-	void from_json(const nlohmann::json& j) override;
+	void loadData(const nlohmann::json& j) override;
 	
 
 private:
-
-	void toJson(nlohmann::json& j) override;
+	void setState(nlohmann::json& j) override;
 	
 	std::string mName = "";
 	std::string mSpecies = "";

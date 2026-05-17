@@ -1,6 +1,6 @@
 ﻿
 
-add_library(entities STATIC "pet.cpp" "include/pet.h" "item.cpp" "include/item.h")
+add_library(entities STATIC "pet.cpp" "include/pet.h" "item.cpp" "include/item.h" "particle.cpp" "include/particle.h")
 
 if (CMAKE_VERSION VERSION_GREATER 3.12)
   set_property(TARGET entities PROPERTY CXX_STANDARD 20)

@@ -2,6 +2,7 @@
 #include <future>
 #include "Model.h"
 #include "SFML/Graphics.hpp"
+#include "SFML/Window.hpp"
 #include "Services.h"
 #include "item.h"
 #include "TitleScene.h"
@@ -37,6 +38,7 @@ private:
 	bool mMouseDown = false;
 	bool mIsDragging = false;
 	sf::Vector2f mMouseDownPosition;
+	std::unique_ptr<sf::Cursor> mCursor; 
 
 	NeedsSystem mNeedsSystem;
 	AnimationManager mAnimationManager;

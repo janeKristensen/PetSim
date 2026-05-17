@@ -18,7 +18,7 @@ target_include_directories(scenes PUBLIC
     ${SFML_DIR}/include
     llm_model/include
     commands/include
-    particles/include
+    entities/include
     save_system/include
     ressource_managers/include
     ${CMAKE_CURRENT_SOURCE_DIR}/include
@@ -31,7 +31,7 @@ if(CMAKE_BUILD_TYPE STREQUAL "Debug")
     PetSim
     llm_model
     commands
-    particles
+    entities
     save_system
     ressource_managers
     ${SFML_DIR}/lib/sfml-system-d.lib
@@ -44,7 +44,7 @@ else()
     PetSim
     llm_model
     commands
-    particles
+    entities
     save_system
     ressource_managers
     ${SFML_DIR}/lib/sfml-system.lib

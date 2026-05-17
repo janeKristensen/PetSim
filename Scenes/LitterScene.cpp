@@ -307,3 +307,32 @@ void LitterScene::addPoop(float dt)
 		placeRandomPoops(1);
 	}
 }
+
+void LitterScene::setState()
+{
+	std::vector<nlohmann::json> items;
+	for (const auto& item : mItems) {
+
+		items.push_back(item->saveData());
+	}
+
+	mState["items"] = items;
+	mState["particles"] = mParticleManager.saveData();
+}
+
+void LitterScene::loadData(nlohmann::json data)
+{
+	mItems.clear();
+	for (const auto& element : data["items"])
+	{
+		// create new item instance from typeId
+		auto typeId = element["typeId"].get<ItemType>();
+		auto item = mServices.itemManager->createItemFromType(typeId);
+		item->loadData(element);
+		item->setTexture(mServices.textureManager->getTexture(item->getTextureName()));
+		mItems.push_back(item);
+	}
+
+	mParticleManager.loadData(data["particles"]);
+}
+

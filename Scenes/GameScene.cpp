@@ -5,6 +5,7 @@
 #include "LitterScene.h"
 #include "WorkScene.h"
 
+const size_t TEXT_SIZE = 16;
 
 GameScene::GameScene(sf::Vector2f screenSize, std::shared_ptr<Game> game, Services& services, std::shared_ptr<Model> model)
 	: Scene(screenSize, game, services), mModel(model), mScreenSize(screenSize) {
@@ -36,12 +37,12 @@ GameScene::GameScene(sf::Vector2f screenSize, std::shared_ptr<Game> game, Servic
 
 	
 	// Inventory container object
-	float inv_height = bg_Y;
+	float inv_height = mScreenSize.y;
 	std::shared_ptr<sf::RectangleShape> inventory = std::make_shared<sf::RectangleShape>(sf::Vector2f{ INV_WIDTH, inv_height });
 	inventory->setTexture(mServices.textureManager->getTexture(Texture::INVENTORY).get());
 	auto inv_pos = sf::Vector2f{
 			bg_start_X,
-			bg_start_Y 
+			0 
 	};
 	inventory->setPosition(inv_pos);
 	addSceneObject(SceneObject::INVENTORY, inventory);
@@ -176,11 +177,10 @@ GameScene::GameScene(sf::Vector2f screenSize, std::shared_ptr<Game> game, Servic
 	// Adding scene text objects.
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	auto char_size = 16;
 
 	// Output text by AI
 	auto& font = mServices.fontManager->getFont(FontName::TITLE);
-	addTextObject(SceneText::PET_TEXT, sf::Text(font, "", char_size));
+	addTextObject(SceneText::PET_TEXT, sf::Text(font, "", TEXT_SIZE));
 	auto& pet_text = mSceneText.at(SceneText::PET_TEXT);
 	pet_text.setFillColor(sf::Color::Black);
 	pet_text.setPosition(
@@ -191,7 +191,7 @@ GameScene::GameScene(sf::Vector2f screenSize, std::shared_ptr<Game> game, Servic
 	);
 	
 	// User prompting text
-	addTextObject(SceneText::PROMPT_TEXT, sf::Text(font, "", char_size));
+	addTextObject(SceneText::PROMPT_TEXT, sf::Text(font, "", TEXT_SIZE));
 	auto& prompt_text = mSceneText.at(SceneText::PROMPT_TEXT);
 	prompt_text.setFillColor(sf::Color::Black);
 	prompt_text.setPosition(
@@ -216,34 +216,34 @@ GameScene::GameScene(sf::Vector2f screenSize, std::shared_ptr<Game> game, Servic
 	auto text_field_size = text_field->getSize();
 	
 	// Pet health value
-	addTextObject(SceneText::HEALTH_VALUE, sf::Text(font, "", char_size));
+	addTextObject(SceneText::HEALTH_VALUE, sf::Text(font, "", TEXT_SIZE));
 	auto& health_text = mSceneText.at(SceneText::HEALTH_VALUE);
-	auto position_y = output_field_pos.y - SCREEN_MARGIN - char_size;
+	auto position_y = output_field_pos.y - SCREEN_MARGIN - TEXT_SIZE;
 	health_text.setFillColor(sf::Color::Magenta);
 	auto health_text_pos = sf::Vector2f{ scene_end_pos, position_y };
 	health_text.setPosition(health_text_pos);
 	
 	// Pet hunger value
-	addTextObject(SceneText::HUNGER_VALUE, sf::Text(font, "", char_size));
+	addTextObject(SceneText::HUNGER_VALUE, sf::Text(font, "", TEXT_SIZE));
 	auto& hunger_text =  mSceneText.at(SceneText::HUNGER_VALUE);
 	hunger_text.setFillColor(sf::Color::Magenta);
 	auto hunger_text_pos = sf::Vector2f{ health_text_pos.x + text_field_size.x / 4 + SCREEN_MARGIN, position_y };
 	hunger_text.setPosition(hunger_text_pos);
 	
 	// Pet groom value
-	addTextObject(SceneText::GROOM_VALUE, sf::Text(font, "", char_size));
+	addTextObject(SceneText::GROOM_VALUE, sf::Text(font, "", TEXT_SIZE));
 	auto& groom_text = mSceneText.at(SceneText::GROOM_VALUE);
 	groom_text.setFillColor(sf::Color::Magenta);
 	groom_text.setPosition({ hunger_text_pos.x + text_field_size.x / 4 + SCREEN_MARGIN, position_y});
 	
 	// Pet state value
-	addTextObject(SceneText::STATE_VALUE, sf::Text(font, "", char_size));
+	addTextObject(SceneText::STATE_VALUE, sf::Text(font, "", TEXT_SIZE));
 	auto& state_text = mSceneText.at(SceneText::STATE_VALUE);
 	state_text.setFillColor(sf::Color::Magenta);
 	state_text.setPosition({ scene_end_pos, position_y - 4*SCREEN_MARGIN});
 
 	// Pet happiness value
-	addTextObject(SceneText::HAPPY_VALUE, sf::Text(font, "", char_size));
+	addTextObject(SceneText::HAPPY_VALUE, sf::Text(font, "", TEXT_SIZE));
 	auto& happy_text = mSceneText.at(SceneText::HAPPY_VALUE);
 	happy_text.setFillColor(sf::Color::Magenta);
 	happy_text.setPosition({ scene_end_pos, position_y - 8 * SCREEN_MARGIN });
@@ -290,6 +290,8 @@ GameScene::GameScene(sf::Vector2f screenSize, std::shared_ptr<Game> game, Servic
 	mLitterScene = std::make_shared<LitterScene>(mScreenSize, mGame, mServices, *this);
 	mWorkScene = std::make_shared<WorkScene>(mScreenSize, mGame, mServices, *this);
 	
+	//Play music 
+	mServices.soundManager->playTrack("Sounds/lofi_stars.wav");
 }
 
 
@@ -357,12 +359,19 @@ void GameScene::update(float dt)
 
 	// Update the input text field if field is active
 	if (mInTextField) {
-		const auto& text = wrapText(mStringBuffer, 30);
-		mSceneText.at(SceneText::PROMPT_TEXT).setString(text);
+		const auto& text = wrapText(mStringBuffer, 60);
 		auto& prompt_text = mSceneText.at(SceneText::PROMPT_TEXT);
+		prompt_text.setString(text);
 		auto& text_blip = mSceneObjects.at(SceneObject::TEXT_BLIP);
-		text_blip->setPosition({prompt_text.getPosition().x + prompt_text.getGlobalBounds().size.x + 2, prompt_text.getPosition().y + prompt_text.getLocalBounds().size.y - prompt_text.getCharacterSize()});
-
+		if (text == "")
+		{
+			text_blip->setPosition({ prompt_text.getPosition().x + prompt_text.getGlobalBounds().size.x + 2, prompt_text.getPosition().y });
+		}
+		else
+		{
+			text_blip->setPosition({ prompt_text.getPosition().x + prompt_text.getGlobalBounds().size.x + 2, prompt_text.getPosition().y + prompt_text.getLocalBounds().size.y - TEXT_SIZE});
+		}
+		
 		mBlipTracker += dt;
 
 		// Blip animation
@@ -378,7 +387,7 @@ void GameScene::update(float dt)
 		std::string str = mModel->getModelStringBuffer();
 		mResponseTracker += dt;
 		if (!str.empty()) {
-			const auto& text = wrapText(str, 90);
+			const auto& text = wrapText(str, 60);
 			mSceneText.at(SceneText::PET_TEXT).setString(text);
 			mResponseTracker = 0.f;
 		}
@@ -504,6 +513,7 @@ void GameScene::handleKeyPress(sf::Keyboard::Key key)
 {
 	if (key == sf::Keyboard::Key::Escape) {
 
+		mServices.soundManager->pauseMusic();
 		SceneManager::getInstance()->changeScene(std::make_shared<MenuScene>(mScreenSize, mGame, mServices));
 	}
 }
@@ -638,6 +648,7 @@ void GameScene::setState() {
 	mState["items"] = items;
 	mState["inventory"] = mInventorySystem->saveData();
 	mState["work"] = mWorkScene->saveData();
+	mState["litter"] = mLitterScene->saveData();
 }
 
 void GameScene::addMoney(uint32_t value) 
@@ -692,7 +703,7 @@ void GameScene::loadGame(const std::string& filename) {
 		}
 
 		// Load Pet status from json
-		mPet->from_json(j["pet"]);
+		mPet->loadData(j["pet"]);
 		std::string initPrompt = mPet->getInitPrompt() + mPet->getStatus();
 		mModel->clearModelStringBuffer();
 		mModel->addSystemPrompt(initPrompt);
@@ -700,6 +711,7 @@ void GameScene::loadGame(const std::string& filename) {
 		
 		// Load workScene
 		mWorkScene->loadData(j["work"]);
+		mLitterScene->loadData(j["litter"]);
 	
 }
 

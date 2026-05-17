@@ -19,6 +19,7 @@ Game::Game(std::shared_ptr<sf::RenderWindow> window) : mWindow(std::move(window)
     mServices.textureManager->loadTexture(Texture::SPRITESHEET, "ressources/assets/spritesheet.png");
     mServices.textureManager->loadTexture(Texture::TITLE_MENU, "ressources/assets/title_menu.png");
     mServices.textureManager->loadTexture(Texture::LOADING_SCREEN, "ressources/assets/loading.png");
+    mServices.textureManager->loadTexture(Texture::STANDARD_CURSOR, "ressources/assets/standard_cursor.png");
 
     // Load fonts
     mServices.fontManager->loadFont(FontName::TITLE, "ressources/fonts/Gabriola.ttf");
@@ -29,7 +30,13 @@ Game::Game(std::shared_ptr<sf::RenderWindow> window) : mWindow(std::move(window)
 
 void Game::init()
 {
-    SceneManager::getInstance()->changeScene(std::make_shared<TitleScene>((sf::Vector2f)mWindow->getSize(), shared_from_this(), mServices));
+    sf::Image cursor_image;
+    if (cursor_image.loadFromFile("ressources/assets/standard_cursor.png"))
+    {
+        mCursor = std::move(std::make_unique<sf::Cursor>(cursor_image.getPixelsPtr(), sf::Vector2u{ 32,32 }, sf::Vector2u{ 2,2 }));
+        mWindow->setMouseCursor(*mCursor);
+    }
+    SceneManager::getInstance()->changeScene(std::make_shared<TitleScene>((sf::Vector2f)mWindow->getSize(), shared_from_this(), mServices)); 
 }
 
 void Game::pollEvents() 
@@ -134,7 +141,7 @@ void Game::saveGame()
 {
     setState();
     mSaveManager->save();
-    mSaveManager->showHistory();
+    //mSaveManager->showHistory();
 }
 
 void Game::loadGame(const std::string& filename)

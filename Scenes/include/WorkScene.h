@@ -28,5 +28,5 @@ private:
 	sf::Vector2f mScreenPosition;
 	sf::Vector2f mScreenSize;
 	std::queue<DialogName> mRobotDialog;
-	std::shared_ptr<SaveComponent> mSaveComponent = std::make_shared<SaveComponent>();
+	//std::shared_ptr<SaveComponent> mSaveComponent = std::make_shared<SaveComponent>();
 };

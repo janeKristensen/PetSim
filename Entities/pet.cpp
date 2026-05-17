@@ -1,24 +1,12 @@
 #include "Pet.h"
 #include <iostream>
 
-constexpr uint32_t MAX_VALUE = 100;
-constexpr uint32_t MIN_VALUE = 0;
-constexpr uint32_t LIMIT_VALUE = 50;
+constexpr int32_t MAX_VALUE = 100;
+constexpr int32_t MIN_VALUE = 0;
+constexpr int32_t LIMIT_VALUE = 50;
 constexpr int32_t DECAY_VALUE = -1;
 
-void Entity::setState(nlohmann::json)
-{
-	toJson(mState);
-	mSaveComponent->setState(mState);
-}
-
-nlohmann::json Entity::saveData()
-{
-	setState(mState);
-	return mState;
-}
-
-void Entity::toJson(nlohmann::json& j)
+void Entity::setState(nlohmann::json& j)
 {
 	auto tex_rect = mSprite.getTextureRect();
 
@@ -46,7 +34,13 @@ void Entity::toJson(nlohmann::json& j)
 	};
 }
 
-void Entity::from_json(const nlohmann::json& j)
+nlohmann::json Entity::saveData()
+{
+	setState(mState);
+	return mState;
+}
+
+void Entity::loadData(const nlohmann::json& j)
 {
 	j.at("texName").get_to(mTexture);
 	j.at("animName").get_to(mAnimation);
@@ -125,21 +119,21 @@ void Entity::setTexRect(sf::IntRect rect)
 
 void Pet::setHungerValue(int32_t value) 
 {
-	auto newValue = mHunger += value;
+	int32_t newValue = mHunger + value;
 	if (newValue > MAX_VALUE) mHunger = MAX_VALUE;
 	else if (newValue < MIN_VALUE) mHunger = MIN_VALUE;
-	else newValue += value;
+	else mHunger += value;
 }
 void Pet::setGroomValue(int32_t value) 
 {
-	auto newValue = mGroom += value;
+	int32_t newValue = mGroom + value;
 	if (newValue > MAX_VALUE) mGroom = MAX_VALUE;
 	else if (newValue < MIN_VALUE) mGroom = MIN_VALUE;
 	else mGroom += value;
 }
 void Pet::setHealthValue(int32_t value) 
 {
-	auto newValue = mHealth += value;
+	int32_t newValue = mHealth + value;
 	if (newValue > MAX_VALUE) mHealth = MAX_VALUE;
 	else if (newValue < MIN_VALUE) mHealth = MIN_VALUE;
 	else mHealth += value;
@@ -147,7 +141,7 @@ void Pet::setHealthValue(int32_t value)
 
 void Pet::setHappinessValue(int32_t value) 
 {
-	auto newValue = mHappiness += value;
+	int32_t newValue = mHappiness + value;
 	if (newValue > MAX_VALUE) mHappiness = MAX_VALUE;
 	else if (newValue < MIN_VALUE) mHappiness = MIN_VALUE;
 	else mHappiness += value;
@@ -167,11 +161,11 @@ void Pet::decayValues()
 	if (mHealth < LIMIT_VALUE) setHappinessValue(DECAY_VALUE);
 }
 
-void Pet::toJson(nlohmann::json& j) 
+void Pet::setState(nlohmann::json& j) 
 {
 	auto tex_rect = mSprite.getTextureRect();
 
-	j = nlohmann::json{ 
+	j = nlohmann::json{
 		{ "name", mName },
 		{ "species", mSpecies },
 		{ "temper", mTemper },
@@ -184,7 +178,7 @@ void Pet::toJson(nlohmann::json& j)
 		{ "texName", mTexture},
 		{"animName", mAnimation},
 		{ "sprite", {
-			{ "position", 
+			{ "position",
 				{
 					{ "x", mSprite.getPosition().x },
 					{ "y", mSprite.getPosition().y }
@@ -199,12 +193,12 @@ void Pet::toJson(nlohmann::json& j)
 					{ "x", tex_rect.size.x },
 					{ "y", tex_rect.size.y }
 				}}}
-			}}	
+			}}
 		}
 	};
 }
 
-void Pet::from_json(const nlohmann::json& j) 
+void Pet::loadData(const nlohmann::json& j) 
 {
 	j.at("name").get_to(mName);
 	j.at("species").get_to(mSpecies);

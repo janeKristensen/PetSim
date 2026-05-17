@@ -18,6 +18,8 @@ public:
 	void handleKeyPress		(sf::Keyboard::Key key) override;
 	void handleDrag			(std::shared_ptr<sf::RenderWindow> window) override;
 	void addPoop			(float dt);
+	void setState			() override;
+	void loadData			(nlohmann::json data) override;
 
 private:
 	void placeRandomPoops	(size_t number);
@@ -31,7 +33,8 @@ private:
 	Bounds								mBounds;
 	ParticleManager						mParticleManager;
 	sf::VertexArray						mVa = sf::VertexArray(sf::PrimitiveType::Points);
-	std::array<std::array<sf::RectangleShape,4>, 4> mGrid;
+	std::array<std::array<
+		sf::RectangleShape,4>, 4>		mGrid;
 	sf::Vector2f						mBoxSize{512,512};
 	float								mParticleSize = 1.f;
 	size_t								mParticlePoints = 4;

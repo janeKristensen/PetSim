@@ -18,6 +18,10 @@ std::shared_ptr<Item> ItemManager::createItemFromType(ItemType type)
 	{
 		item = std::make_shared<Toy>(type);
 	}
+	else if (type == ItemType::POOP)
+	{
+		item = std::make_shared<Poop>(type);
+	}
 	else if (type == ItemType::NUMBER)
 	{
 		item = std::make_shared<Number>(type);

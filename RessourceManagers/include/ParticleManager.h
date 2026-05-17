@@ -1,6 +1,7 @@
 #pragma once
 #include "SFML/Graphics.hpp"
 #include "Particle.h"
+#include "nlohmann/json.hpp"
 
 
 struct Bounds
@@ -21,9 +22,12 @@ public:
 	void addParticle(float size, size_t points, sf::Color color, sf::Vector2f position, float speed);
 	void setDirection(sf::Vector2f newPos, float radius = 10);
 	void moveParticles(float dt, float force);
-	const std::vector<Particle>& getParticles() { return m_particles; }
+	const std::vector<Particle>& getParticles() { return mParticles; }
 	void resetDirection();
+	nlohmann::json saveData();
+	void loadData(nlohmann::json data);
+
 private:
-	Bounds m_bounds;
-	std::vector<Particle> m_particles;
+	Bounds mBounds;
+	std::vector<Particle> mParticles;
 };

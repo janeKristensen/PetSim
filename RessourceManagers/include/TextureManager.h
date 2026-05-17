@@ -15,7 +15,8 @@ enum class Texture {
 	NUMBERS, 
 	ROBOT,
 	CAT,
-	CHOICE_BTN
+	CHOICE_BTN,
+	STANDARD_CURSOR
 };
 
 class TextureManager

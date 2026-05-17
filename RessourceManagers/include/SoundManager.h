@@ -21,8 +21,13 @@ public:
 	void play(Sound sound);
 	bool isPlaying();
 	void update();
+	void playTrack(std::string filename);
+	void pauseMusic();
+	void stopMusic();
+	void startMusic();
 
 private:
 	std::unordered_map<Sound, sf::SoundBuffer> mSounds;
 	std::queue<sf::Sound> mActiveSounds;
+	sf::Music mMusic;
 };
