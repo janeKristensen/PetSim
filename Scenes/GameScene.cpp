@@ -291,7 +291,7 @@ GameScene::GameScene(sf::Vector2f screenSize, std::shared_ptr<Game> game, Servic
 	mWorkScene = std::make_shared<WorkScene>(mScreenSize, mGame, mServices, *this);
 	
 	//Play music 
-	mServices.soundManager->playTrack("Sounds/lofi_stars.wav");
+	mServices.soundManager->playTrack(Track::GAME_SCENE);
 }
 
 
@@ -488,16 +488,19 @@ void GameScene::handleClick(sf::Vector2f mouseposition) {
 	else if (mSceneObjects.at(SceneObject::SHOP_BUTTON)->getGlobalBounds().contains(mouseposition))
 	{
 		mServices.soundManager->play(Sound::CLICK);
+		mServices.soundManager->saveTrackOffset();
 		SceneManager::getInstance()->changeScene(std::make_shared<ShopScene>(mScreenSize, mGame, mServices, *this));
 	}
 	else if (mSceneObjects.at(SceneObject::LITTER_BUTTON)->getGlobalBounds().contains(mouseposition))
 	{
 		mServices.soundManager->play(Sound::CLICK);
+		mServices.soundManager->saveTrackOffset();
 		SceneManager::getInstance()->changeScene(mLitterScene);
 	}
 	else if (mSceneObjects.at(SceneObject::COMPUTER)->getGlobalBounds().contains(mouseposition))
 	{
 		mServices.soundManager->play(Sound::CLICK);
+		mServices.soundManager->saveTrackOffset();
 		if (mWorkScene)
 		{
 			SceneManager::getInstance()->changeScene(mWorkScene);

@@ -26,6 +26,10 @@ Game::Game(std::shared_ptr<sf::RenderWindow> window) : mWindow(std::move(window)
 
     // Load Sounds
     mServices.soundManager->loadSound(Sound::CLICK, "Sounds/click.wav");
+
+    // Track list
+    mServices.soundManager->newTrack(Track::GAME_SCENE, "Sounds/lofi_stars.wav");
+    mServices.soundManager->newTrack(Track::SHOP_SCENE, "Sounds/fun-little-happy-song-edited.wav");
 }
 
 void Game::init()

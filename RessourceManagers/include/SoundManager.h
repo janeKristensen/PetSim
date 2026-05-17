@@ -12,6 +12,14 @@ enum class Sound {
 	SHORT_PURR
 };
 
+enum class Track {
+	GAME_SCENE,
+	SHOP_SCENE,
+	LITTER_SCENE,
+	MENU,
+	LOADING_SCREEN
+};
+
 class SoundManager
 {
 public:
@@ -21,7 +29,9 @@ public:
 	void play(Sound sound);
 	bool isPlaying();
 	void update();
-	void playTrack(std::string filename);
+	void newTrack(Track trackName, std::string filename);
+	void playTrack(Track trackName, bool atOffset = false);
+	void saveTrackOffset();
 	void pauseMusic();
 	void stopMusic();
 	void startMusic();
@@ -29,5 +39,7 @@ public:
 private:
 	std::unordered_map<Sound, sf::SoundBuffer> mSounds;
 	std::queue<sf::Sound> mActiveSounds;
+	std::unordered_map<Track, std::string> mTracks;
 	sf::Music mMusic;
+	sf::Time mPreviousTrackOffset;
 };

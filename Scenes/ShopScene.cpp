@@ -53,7 +53,7 @@ ShopScene::ShopScene(sf::Vector2f screenSize, std::shared_ptr<Game> game, Servic
 		start_pos.x += tile_size.x + TEXT_MARGIN;
 	}
 
-	mServices.soundManager->playTrack("Sounds/shop_music.wav");
+	mServices.soundManager->playTrack(Track::SHOP_SCENE);
 }
 
 void ShopScene::update(float dt)
@@ -77,7 +77,6 @@ void ShopScene::update(float dt)
 		}
 	}
 }
-
 
 void ShopScene::render(sf::RenderWindow& window)
 {
@@ -139,7 +138,7 @@ void ShopScene::handleClick(sf::Vector2f mouseposition)
 	{
 		mServices.soundManager->play(Sound::CLICK);
 		auto btn = std::static_pointer_cast<Button>(mSceneObjects.at(SceneObject::RETURN_BUTTON));
-		mServices.soundManager->playTrack("Sounds/lofi_stars.wav");
+		mServices.soundManager->playTrack(Track::GAME_SCENE, true);
 		btn->onClick();
 	}
 	else if(mSceneObjects.at(SceneObject::BUY_BUTTON)->getGlobalBounds().contains(mouseposition))
@@ -184,7 +183,6 @@ void ShopScene::handleClick(sf::Vector2f mouseposition)
 		}
 	}
 }
-
 
 void ShopScene::handleTextEntry(const sf::Event& event)
 {

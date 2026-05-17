@@ -32,14 +32,28 @@ void SoundManager::update()
 	}
 }
 
-void SoundManager::playTrack(std::string filename)
+void SoundManager::newTrack(Track trackName, std::string filename)
 {
-	mMusic = sf::Music(filename);
-	mMusic.setPosition({0, 1, 10});
-	//mMusic.setPitch(2);
-	mMusic.setVolume(100);
-	mMusic.setLooping(true);
-	mMusic.play();
+	mTracks.insert({ trackName, filename });
+}
+
+void SoundManager::playTrack(Track trackName, bool atOffset)
+{
+	auto track = mTracks.find(trackName);
+	if (track != mTracks.end())
+	{
+		mMusic = sf::Music(track->second);
+		mMusic.setPosition({ 0, 0, 0 });
+		mMusic.setVolume(100);
+		mMusic.setLooping(true);
+		mMusic.play();
+		if (atOffset) mMusic.setPlayingOffset(mPreviousTrackOffset);
+	}
+}
+
+void SoundManager::saveTrackOffset()
+{
+	mPreviousTrackOffset = mMusic.getPlayingOffset();
 }
 
 void SoundManager::pauseMusic()

@@ -226,6 +226,7 @@ void WorkScene::handleClick(sf::Vector2f mouseposition)
 	{
 		mServices.soundManager->play(Sound::CLICK);
 		auto btn = std::static_pointer_cast<Button>(mSceneObjects.at(SceneObject::RETURN_BUTTON));
+		mServices.soundManager->playTrack(Track::GAME_SCENE, true);
 		btn->onClick();
 	}
 	else if (mRobot->getSprite().getGlobalBounds().contains(mouseposition))
@@ -325,10 +326,11 @@ void WorkScene::setState()
 	}
 
 	std::vector<nlohmann::json> dialog;
-	while(!mRobotDialog.empty()) {
+	std::queue<DialogName> temp(mRobotDialog);
+	while(!temp.empty()) {
 
-		dialog.push_back(mRobotDialog.front());
-		mRobotDialog.pop();
+		dialog.push_back(temp.front());
+		temp.pop();
 	}
 
 	mState["items"] = items;
