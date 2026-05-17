@@ -289,11 +289,11 @@ GameScene::GameScene(sf::Vector2f screenSize, std::shared_ptr<Game> game, Servic
 	// Create the litterbox scene
 	mLitterScene = std::make_shared<LitterScene>(mScreenSize, mGame, mServices, *this);
 	mWorkScene = std::make_shared<WorkScene>(mScreenSize, mGame, mServices, *this);
+	mShopScene = std::make_shared<ShopScene>(mScreenSize, mGame, mServices, *this);
 	
 	//Play music 
-	mServices.soundManager->playTrack(Track::GAME_SCENE);
+	mServices.soundManager->playTrack(Track::GAME_SCENE, mMusicOffset);
 }
-
 
 void GameScene::update(float dt)
 {
@@ -488,19 +488,22 @@ void GameScene::handleClick(sf::Vector2f mouseposition) {
 	else if (mSceneObjects.at(SceneObject::SHOP_BUTTON)->getGlobalBounds().contains(mouseposition))
 	{
 		mServices.soundManager->play(Sound::CLICK);
-		mServices.soundManager->saveTrackOffset();
-		SceneManager::getInstance()->changeScene(std::make_shared<ShopScene>(mScreenSize, mGame, mServices, *this));
+		mMusicOffset = mServices.soundManager->saveTrackOffset();
+		mServices.soundManager->playTrack(Track::SHOP_SCENE, mShopScene->getMusicOffset());
+		SceneManager::getInstance()->changeScene(mShopScene);
 	}
 	else if (mSceneObjects.at(SceneObject::LITTER_BUTTON)->getGlobalBounds().contains(mouseposition))
 	{
 		mServices.soundManager->play(Sound::CLICK);
-		mServices.soundManager->saveTrackOffset();
+		mMusicOffset = mServices.soundManager->saveTrackOffset();
+		mServices.soundManager->playTrack(Track::LITTER_SCENE, mLitterScene->getMusicOffset());
 		SceneManager::getInstance()->changeScene(mLitterScene);
 	}
 	else if (mSceneObjects.at(SceneObject::COMPUTER)->getGlobalBounds().contains(mouseposition))
 	{
 		mServices.soundManager->play(Sound::CLICK);
-		mServices.soundManager->saveTrackOffset();
+		mMusicOffset = mServices.soundManager->saveTrackOffset();
+		mServices.soundManager->playTrack(Track::WORK_SCENE, mWorkScene->getMusicOffset());
 		if (mWorkScene)
 		{
 			SceneManager::getInstance()->changeScene(mWorkScene);

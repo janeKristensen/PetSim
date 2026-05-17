@@ -52,8 +52,6 @@ ShopScene::ShopScene(sf::Vector2f screenSize, std::shared_ptr<Game> game, Servic
 		mShopTiles.push_back(ShopTile(tile_size, start_pos, item, font));
 		start_pos.x += tile_size.x + TEXT_MARGIN;
 	}
-
-	mServices.soundManager->playTrack(Track::SHOP_SCENE);
 }
 
 void ShopScene::update(float dt)
@@ -137,8 +135,9 @@ void ShopScene::handleClick(sf::Vector2f mouseposition)
 	if (mSceneObjects.at(SceneObject::RETURN_BUTTON)->getGlobalBounds().contains(mouseposition))
 	{
 		mServices.soundManager->play(Sound::CLICK);
+		mServices.soundManager->playTrack(Track::GAME_SCENE, mGameScene.getMusicOffset());
+		mMusicOffset = mServices.soundManager->saveTrackOffset();
 		auto btn = std::static_pointer_cast<Button>(mSceneObjects.at(SceneObject::RETURN_BUTTON));
-		mServices.soundManager->playTrack(Track::GAME_SCENE, true);
 		btn->onClick();
 	}
 	else if(mSceneObjects.at(SceneObject::BUY_BUTTON)->getGlobalBounds().contains(mouseposition))

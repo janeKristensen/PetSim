@@ -1,5 +1,5 @@
 #include "SoundManager.h"
-
+#include <thread>
 
 void SoundManager::loadSound(Sound sound, const std::string& filename)
 {
@@ -37,23 +37,23 @@ void SoundManager::newTrack(Track trackName, std::string filename)
 	mTracks.insert({ trackName, filename });
 }
 
-void SoundManager::playTrack(Track trackName, bool atOffset)
+void SoundManager::playTrack(Track trackName, sf::Time offset)
 {
+	mMusic.stop();
 	auto track = mTracks.find(trackName);
 	if (track != mTracks.end())
 	{
 		mMusic = sf::Music(track->second);
-		mMusic.setPosition({ 0, 0, 0 });
-		mMusic.setVolume(100);
+		mMusic.setVolume(70);
 		mMusic.setLooping(true);
-		mMusic.play();
-		if (atOffset) mMusic.setPlayingOffset(mPreviousTrackOffset);
+		mMusic.setPlayingOffset(offset);
+		mMusic.play();	
 	}
 }
 
-void SoundManager::saveTrackOffset()
+sf::Time SoundManager::saveTrackOffset()
 {
-	mPreviousTrackOffset = mMusic.getPlayingOffset();
+	return mMusic.getPlayingOffset();
 }
 
 void SoundManager::pauseMusic()

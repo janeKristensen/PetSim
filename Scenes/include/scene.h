@@ -94,7 +94,7 @@ public:
 	void setDialogOptions(std::vector<std::shared_ptr<DialogOption>>* options);
 	void activateDialog() { mIsDialogActive = true; }
 	void deactivateDialog() { mIsDialogActive = false; }
-	
+	sf::Time getMusicOffset() { return mMusicOffset; }
 	sf::Vector2f getObjectSize(SceneObject object) { return mSceneObjects[object]->getSize(); }
 	sf::Vector2f getObjectPosition(SceneObject object) { return mSceneObjects[object]->getPosition(); }
 	const std::unordered_map<SceneObject, std::shared_ptr<sf::RectangleShape>> getSceneObjects() const { return mSceneObjects; }
@@ -112,6 +112,7 @@ protected:
 	std::shared_ptr<sf::Shader> mItemShader = std::make_shared<sf::Shader>();
 	std::shared_ptr<SaveComponent> mSaveComponent = std::make_shared<SaveComponent>();
 	Services& mServices;
+	sf::Time mMusicOffset = sf::Time();
 	bool mIsDialogActive = false;
 private:
 

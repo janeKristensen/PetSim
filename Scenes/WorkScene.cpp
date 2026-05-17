@@ -225,8 +225,9 @@ void WorkScene::handleClick(sf::Vector2f mouseposition)
 	if (mSceneObjects.at(SceneObject::RETURN_BUTTON)->getGlobalBounds().contains(mouseposition))
 	{
 		mServices.soundManager->play(Sound::CLICK);
+		mServices.soundManager->playTrack(Track::GAME_SCENE, mGameScene.getMusicOffset());
+		mMusicOffset = mServices.soundManager->saveTrackOffset();
 		auto btn = std::static_pointer_cast<Button>(mSceneObjects.at(SceneObject::RETURN_BUTTON));
-		mServices.soundManager->playTrack(Track::GAME_SCENE, true);
 		btn->onClick();
 	}
 	else if (mRobot->getSprite().getGlobalBounds().contains(mouseposition))

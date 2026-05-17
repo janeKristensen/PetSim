@@ -49,6 +49,7 @@ private:
 	std::vector<std::shared_ptr<Item>> mItems;
 	std::vector<std::shared_ptr<Item>> mItemsToAdd;
 	std::unique_ptr<InventorySystem> mInventorySystem;
+	std::shared_ptr<ShopScene> mShopScene = nullptr;
 	std::shared_ptr<LitterScene> mLitterScene = nullptr;
 	std::shared_ptr<WorkScene> mWorkScene = nullptr;
 	std::shared_ptr<Pet> mPet = nullptr;

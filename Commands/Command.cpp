@@ -31,7 +31,6 @@ void LoadCommand::execute() const
 void ContinueCommand::execute() const
 {
 	SceneManager::getInstance()->removeScene();
-	mGame->getServices().soundManager->startMusic();
 }
 
 

@@ -16,6 +16,7 @@ enum class Track {
 	GAME_SCENE,
 	SHOP_SCENE,
 	LITTER_SCENE,
+	WORK_SCENE,
 	MENU,
 	LOADING_SCREEN
 };
@@ -30,8 +31,8 @@ public:
 	bool isPlaying();
 	void update();
 	void newTrack(Track trackName, std::string filename);
-	void playTrack(Track trackName, bool atOffset = false);
-	void saveTrackOffset();
+	void playTrack(Track trackName, sf::Time offset);
+	sf::Time saveTrackOffset();
 	void pauseMusic();
 	void stopMusic();
 	void startMusic();
@@ -41,5 +42,4 @@ private:
 	std::queue<sf::Sound> mActiveSounds;
 	std::unordered_map<Track, std::string> mTracks;
 	sf::Music mMusic;
-	sf::Time mPreviousTrackOffset;
 };
